@@ -1,2 +1,2 @@
-# FluvalSmart
-Hagen蓝牙控制鱼缸灯app
+# Inledco App
+Inledco App Android版
