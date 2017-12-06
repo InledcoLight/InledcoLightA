@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:animateLayoutChanges="true"
-    tools:context="com.inledco.fluvalsmart.activity.ScanActivity">
+    tools:context="com.inledco.fluvalsmart.com.inledco.light.activity.ScanActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/scan_toolbar"

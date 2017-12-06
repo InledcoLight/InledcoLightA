@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.inledco.fluvalsmart">
+    package="com.inledco.light">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.LaunchActivity"
+            android:name="com.inledco.light.activity.LaunchActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,22 +21,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.MainActivity"
+            android:name="com.inledco.light.activity.MainActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".activity.ScanActivity"
+            android:name="com.inledco.light.activity.ScanActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".activity.LightActivity"
+            android:name="com.inledco.light.activity.LightActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".activity.WebActivity"
+            android:name="com.inledco.light.activity.WebActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.InledcoLightingActivity"></activity>
+        <activity android:name="com.inledco.light.activity.InledcoLightingActivity"></activity>
     </application>
 
 </manifest>

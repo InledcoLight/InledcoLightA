@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FluvalSmart.iml" filepath="$PROJECT_DIR$/FluvalSmart.iml" />
+      <module fileurl="file://$PROJECT_DIR$/InledcoLightA.iml" filepath="$PROJECT_DIR$/InledcoLightA.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/blemanager/blemanager.iml" filepath="$PROJECT_DIR$/blemanager/blemanager.iml" />
       <module fileurl="file://$PROJECT_DIR$/bleota/bleota.iml" filepath="$PROJECT_DIR$/bleota/bleota.iml" />
