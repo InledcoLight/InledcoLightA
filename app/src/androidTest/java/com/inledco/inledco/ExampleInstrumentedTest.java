@@ -1,4 +1,4 @@
-package com.inledco.fluvalsmart;
+package com.inledco.inledco;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

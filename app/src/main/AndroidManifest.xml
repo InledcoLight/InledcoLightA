@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.inledco.light.activity.LaunchActivity"
+            android:name=".activity.LaunchActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,22 +21,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.inledco.light.activity.MainActivity"
+            android:name=".activity.MainActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.inledco.light.activity.ScanActivity"
+            android:name=".activity.ScanActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.inledco.light.activity.LightActivity"
+            android:name=".activity.LightActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="com.inledco.light.activity.WebActivity"
+            android:name=".activity.WebActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name="com.inledco.light.activity.InledcoLightingActivity"></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.LightingActivity"></activity>
     </application>
 
 </manifest>

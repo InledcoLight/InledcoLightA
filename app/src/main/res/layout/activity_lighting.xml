@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.inledco.light.activity.LightingActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/lightingToolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_chevron_left_white_36dp" />
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="64dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="@string/default_lighting_navigation_title"
+        app:layout_constraintBottom_toBottomOf="@+id/lightingToolbar"
+        app:layout_constraintEnd_toEndOf="@+id/lightingToolbar"
+        app:layout_constraintStart_toStartOf="@+id/lightingToolbar"
+        app:layout_constraintTop_toTopOf="@+id/lightingToolbar" />
+
+    <FrameLayout
+        android:id="@+id/manual_auto_fragment"
+        android:layout_width="368dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lightingToolbar">
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/lighting_fragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/manual_auto_fragment">
+
+    </FrameLayout>
+</android.support.constraint.ConstraintLayout>

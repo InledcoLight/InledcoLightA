@@ -4,11 +4,11 @@ android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
     defaultConfig {
-        applicationId "com.inledco.fluvalsmart"
+        applicationId "com.inledco.light"
         minSdkVersion 18
         targetSdkVersion 22
-        versionCode 5
-        versionName "1.03"
+        versionCode 1
+        versionName "0.01"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -41,4 +41,8 @@ dependencies {
     compile project(':bleota')
     compile project(':itemtouchhelperextension')
     compile 'com.android.support:recyclerview-v7:25.1.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'

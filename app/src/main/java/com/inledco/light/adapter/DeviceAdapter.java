@@ -41,7 +41,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
     public DeviceViewHolder onCreateViewHolder ( ViewGroup parent, int viewType )
     {
         DeviceViewHolder holder = new DeviceViewHolder( LayoutInflater.from( mContext )
-                                                     .inflate( R.layout.item_device_with_action, parent, false ) );
+                                                     .inflate( R.layout.item_device_with_action, parent,false ) );
         return holder;
     }
 

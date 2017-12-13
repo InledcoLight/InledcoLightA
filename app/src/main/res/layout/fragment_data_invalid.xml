@@ -5,7 +5,7 @@
               android:gravity="center"
               android:orientation="vertical"
               android:padding="64dp"
-              tools:context="com.inledco.fluvalsmart.com.inledco.light.fragment.DataInvalidFragment">
+              tools:context="com.inledco.light.fragment.DataInvalidFragment">
 
     <TextView
         android:id="@+id/data_invalid_msg"

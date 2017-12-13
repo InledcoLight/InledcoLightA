@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.inledco.fluvalsmart.com.inledco.light.fragment.DeviceFragment">
+    tools:context="com.inledco.light.fragment.DeviceFragment">
 
     <ImageView
         android:id="@+id/device_iv_add"

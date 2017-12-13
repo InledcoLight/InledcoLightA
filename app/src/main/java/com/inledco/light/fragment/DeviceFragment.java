@@ -23,6 +23,7 @@ import com.inledco.blemanager.BleManager;
 import com.inledco.bleota.BleOTAActivity;
 import com.inledco.light.R;
 import com.inledco.light.activity.LightActivity;
+import com.inledco.light.activity.LightingActivity;
 import com.inledco.light.activity.ScanActivity;
 import com.inledco.light.adapter.DeviceAdapter;
 import com.inledco.light.bean.BaseDevice;
@@ -136,7 +137,9 @@ public class DeviceFragment extends BaseFragment
             public void onClickContent ( int position )
             {
                 BaseDevice device = mDevices.get( position );
-                Intent intent = new Intent( getContext(), LightActivity.class );
+
+                // 跳转设置界面，跳转到新的
+                Intent intent = new Intent( getContext(), LightingActivity.class );
                 intent.putExtra( "DevicePrefer", device.getDevicePrefer() );
                 startActivity( intent );
             }

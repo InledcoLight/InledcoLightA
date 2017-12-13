@@ -165,6 +165,7 @@ public class LightActivity extends BaseActivity implements DataInvalidFragment.O
                                            .commit();
             }
         };
+
         mCommunicateListener = new BleCommunicateListener() {
             @Override
             public void onDataValid ( final String mac )
@@ -354,9 +355,11 @@ public class LightActivity extends BaseActivity implements DataInvalidFragment.O
         AlertDialog.Builder builder = new AlertDialog.Builder( this );
         final AlertDialog dialog = builder.create();
         dialog.setTitle( R.string.rename_device );
+
         View view = LayoutInflater.from( this ).inflate( R.layout.dialog_rename, null );
         Button btn_cancel = (Button) view.findViewById( R.id.rename_cancel );
         Button btn_rename = (Button) view.findViewById( R.id.rename_confirm );
+
         final EditText newname = (EditText) view.findViewById( R.id.rename_newname );
         newname.setText( prefer.getDeviceName() );
         btn_cancel.setOnClickListener( new View.OnClickListener() {
@@ -387,6 +390,7 @@ public class LightActivity extends BaseActivity implements DataInvalidFragment.O
                 }
             }
         } );
+
         dialog.setView( view );
         dialog.setCanceledOnTouchOutside( false );
         dialog.show();
