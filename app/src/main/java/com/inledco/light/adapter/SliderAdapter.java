@@ -30,11 +30,11 @@ public class SliderAdapter extends BaseAdapter
     private ArrayList<Channel> mChannels;
     private static long msc;
 
-    public SliderAdapter ( Context context, String mac, short devid, ArrayList< Channel > channels )
+    public SliderAdapter ( Context context, String mac, short devId, ArrayList< Channel > channels )
     {
         mContext = context;
         this.mac = mac;
-        this.devid = devid;
+        this.devid = devId;
         mChannels = channels;
         msc = System.currentTimeMillis();
     }

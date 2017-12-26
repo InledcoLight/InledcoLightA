@@ -187,6 +187,7 @@ public class LightManualFragment extends BaseFragment
         }
         mSliderAdapter = new SliderAdapter( getContext(), mAddress, devid, mChannels );
         lightmanuallv.setAdapter( mSliderAdapter );
+
         p1Brt = mLightManual.getCustomP1Values();
         p2Brt = mLightManual.getCustomP2Values();
         p3Brt = mLightManual.getCustomP3Values();
