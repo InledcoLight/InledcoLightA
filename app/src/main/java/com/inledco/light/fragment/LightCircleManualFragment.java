@@ -1,18 +1,13 @@
 package com.inledco.light.fragment;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
 
 import com.gigamole.library.ArcProgressStackView;
 import com.inledco.light.R;
@@ -21,6 +16,8 @@ import com.inledco.light.bean.LightManual;
 import com.inledco.light.util.DeviceUtil;
 
 import java.util.ArrayList;
+
+import io.feeeei.circleseekbar.CircleSeekBar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,12 +40,8 @@ public class LightCircleManualFragment extends BaseFragment
     private Short mDeviceId;
     private LightManual mLightManual;
 
-    // 控件
-    private ArcProgressStackView mArcProgressStackView;
-
-    // 所有通道数据
-    private ArrayList<Channel> mChannels;
-
+    // 圆弧
+    private CircleSeekBar mCircleSeekBar;
 
     public LightCircleManualFragment()
     {
@@ -92,8 +85,7 @@ public class LightCircleManualFragment extends BaseFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_light_circle_manual, container, false);
 
@@ -103,15 +95,6 @@ public class LightCircleManualFragment extends BaseFragment
         initEvent();
 
         return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri)
-    {
-        if (mListener != null)
-        {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -133,39 +116,23 @@ public class LightCircleManualFragment extends BaseFragment
 
     @Override
     protected void initView(View view) {
-        // 根据模型数据创建圆盘型调光数据
-        mArcProgressStackView = (ArcProgressStackView) view.findViewById(R.id.manual_circle_color);
         ArrayList<ArcProgressStackView.Model> manual_circle_color_models = new ArrayList<>();
         Channel[] channels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
-        for(int i=0; i<channels.length; i++){
-
+        for(int i=0; i<channels.length; i++) {
             manual_circle_color_models.add(new ArcProgressStackView.Model("",0, channels[i].getColor() & 0x80FFFFFF, channels[i].getColor()));
         }
 
-        // 设置色条宽度
-        DisplayMetrics dm =getResources().getDisplayMetrics();
-        mArcProgressStackView.setDrawWidthDimension((dm.widthPixels - 60) / manual_circle_color_models.size());
-        mArcProgressStackView.setModels(manual_circle_color_models);
+        mCircleSeekBar = new CircleSeekBar(getContext());
     }
 
     @Override
     protected void initEvent() {
-        mArcProgressStackView.setAnimatorUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mCircleSeekBar.setOnSeekBarChangeListener(new CircleSeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onAnimationUpdate(ValueAnimator animation) {
-                String s = String.valueOf(animation.getAnimatedValue());
-                // 动画是获取不到当前索引的
-                int f = mArcProgressStackView.getModels().size();
+            public void onChanged(CircleSeekBar circleSeekBar, int i) {
 
-                for(int i=0; i<mArcProgressStackView.getModels().size(); i++){
-
-                }
-
-                Log.d("onAnimationUpdate: ", "f:" + f);
             }
         });
-
-
     }
 
     @Override
@@ -173,22 +140,14 @@ public class LightCircleManualFragment extends BaseFragment
         refreshData();
     }
 
-    private void refreshData(){
-        mChannels = new ArrayList<>();
+    private void refreshData() {
         Channel[] channels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
         // 获取圆盘数据
         for (int i=0; i< mLightManual.getChnValues().length; i++) {
-            // 这个值是在[0,1000]范围内的值，需要转换成百分比显示
-            // 圆弧的默认范围值是[0,100]
             short value = mLightManual.getChnValues()[i];
 
             channels[i].setValue(value);
-            mChannels.add(channels[i]);
-
-            mArcProgressStackView.getModels().get(i).setProgress((float)value / 10.0f);
         }
-
-        mArcProgressStackView.invalidate();
     }
 
     /**

@@ -5,17 +5,4 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.inledco.light.fragment.LightCircleManualFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <com.gigamole.library.ArcProgressStackView
-        android:id="@+id/manual_circle_color"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:apsv_start_angle="270"
-        app:apsv_sweep_angle="360"
-        app:apsv_draw_width="80dp"
-        app:apsv_model_offset="0dp"
-        app:apsv_dragged="true"
-        app:apsv_animated="true"
-        app:apsv_rounded="true"
-        app:apsv_model_bg_enabled="true" />
 </FrameLayout>

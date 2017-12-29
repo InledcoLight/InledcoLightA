@@ -37,6 +37,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.android.support:design:25.1.0'
     compile 'com.github.gigamole.arcprogressstackview:library:1.0.3'
+    compile 'me.angrybyte.slider:slider:1.4.2'
+    compile 'com.github.feeeei:CircleSeekbar:v1.1.2'
     testCompile 'junit:junit:4.12'
     compile project(':bleota')
     compile project(':itemtouchhelperextension')
