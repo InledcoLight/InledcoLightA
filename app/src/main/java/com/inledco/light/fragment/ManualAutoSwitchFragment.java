@@ -14,8 +14,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.inledco.light.R;
+import com.inledco.light.util.CommUtil;
 
 public class ManualAutoSwitchFragment extends BaseFragment {
+
+    // 参数
+    private static final String ARG_PARAM_DEVICE_ADDRESS = "address";
+    private static final String ARG_PARAM_DEVICE_ID = "deviceId";
+
+    // 传递的变量
+    private String mDeviceAddress;
+    private Short mDeviceId;
 
     private OnFragmentInteractionListener mListener;
     private int mPadding = 20;
@@ -26,9 +35,27 @@ public class ManualAutoSwitchFragment extends BaseFragment {
         // Required empty public constructor
     }
 
+    public static ManualAutoSwitchFragment newInstance(String address, short deviceId) {
+        ManualAutoSwitchFragment fragment = new ManualAutoSwitchFragment();
+
+        Bundle args = new Bundle();
+
+        args.putString(ARG_PARAM_DEVICE_ADDRESS, address);
+        args.putShort(ARG_PARAM_DEVICE_ID, deviceId);
+
+        fragment.setArguments(args);
+
+        return  fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            mDeviceAddress = getArguments().getString(ARG_PARAM_DEVICE_ADDRESS);
+            mDeviceId = getArguments().getShort(ARG_PARAM_DEVICE_ID);
+        }
     }
 
     @Override
@@ -77,6 +104,8 @@ public class ManualAutoSwitchFragment extends BaseFragment {
                 mAutoButton.setPadding(mPadding,mPadding,mPadding,mPadding);
                 mAutoButton.setWidth(mAutoButton.getWidth() - mPadding);
                 mAutoButton.setHeight(mAutoButton.getHeight() - mPadding);
+
+                CommUtil.setManual(mDeviceAddress);
             }
         });
 
@@ -90,6 +119,8 @@ public class ManualAutoSwitchFragment extends BaseFragment {
                 mManualButton.setPadding(mPadding,mPadding,mPadding,mPadding);
                 mManualButton.setWidth(mAutoButton.getWidth() - mPadding);
                 mManualButton.setHeight(mAutoButton.getHeight() - mPadding);
+
+                CommUtil.setAuto(mDeviceAddress);
             }
         });
     }

@@ -1,20 +1,32 @@
 package com.inledco.light.fragment;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.support.design.widget.CheckableImageButton;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import com.gigamole.library.ArcProgressStackView;
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightManual;
+import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
+import com.inledco.light.util.MeasureUtil;
 
+import java.security.cert.CRLException;
 import java.util.ArrayList;
 
 import io.feeeei.circleseekbar.CircleSeekBar;
@@ -40,8 +52,49 @@ public class LightCircleManualFragment extends BaseFragment
     private Short mDeviceId;
     private LightManual mLightManual;
 
+    // 当前时间秒数
+    private long mCurrentMillisSecond = System.currentTimeMillis();
+
+    // 布局
+    private RelativeLayout mColorRelativeLayout;
+
+    // 通道数据
+    private Channel[] mChannels;
+
+    // 各个通道数值
+    private short[] mChannelsValues;
+
     // 圆弧
-    private CircleSeekBar mCircleSeekBar;
+    private CircleSeekBar[] mCircleSeekBars;
+
+    // 开关按钮
+    private CheckableImageButton mPowerButton;
+
+    // 圆形滑动回调
+    private CircleSeekBar.OnSeekBarChangeListener mColorSeekBarChangeListener = new CircleSeekBar.OnSeekBarChangeListener() {
+        @Override
+        public void onChanged(CircleSeekBar circleSeekBar, int i) {
+            // 设置手动模式数据
+            // 获取颜色索引
+            int colorIndex = (int) circleSeekBar.getTag();
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - mCurrentMillisSecond > 32) {
+                short[] colorValues = new short[mChannels.length];
+                for (int j=0; j<colorValues.length; j++) {
+                    colorValues[j] = (short) 0xFFFF;
+                }
+
+                colorValues[colorIndex] = (short) i;
+
+                CommUtil.setLed(mDeviceMacAddress, colorValues);
+
+                mCurrentMillisSecond = currentTime;
+            }
+
+            Log.v("teg;",Integer.toString(colorIndex) + ":" + Integer.toString(i));
+        }
+    };
 
     public LightCircleManualFragment()
     {
@@ -86,15 +139,14 @@ public class LightCircleManualFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_light_circle_manual, container, false);
-
+        // 使用相对布局，由于灯具的路数不一定，所以使用代码布局
+        mColorRelativeLayout = new RelativeLayout(getContext());
         // 初始化
-        initView(view);
+        initView(mColorRelativeLayout);
         initData();
         initEvent();
 
-        return view;
+        return mColorRelativeLayout;
     }
 
     @Override
@@ -114,25 +166,172 @@ public class LightCircleManualFragment extends BaseFragment
         mListener = null;
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void initView(View view) {
-        ArrayList<ArcProgressStackView.Model> manual_circle_color_models = new ArrayList<>();
-        Channel[] channels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
-        for(int i=0; i<channels.length; i++) {
-            manual_circle_color_models.add(new ArcProgressStackView.Model("",0, channels[i].getColor() & 0x80FFFFFF, channels[i].getColor()));
+        // 通道数值
+        mChannelsValues = mLightManual.getChnValues();
+
+        // 获取通道数量
+        int channelNum = mLightManual.getChnValues().length;
+
+        // 初始化圆盘数组
+        mCircleSeekBars = new CircleSeekBar[channelNum];
+
+        // 初始化类型数据
+        mChannels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
+
+        // 获取设备屏幕宽高
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+
+        // 圆盘距离手动自动切换的距离
+        int circleDistance = 30;
+
+        // 圆形中心直径
+        int diameter = displayMetrics.widthPixels / 6;
+
+        // 圆盘距离边缘的距离
+        int distance = displayMetrics.widthPixels / 12;
+
+        // 圆环宽度
+        float circleWidth = (displayMetrics.widthPixels - distance * 2 - diameter) / (mChannelsValues.length * 2);
+
+        // 根据通道数量创建圆环
+        for (int i=0; i<mChannelsValues.length; i++) {
+            // 圆环
+            CircleSeekBar circleSeekBar = new CircleSeekBar(getContext());
+
+            circleSeekBar.setId(10000 + i);
+            circleSeekBar.setReachedColor(mChannels[i].getColor());
+            circleSeekBar.setUnreachedColor(mChannels[i].getColor() & 0x80FFFFFF);
+            circleSeekBar.setReachedWidth(circleWidth);
+            circleSeekBar.setUnreachedWidth(circleWidth);
+            circleSeekBar.setMaxProcess(1000);
+            circleSeekBar.setCurProcess(mChannelsValues[i]);
+            circleSeekBar.setTag(i);
+            circleSeekBar.setOnSeekBarChangeListener(mColorSeekBarChangeListener);
+
+            // 添加到数组中
+            mCircleSeekBars[i] = circleSeekBar;
+
+            // 布局参数
+            RelativeLayout.LayoutParams circleSeekBarLayoutParams =
+                    new RelativeLayout.LayoutParams(displayMetrics.widthPixels - distance * 2 - i * (int)circleSeekBar.getReachedWidth() * 2,
+                                                    displayMetrics.widthPixels - distance * 2 - i * (int)circleSeekBar.getReachedWidth() * 2);
+
+            circleSeekBarLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            circleSeekBarLayoutParams.topMargin = (int) circleWidth * i + circleDistance;
+
+            mColorRelativeLayout.addView(circleSeekBar, circleSeekBarLayoutParams);
         }
 
-        mCircleSeekBar = new CircleSeekBar(getContext());
+        // 添加开关按钮
+        mPowerButton = new CheckableImageButton(getContext());
+
+        mPowerButton.setId(20000 + 1);
+        mPowerButton.setBackgroundColor(R.drawable.ripple_theme);
+        if (mLightManual.isOn()) {
+            mPowerButton.setImageResource(R.drawable.ic_power);
+        } else {
+            mPowerButton.setImageResource(R.drawable.ic_power_off);
+        }
+
+        mPowerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mLightManual.isOn()) {
+                    CommUtil.turnOffLed(mDeviceMacAddress);
+                } else {
+                    CommUtil.turnOnLed(mDeviceMacAddress);
+                }
+            }
+        });
+
+        RelativeLayout.LayoutParams powerButtonLayoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        powerButtonLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        powerButtonLayoutParams.addRule(RelativeLayout.BELOW, mCircleSeekBars[0].getId());
+
+        mColorRelativeLayout.addView(mPowerButton, powerButtonLayoutParams);
+
+        // 添加用户自定义按钮
+        for (int i=0; i<3; i++) {
+            Button userDefineButton = new Button(getContext());
+
+            userDefineButton.setId(30000 + i);
+            userDefineButton.setTag(i);
+            userDefineButton.setText("M" + Integer.toString(i + 1));
+            userDefineButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int userDefineIndex = (int) v.getTag();
+
+                    byte[] userDefineValues;
+                    switch (userDefineIndex) {
+                        case 0:
+                            userDefineValues = mLightManual.getCustomP1Values();
+                            break;
+                        case 1:
+                            userDefineValues = mLightManual.getCustomP2Values();
+                            break;
+                        case 2:
+                            userDefineValues = mLightManual.getCustomP3Values();
+                            break;
+                        case 3:
+                            userDefineValues = mLightManual.getCustomP4Values();
+                            break;
+                        default:
+                                userDefineValues = mLightManual.getCustomP1Values();
+                                break;
+                    }
+                    // 设置对应的用户设置
+                    short[] values = new short[userDefineValues.length];
+                    for ( int i = 0; i < userDefineValues.length; i++ )
+                    {
+                        values[i] = (short) ( ( userDefineValues[i] & 0xFF ) * 10 );
+                    }
+                    CommUtil.setLed( mDeviceMacAddress, values );
+                }
+            });
+
+            userDefineButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int userDefineIndex = (int) v.getTag();
+
+                    CommUtil.setLedCustom( mDeviceMacAddress, (byte) userDefineIndex );
+                    // 还应该提示设置成功的提示
+
+                    return true;
+                }
+            });
+
+            RelativeLayout.LayoutParams userDefineButtonParams = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                    RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+            userDefineButtonParams.addRule(RelativeLayout.BELOW, mPowerButton.getId());
+            if (i == 0) {
+                userDefineButtonParams.addRule(RelativeLayout.LEFT_OF, mPowerButton.getId());
+                userDefineButtonParams.rightMargin = 50;
+            } else if (i == 1) {
+                userDefineButtonParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+            } else {
+                userDefineButtonParams.addRule(RelativeLayout.RIGHT_OF, mPowerButton.getId());
+                userDefineButtonParams.leftMargin = 50;
+            }
+
+            mColorRelativeLayout.addView(userDefineButton, userDefineButtonParams);
+        }
+
+        mColorRelativeLayout.setBackgroundColor(getResources().getColor(R.color.colorCyan));
     }
 
     @Override
     protected void initEvent() {
-        mCircleSeekBar.setOnSeekBarChangeListener(new CircleSeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onChanged(CircleSeekBar circleSeekBar, int i) {
 
-            }
-        });
     }
 
     @Override

@@ -4,12 +4,14 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.inledco.blemanager.BleCommunicateListener;
@@ -20,6 +22,7 @@ import com.inledco.light.bean.Light;
 import com.inledco.light.bean.LightAuto;
 import com.inledco.light.bean.LightManual;
 import com.inledco.light.fragment.DataInvalidFragment;
+import com.inledco.light.fragment.LightAutoFragment;
 import com.inledco.light.fragment.LightCircleManualFragment;
 import com.inledco.light.fragment.ManualAutoSwitchFragment;
 import com.inledco.light.util.CommUtil;
@@ -28,9 +31,7 @@ import com.inledco.light.util.DeviceUtil;
 import java.util.ArrayList;
 
 
-public class LightingActivity extends BaseActivity implements DataInvalidFragment.OnRetryClickListener
-{
-
+public class LightingActivity extends BaseActivity implements DataInvalidFragment.OnRetryClickListener {
     // 设备参数
     private DevicePrefer mPrefer;
     private Light mLight;
@@ -55,12 +56,19 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
     }
 
     @Override
-    protected void initView()
-    {
+    protected void initView() {
+        // 设置圆形颜色设置宽高相同
+        FrameLayout colorFrameLayout = (FrameLayout) findViewById(R.id.lighting_fragment);
+
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) colorFrameLayout.getLayoutParams();
+
+        colorFrameLayout.setLayoutParams(layoutParams);
+
         // 设置手动自动模式切换按钮
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.manual_auto_fragment, new ManualAutoSwitchFragment())
+                .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mPrefer.getDeviceMac(),
+                                                                                         mPrefer.getDevId()))
                 .commit();
 
         // 获取各个控件
@@ -225,7 +233,14 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                     @Override
                     public void run()
                     {
-
+                        Log.v("切换模式","自动模式");
+                        mProgressDialog.dismiss();
+                        if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III) {
+                            fragmentTransaction.replace(R.id.lighting_fragment,
+                                    LightAutoFragment.newInstance(mPrefer.getDeviceMac(),
+                                            mPrefer.getDevId(),
+                                            mLight.getLightAuto())).commit();
+                        }
                     }
                 });
             }
