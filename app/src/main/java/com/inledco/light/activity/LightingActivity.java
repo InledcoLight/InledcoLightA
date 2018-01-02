@@ -4,12 +4,10 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.CountDownTimer;
+import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -19,11 +17,12 @@ import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.bean.DevicePrefer;
 import com.inledco.light.bean.Light;
-import com.inledco.light.bean.LightAuto;
 import com.inledco.light.bean.LightManual;
+import com.inledco.light.bean.LightModel;
+import com.inledco.light.fragment.AutoModeFragment;
 import com.inledco.light.fragment.DataInvalidFragment;
 import com.inledco.light.fragment.LightAutoFragment;
-import com.inledco.light.fragment.LightCircleManualFragment;
+import com.inledco.light.fragment.ManualModeFragment;
 import com.inledco.light.fragment.ManualAutoSwitchFragment;
 import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
@@ -176,7 +175,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
         // 开始蓝牙扫描
         BleManager.getInstance().addBleCommunicateListener(mCommunicateListener);
 
-        mLight = new Light(mPrefer, false, false, null, null );
+        mLight = new Light(mPrefer, false, false, null, (LightModel) null );
 
         getSupportFragmentManager()
                 .beginTransaction()
@@ -216,16 +215,16 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
     // 解析获取到的数据
     private void decodeReceiveData(final String mac, ArrayList< Byte > list)
     {
-        Object object = CommUtil.decodeLight(list, mPrefer.getDevId());
+        Object object = CommUtil.decodeOldInledcoLight(list, mPrefer.getDevId());
         if (object != null)
         {
             final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            if (object instanceof LightAuto)
+            if (object instanceof LightModel)
             {
                 mCountDownTimer.cancel();
                 // 设置模型
                 mLight.setAuto(true);
-                mLight.setLightAuto((LightAuto) object);
+                mLight.setmLightModel((LightModel) object);
 
                 // 切换到自动模式界面
                 runOnUiThread(new Runnable()
@@ -233,13 +232,12 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                     @Override
                     public void run()
                     {
-                        Log.v("切换模式","自动模式");
                         mProgressDialog.dismiss();
                         if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III) {
                             fragmentTransaction.replace(R.id.lighting_fragment,
-                                    LightAutoFragment.newInstance(mPrefer.getDeviceMac(),
-                                            mPrefer.getDevId(),
-                                            mLight.getLightAuto())).commit();
+                                    AutoModeFragment.newInstance(mPrefer.getDeviceMac(),
+                                                                 mPrefer.getDevId(),
+                                                                 mLight.getmLightModel())).commit();
                         }
                     }
                 });
@@ -262,7 +260,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                         {
                             // 显示圆盘手动调光界面
                             fragmentTransaction.replace(R.id.lighting_fragment,
-                                                        LightCircleManualFragment.newInstance(mPrefer.getDeviceMac(),
+                                                        ManualModeFragment.newInstance(mPrefer.getDeviceMac(),
                                                                                               mPrefer.getDevId(),
                                                                                               mLight.getLightManual())).commit();
                         }

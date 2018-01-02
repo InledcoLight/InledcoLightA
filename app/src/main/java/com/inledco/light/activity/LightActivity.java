@@ -224,7 +224,7 @@ public class LightActivity extends BaseActivity implements DataInvalidFragment.O
 
         BleManager.getInstance().addBleCommunicateListener( mCommunicateListener );
 
-        mLight = new Light( mPrefer, false, false, null, null );
+        mLight = new Light( mPrefer, false, false, null, (LightAuto) null );
         light_toolbar.setTitle( mPrefer.getDeviceName() );
         light_sw_auto.setVisibility( View.GONE );
 

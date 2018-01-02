@@ -50,9 +50,11 @@ import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightAuto;
 import com.inledco.light.bean.RampTime;
 import com.inledco.light.constant.CustomColor;
+import com.inledco.light.impl.PreviewTaskListener;
 import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
 import com.inledco.light.util.LightAutoProfileUtil;
+import com.inledco.light.util.PreviewTimerTask;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -1155,54 +1157,5 @@ public class LightAutoFragment extends BaseFragment
             } );
             return convertView;
         }
-    }
-
-    class PreviewTimerTask extends TimerTask
-    {
-//        private static final int TOTAL_COUNT = 24 * 60;
-//        private static final int TIME_STEP = 1;
-
-        private int tm;
-        private PreviewTaskListener mListener;
-
-        public PreviewTimerTask ()
-        {
-            tm = 0;
-        }
-
-        public void setListener ( PreviewTaskListener listener )
-        {
-            mListener = listener;
-        }
-
-        @Override
-        public void run ()
-        {
-//            tm += TIME_STEP;
-            tm++;
-            if ( tm >= 1440 )
-            {
-                tm = 0;
-                if ( mListener != null )
-                {
-                    mListener.onFinish();
-                }
-            }
-            else
-            {
-                if ( mListener != null )
-                {
-                    mListener.onUpdate( tm );
-                }
-            }
-            CommUtil.previewAuto( mAddress, getBright( tm ) );
-        }
-    }
-
-    interface PreviewTaskListener
-    {
-        void onFinish ();
-
-        void onUpdate ( int tm );
     }
 }

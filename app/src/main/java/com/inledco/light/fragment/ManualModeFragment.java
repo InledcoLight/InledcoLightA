@@ -1,13 +1,9 @@
 package com.inledco.light.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.print.PrintAttributes;
 import android.support.design.widget.CheckableImageButton;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -18,28 +14,24 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.gigamole.library.ArcProgressStackView;
+import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightManual;
 import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
-import com.inledco.light.util.MeasureUtil;
-
-import java.security.cert.CRLException;
-import java.util.ArrayList;
 
 import io.feeeei.circleseekbar.CircleSeekBar;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LightCircleManualFragment.OnFragmentInteractionListener} interface
+ * {@link ManualModeFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LightCircleManualFragment#newInstance} factory method to
+ * Use the {@link ManualModeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LightCircleManualFragment extends BaseFragment
+public class ManualModeFragment extends BaseFragment
 {
     private OnFragmentInteractionListener mListener;
     // 参数的键值
@@ -96,7 +88,7 @@ public class LightCircleManualFragment extends BaseFragment
         }
     };
 
-    public LightCircleManualFragment()
+    public ManualModeFragment()
     {
         // Required empty public constructor
     }
@@ -112,9 +104,9 @@ public class LightCircleManualFragment extends BaseFragment
      * @param lightManual 手动模式.
      * @return 一个新的实例.
      */
-    public static LightCircleManualFragment newInstance(String address, short deviceId, LightManual lightManual)
+    public static ManualModeFragment newInstance(String address, short deviceId, LightManual lightManual)
     {
-        LightCircleManualFragment fragment = new LightCircleManualFragment();
+        ManualModeFragment fragment = new ManualModeFragment();
         Bundle args = new Bundle();
 
         args.putString(ARG_PARAM_DEVICE_ADDRESS, address);
@@ -164,6 +156,11 @@ public class LightCircleManualFragment extends BaseFragment
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     @SuppressLint("RestrictedApi")

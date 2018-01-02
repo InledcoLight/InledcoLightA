@@ -6,10 +6,14 @@ import com.ble.api.DataUtil;
 import com.inledco.blemanager.BleManager;
 import com.inledco.light.bean.LightAuto;
 import com.inledco.light.bean.LightManual;
+import com.inledco.light.bean.LightModel;
 import com.inledco.light.bean.RampTime;
+import com.inledco.light.bean.TimePoint;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 与硬件设备通信工具类
@@ -238,6 +242,97 @@ public class CommUtil
                     byte mode = bytes.get( 16+chns*2 );
                     lightAuto = new LightAuto( sunrise, dbrt, sunset, nbrt, week, dynamicPeriod, mode );
                     return lightAuto;
+                }
+            }
+            else
+            {
+                if ( len == 6*chns+6 )
+                {
+                    boolean on = ( bytes.get( 3 ) != 0x00 );
+                    byte dyn = bytes.get( 4 );
+                    short[] chnValues = new short[chns];
+                    byte[] p1Values = new byte[chns];
+                    byte[] p2Values = new byte[chns];
+                    byte[] p3Values = new byte[chns];
+                    byte[] p4Values = new byte[chns];
+                    for ( int i = 0; i < chns; i++ )
+                    {
+                        chnValues[i] = (short) ( ( ( bytes.get( 6 + 2 * i ) & 0xFF) << 8) | ( bytes.get( 5 + 2 * i ) & 0xFF ) );
+                        p1Values[i] = bytes.get( 5+2*chns+i );
+                        p2Values[i] = bytes.get( 5+3*chns+i );
+                        p3Values[i] = bytes.get( 5+4*chns+i );
+                        p4Values[i] = bytes.get( 5+5*chns+i );
+                    }
+                    lightManual = new LightManual( on, dyn, chnValues, p1Values, p2Values, p3Values, p4Values );
+                    return lightManual;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Object decodeOldInledcoLight (ArrayList<Byte> bytes, short devid) {
+        LightManual lightManual = null;
+        LightModel lightAuto = null;
+        int chns = DeviceUtil.getChannelCount(devid);
+        int len = bytes.size();
+        if (bytes.get(1) == CMD_READ && getCRC(bytes, len) == 0x00)
+        {
+            boolean fAuto = (bytes.get(2) != 0x00);
+            if (fAuto)
+            {
+                if (len == 2*chns+12)
+                {
+                    int timeQuantum = 2;
+                    int index = 0;
+                    TimePoint[] timePoints = new TimePoint[timeQuantum * 2];
+                    Map<Short, byte[]> timePointColorValue = new LinkedHashMap<>();
+                    for (int i=0; i<timeQuantum; i++) {
+                        index = 3 + i * (chns + 4);
+                        TimePoint startTimePoint = new TimePoint(bytes.get(index), bytes.get(index + 1));
+                        TimePoint endTimePoint = new TimePoint(bytes.get(index + 2), bytes.get(index + 3));
+
+
+                        timePoints[2 * i] = startTimePoint;
+                        timePoints[2 * i + 1] = endTimePoint;
+
+                        byte[] lightValues = new byte[chns];
+                        for (int j=0; j<chns; j++) {
+                            lightValues[j] = bytes.get(index + 4 + j);
+                        }
+
+                        if (i == timeQuantum - 1) {
+                            timePointColorValue.put((short)(0), lightValues);
+                            timePointColorValue.put((short)(2 * timeQuantum - 1), lightValues);
+                        } else {
+                            timePointColorValue.put((short)(2 * i + 1), lightValues);
+                            timePointColorValue.put((short)(2 * i + 2), lightValues);
+                        }
+                    }
+
+                    lightAuto = new LightModel(timePoints, timePointColorValue);
+
+                    return lightAuto;
+                }
+                else if (len == 2*chns+18)
+                {
+//                    RampTime sunrise = new RampTime( bytes.get( 3 ), bytes.get( 4 ),
+//                            bytes.get( 5 ), bytes.get( 6 ));
+//                    RampTime sunset = new RampTime( bytes.get( 7+chns ), bytes.get( 8+chns ),
+//                            bytes.get( 9+chns ), bytes.get( 10+chns ));
+//                    byte[] dbrt = new byte[chns];
+//                    byte[] nbrt = new byte[chns];
+//                    for ( int i = 0; i < chns; i++ )
+//                    {
+//                        dbrt[i] = bytes.get( 7+i );
+//                        nbrt[i] = bytes.get( 11+chns+i );
+//                    }
+//                    byte week = bytes.get( 11 + chns*2 );
+//                    RampTime dynamicPeriod = new RampTime( bytes.get( 12+chns*2 ), bytes.get( 13+chns*2 ),
+//                            bytes.get( 14+chns*2 ), bytes.get( 15+chns*2 ));
+//                    byte mode = bytes.get( 16+chns*2 );
+//                    lightAuto = new LightAuto( sunrise, dbrt, sunset, nbrt, week, dynamicPeriod, mode );
+//                    return lightAuto;
                 }
             }
             else

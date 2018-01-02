@@ -69,4 +69,6 @@
     <string name="app_name">InledcoLight</string>
     <string name="setting_version">Version</string>
     <string name="device_press_to_scan">Press + to scan for new devices</string>
+    <string name="auto_mode_run">Run</string>
+    <string name="auto_mode_edit">Edit</string>
 </resources>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--曲线图-->
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/auto_mode_chart"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/auto_mode_run"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+
+    </com.github.mikephil.charting.charts.LineChart>
+
+    <!--预览按钮-->
+    <Button
+        android:id="@+id/auto_mode_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/light_auto_preview"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/auto_mode_run" />
+
+    <!--运行按钮-->
+    <Button
+        android:id="@+id/auto_mode_run"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/auto_mode_run"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!--编辑按钮-->
+    <Button
+        android:id="@+id/auto_mode_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/auto_mode_edit"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/auto_mode_run" />
+</android.support.constraint.ConstraintLayout>
