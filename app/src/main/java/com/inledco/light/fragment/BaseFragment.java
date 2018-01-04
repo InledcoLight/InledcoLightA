@@ -1,6 +1,7 @@
 package com.inledco.light.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -95,6 +96,11 @@ public abstract class BaseFragment extends Fragment
     {
         super.onDetach();
         LogUtil.d( TAG, "onDetach: " );
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     protected abstract void initView(View view);

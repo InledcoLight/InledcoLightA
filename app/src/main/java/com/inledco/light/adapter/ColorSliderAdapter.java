@@ -28,11 +28,17 @@ import java.util.ArrayList;
 public class ColorSliderAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
-    private ArrayList<Channel> mChannelsList;
+    private Channel[] mChannels;
+    // 滑动条代理
+    private ColorSliderInterface mColorSliderInterface;
 
-    public ColorSliderAdapter(Context context, ArrayList<Channel> channels) {
+    public ColorSliderAdapter(Context context, Channel[] channels) {
         mContext = context;
-        mChannelsList = channels;
+        mChannels = channels;
+    }
+
+    public void setColorSliderInterface(ColorSliderInterface colorSliderInterface) {
+        this.mColorSliderInterface = colorSliderInterface;
     }
 
     @Override
@@ -42,27 +48,60 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
 
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
-        layoutParams.height = MeasureUtil.Dp2Px(mContext, 220) / mChannelsList.size();
+        layoutParams.height = MeasureUtil.Dp2Px(mContext, 220) / mChannels.length;
 
         view.setLayoutParams(layoutParams);
 
-        return new ColorSliderItemViewHolder(view);
+        final ColorSliderItemViewHolder colorSliderItemViewHolder = new ColorSliderItemViewHolder(view);
+
+        colorSliderItemViewHolder.mColorSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                colorSliderItemViewHolder.mPercentTextView.setText(String.format("%s%%", progress / 10));
+
+                if (!fromUser) {
+                    return;
+                }
+
+                View parentView = (View) seekBar.getParent();
+
+                int position = (int) parentView.getTag();
+
+                // 更改数据到模型中
+                if (mColorSliderInterface != null) {
+                    mColorSliderInterface.seekBarProgressChanged(position, progress);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        return colorSliderItemViewHolder;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         ColorSliderItemViewHolder colorSliderItemViewHolder = (ColorSliderItemViewHolder) viewHolder;
+        Channel channel = mChannels[i];
 
-        Channel channel = mChannelsList.get(i);
+        colorSliderItemViewHolder.itemView.setTag(i);
 
         colorSliderItemViewHolder.mNameTextView.setText(channel.getName());
-        colorSliderItemViewHolder.mColorSeekBar.setProgress(channel.getValue());
-        colorSliderItemViewHolder.mPercentTextView.setText(String.valueOf(channel.getValue()));
+        colorSliderItemViewHolder.mColorSeekBar.setProgress(channel.getValue() * 10);
+        colorSliderItemViewHolder.mPercentTextView.setText(String.format("%s%%", channel.getValue()));
     }
 
     @Override
     public int getItemCount() {
-        return mChannelsList == null ? 0 : mChannelsList.size();
+        return mChannels == null ? 0 : mChannels.length;
     }
 
     private class ColorSliderItemViewHolder extends RecyclerView.ViewHolder {
@@ -78,5 +117,9 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
             mColorSeekBar = (SeekBar) itemView.findViewById(R.id.item_color_slider_slider);
             mPercentTextView = (TextView) itemView.findViewById(R.id.item_color_slider_percent);
         }
+    }
+
+    public interface ColorSliderInterface {
+        void seekBarProgressChanged(int position, int progress);
     }
 }

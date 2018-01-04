@@ -5,15 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TimePicker;
-import android.widget.ToggleButton;
 
 import com.inledco.light.R;
 import com.inledco.light.bean.TimePoint;
 import com.inledco.light.util.MeasureUtil;
-
-import java.sql.Time;
-import java.util.zip.Inflater;
 
 /**
  * Created by huangzhengguo on 2018/1/4.
@@ -24,13 +21,22 @@ public class TimePointAdapter extends RecyclerView.Adapter {
 
     // 数据源
     private TimePoint[] mTimePoints;
+    // 时间段索引
+    private int mLastTimePointIndex = 0;
+    private int mTimePointIndex = 0;
+    // 代理
+    private TimePointInterface mTimePointInterface = null;
 
     public TimePointAdapter(TimePoint[] timePoints) {
         mTimePoints = timePoints;
     }
 
+    public void setmTimePointInterface(TimePointInterface mTimePointInterface) {
+        this.mTimePointInterface = mTimePointInterface;
+    }
+
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, final int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_time_point, viewGroup, false);
         // 固定item高度
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
@@ -39,7 +45,30 @@ public class TimePointAdapter extends RecyclerView.Adapter {
 
         view.setLayoutParams(layoutParams);
 
-        return new TimePointViewHolder(view);
+        final TimePointViewHolder viewHolder = new TimePointViewHolder(view);
+
+        viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                View parentView = (View) buttonView.getParent();
+
+                int position = (int) parentView.getTag();
+                if (isChecked) {
+                    mTimePointIndex = position;
+                    if (mTimePointIndex != mLastTimePointIndex) {
+                        notifyItemChanged(mLastTimePointIndex);
+                        mLastTimePointIndex = position;
+                        notifyItemChanged(mTimePointIndex);
+
+                        if (mTimePointInterface != null) {
+                            mTimePointInterface.checkBoxChanged(position);
+                        }
+                    }
+                }
+            }
+        });
+
+        return viewHolder;
     }
 
     @Override
@@ -47,9 +76,19 @@ public class TimePointAdapter extends RecyclerView.Adapter {
         TimePointViewHolder timePointViewHolder = (TimePointViewHolder) viewHolder;
         TimePoint timePoint = mTimePoints[i];
 
+        viewHolder.itemView.setTag(i);
+
         timePointViewHolder.mTimePicker.setIs24HourView(true);
         timePointViewHolder.mTimePicker.setHour(timePoint.getmHour());
         timePointViewHolder.mTimePicker.setMinute(timePoint.getmMinute());
+
+        if (i == mTimePointIndex) {
+            timePointViewHolder.mTimePicker.setEnabled(true);
+            timePointViewHolder.mCheckBox.setChecked(true);
+        } else {
+            timePointViewHolder.mTimePicker.setEnabled(false);
+            timePointViewHolder.mCheckBox.setChecked(false);
+        }
     }
 
     @Override
@@ -69,5 +108,9 @@ public class TimePointAdapter extends RecyclerView.Adapter {
             mTimePicker = (TimePicker) itemView.findViewById(R.id.item_time_point_datePicker);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.item_time_point_check_checkBox);
         }
+    }
+
+    public interface TimePointInterface {
+        void checkBoxChanged(int position);
     }
 }

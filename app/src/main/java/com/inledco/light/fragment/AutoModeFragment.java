@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.activity.AutoModeEditActivity;
 import com.inledco.light.bean.Channel;
+import com.inledco.light.bean.Light;
 import com.inledco.light.bean.LightModel;
 import com.inledco.light.constant.CustomColor;
 import com.inledco.light.impl.PreviewTaskListener;
@@ -156,10 +158,30 @@ public class AutoModeFragment extends BaseFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+
+        refreshData();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
         BleManager.getInstance().removeBleCommunicateListener(mBleCommunicateListener);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 10 && data != null) {
+            Log.d("requestCode:",requestCode + "");
+
+            LightModel lightModel = (LightModel) data.getExtras().getSerializable("1");
+            mLightModel = lightModel;
+        } else {
+
+        }
     }
 
     @Override
@@ -301,7 +323,7 @@ public class AutoModeFragment extends BaseFragment {
 
                 intent.putExtras(bundle);
 
-                startActivity(intent);
+                startActivityForResult(intent, 10);
             }
         });
     }

@@ -50,8 +50,22 @@ public class LightModel implements Serializable {
         mTimePointColorValue = timePointColorValue;
     }
 
-    public short getmDeviceId() {
+    public short getDeviceId() {
         return mDeviceId;
+    }
+
+    public void setTimePointColorValue(int timePointIndex, int colorIndex, int colorValue) {
+        if (timePointIndex > mTimePointColorValue.keySet().size() - 1) {
+            return;
+        }
+
+        byte[] bytes = mTimePointColorValue.get((short)timePointIndex);
+
+        if (colorIndex > bytes.length - 1) {
+            return;
+        }
+
+        bytes[colorIndex] = (byte) (colorValue / 10);
     }
 
     // 获取动态效果使能
