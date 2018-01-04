@@ -10,6 +10,9 @@ import java.util.Map;
 
 public class LightModel implements Serializable {
     private static final long serialVersionUID = 7284666673318500459L;
+    // 设备id
+    private short mDeviceId;
+
     // 手动模式数据
     private boolean isPowerOn;
     // 手动模式动态效果
@@ -41,9 +44,14 @@ public class LightModel implements Serializable {
     // 动态效果类型
     private byte mDynamicMode;
 
-    public LightModel(TimePoint[] timePoints, Map<Short, byte[]> timePointColorValue) {
+    public LightModel(short deviceId, TimePoint[] timePoints, Map<Short, byte[]> timePointColorValue) {
+        mDeviceId = deviceId;
         mTimePoints = timePoints;
         mTimePointColorValue = timePointColorValue;
+    }
+
+    public short getmDeviceId() {
+        return mDeviceId;
     }
 
     // 获取动态效果使能

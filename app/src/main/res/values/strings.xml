@@ -97,4 +97,8 @@
     <string name="default_lighting_navigation_title">Device Name</string>
     <string name="auto_mode_run">Run</string>
     <string name="auto_mode_edit">Edit</string>
+    <string name="title_activity_auto_mode_edit">AutoModeEditActivity</string>
+    <string name="title_activity_auto_mode_setting">AutoModeSettingActivity</string>
+    <string name="delete">Delete</string>
+    <string name="add">Add</string>
 </resources>

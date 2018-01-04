@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.inledco.light.activity.AutoModeEditActivity">
+
+    <!--导航栏-->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/auto_mode_edit_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/auto_mode_edit_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:navigationIcon="@drawable/ic_chevron_left_white_36dp">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <!--滑动条-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/auto_mode_edit_color_slider_recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="220dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/auto_mode_edit_bar">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <!--时间点列表-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/auto_mode_edit_time_point_recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/auto_mode_edit_delete_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/auto_mode_edit_color_slider_recyclerView">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <!--添加  删除  保存  取消-->
+    <Button
+        android:id="@+id/auto_mode_edit_add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/auto_mode_edit_delete_button"/>
+
+    <Button
+        android:id="@+id/auto_mode_edit_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/layout_horizontal_button"/>
+
+    <!--用来居中的按钮-->
+    <Button
+        android:id="@+id/layout_horizontal_button"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:visibility="invisible"
+        android:background="@color/colorColdWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/auto_mode_edit_save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/layout_horizontal_button"/>
+
+    <Button
+        android:id="@+id/auto_mode_edit_cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/auto_mode_edit_save_button"/>
+
+</android.support.constraint.ConstraintLayout>

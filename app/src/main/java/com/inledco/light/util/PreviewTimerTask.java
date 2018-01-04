@@ -11,9 +11,6 @@ import java.util.TimerTask;
 
 public class PreviewTimerTask extends TimerTask
 {
-//        private static final int TOTAL_COUNT = 24 * 60;
-//        private static final int TIME_STEP = 1;
-
     private int tm;
     private PreviewTaskListener mListener;
     private String mAddress;
@@ -65,11 +62,83 @@ public class PreviewTimerTask extends TimerTask
         CommUtil.previewAuto(mAddress, getColorValues(tm, mLightModel));
     }
 
-    private short[] getColorValues(int tm, LightModel lightModel) {
+    private short[] getColorValues(int ct, LightModel lightModel) {
         short[] colorValues = new short[mChannelNum];
 
+        short[] values = new short[mChannelNum];
 
+        // 获取时间点个数
+        int timePointNum = lightModel.getTimePoints().length;
+        int[] tms = tms = new int[timePointNum];
+        for (int i=0;i<timePointNum;i++) {
+            tms[i] = lightModel.getTimePoints()[i].getmHour() * 60 + lightModel.getTimePoints()[i].getmMinute();
+        }
 
-        return colorValues;
+        // 构造颜色值信息
+        byte[][] vals = new byte[timePointNum][mChannelNum];
+        for ( int i = 0; i < timePointNum; i++ )
+        {
+            for (int j=0;j<mChannelNum;j++) {
+                vals[i][j] = lightModel.getTimePointColorValue().get((short)i)[j];
+            }
+        }
+
+        for ( int i = 0; i < timePointNum; i++ )
+        {
+            int j = ( i + 1 ) % timePointNum;
+            int st = tms[i];
+            int et = tms[j];
+            int duration;
+            int dt;
+            int dbrt;
+            if ( et >= st )
+            {
+                if ( ct >= st && ct < et )
+                {
+                    duration = et - st;
+                    dt = ct - st;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            else
+            {
+                if ( ct >= st || ct < et )
+                {
+                    duration = 1440 - st + et;
+                    if ( ct >= st )
+                    {
+                        dt = ct - st;
+                    }
+                    else
+                    {
+                        dt = 1440 - st + ct;
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            for ( int k = 0; k < mChannelNum; k++ )
+            {
+                byte sbrt = vals[i][k];
+                byte ebrt = vals[j][k];
+                if ( ebrt >= sbrt )
+                {
+                    dbrt = ebrt - sbrt;
+                    values[k] = (short) ( ( sbrt & 0xFF ) * 10 + dbrt * 10 * dt / duration );
+                }
+                else
+                {
+                    dbrt = sbrt - ebrt;
+                    values[k] = (short) ( ( sbrt & 0xFF ) * 10 - dbrt * 10 * dt / duration );
+                }
+            }
+        }
+
+        return values;
     }
 }

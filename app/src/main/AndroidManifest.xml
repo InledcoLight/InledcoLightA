@@ -36,7 +36,8 @@
             android:name=".activity.WebActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
-        <activity android:name=".activity.LightingActivity"></activity>
+        <activity android:name=".activity.LightingActivity" />
+        <activity android:name=".activity.AutoModeEditActivity" />
     </application>
 
 </manifest>

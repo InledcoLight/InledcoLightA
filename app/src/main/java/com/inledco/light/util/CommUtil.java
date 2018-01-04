@@ -271,10 +271,10 @@ public class CommUtil
         return null;
     }
 
-    public static Object decodeOldInledcoLight (ArrayList<Byte> bytes, short devid) {
+    public static Object decodeOldInledcoLight (ArrayList<Byte> bytes, short devId) {
         LightManual lightManual = null;
         LightModel lightAuto = null;
-        int chns = DeviceUtil.getChannelCount(devid);
+        int chns = DeviceUtil.getChannelCount(devId);
         int len = bytes.size();
         if (bytes.get(1) == CMD_READ && getCRC(bytes, len) == 0x00)
         {
@@ -310,29 +310,13 @@ public class CommUtil
                         }
                     }
 
-                    lightAuto = new LightModel(timePoints, timePointColorValue);
+                    lightAuto = new LightModel(devId, timePoints, timePointColorValue);
 
                     return lightAuto;
                 }
                 else if (len == 2*chns+18)
                 {
-//                    RampTime sunrise = new RampTime( bytes.get( 3 ), bytes.get( 4 ),
-//                            bytes.get( 5 ), bytes.get( 6 ));
-//                    RampTime sunset = new RampTime( bytes.get( 7+chns ), bytes.get( 8+chns ),
-//                            bytes.get( 9+chns ), bytes.get( 10+chns ));
-//                    byte[] dbrt = new byte[chns];
-//                    byte[] nbrt = new byte[chns];
-//                    for ( int i = 0; i < chns; i++ )
-//                    {
-//                        dbrt[i] = bytes.get( 7+i );
-//                        nbrt[i] = bytes.get( 11+chns+i );
-//                    }
-//                    byte week = bytes.get( 11 + chns*2 );
-//                    RampTime dynamicPeriod = new RampTime( bytes.get( 12+chns*2 ), bytes.get( 13+chns*2 ),
-//                            bytes.get( 14+chns*2 ), bytes.get( 15+chns*2 ));
-//                    byte mode = bytes.get( 16+chns*2 );
-//                    lightAuto = new LightAuto( sunrise, dbrt, sunset, nbrt, week, dynamicPeriod, mode );
-//                    return lightAuto;
+
                 }
             }
             else

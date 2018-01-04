@@ -1,9 +1,11 @@
 package com.inledco.light.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -24,15 +27,19 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.inledco.blemanager.BleCommunicateListener;
 import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
+import com.inledco.light.activity.AutoModeEditActivity;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
+import com.inledco.light.constant.CustomColor;
+import com.inledco.light.impl.PreviewTaskListener;
 import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
+import com.inledco.light.util.PreviewTimerTask;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Timer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,6 +75,10 @@ public class AutoModeFragment extends BaseFragment {
     // 曲线图数据
     private LineData mLineData;
     private ArrayList<ILineDataSet> mLineDataSets;
+
+    // 定时器
+    private Timer mTimer;
+    private PreviewTimerTask mPreviewTimerTask;
 
     private OnFragmentInteractionListener mListener;
 
@@ -211,10 +222,62 @@ public class AutoModeFragment extends BaseFragment {
                 // 实现预览功能
                 Button previewButton = (Button) v;
 
-                if (previewButton.isSelected()) {
+                if (!previewButton.isSelected()) {
+                    mPreviewButton.setSelected(true);
+                    mPreviewButton.setText(R.string.light_auto_stop);
+                    mPreviewTimerTask = new PreviewTimerTask(mDeviceMacAddress,
+                            DeviceUtil.getChannelCount(mDeviceId),
+                            mLightModel);
 
+                    mPreviewTimerTask.setListener(new PreviewTaskListener() {
+                        @Override
+                        public void onFinish() {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mPreviewButton.setSelected(false);
+                                    mPreviewButton.setText(R.string.light_auto_preview);
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onUpdate(int tm) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mLineChart.getXAxis()
+                                            .removeAllLimitLines();
+                                    LimitLine limitLine = new LimitLine( mPreviewTimerTask.getTm() );
+                                    limitLine.setLineWidth( 1 );
+                                    limitLine.setLineColor( CustomColor.COLOR_ACCENT );
+                                    mLineChart.getXAxis()
+                                            .addLimitLine( limitLine );
+                                    mLineChart.invalidate();
+                                }
+                            });
+                        }
+                    });
+
+                    mTimer.schedule( mPreviewTimerTask, 0, 40 );
                 } else {
+                    mPreviewButton.setSelected(false);
+                    mPreviewButton.setText(R.string.light_auto_preview);
+                    // 取消任务
+                    if (mPreviewTimerTask != null) {
+                        mPreviewTimerTask.cancel();
+                    }
 
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            CommUtil.stopPreview(mDeviceMacAddress);
+
+                            mLineChart.getXAxis()
+                                    .removeAllLimitLines();
+                            mLineChart.invalidate();
+                        }
+                    }, 80);
                 }
             }
         });
@@ -229,7 +292,16 @@ public class AutoModeFragment extends BaseFragment {
         mEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // 跳转到编辑界面
+                Intent intent = new Intent(getContext(), AutoModeEditActivity.class);
 
+                Bundle bundle = new Bundle();
+
+                bundle.putSerializable("LIGHT_AUTO_MODE_MODEL", mLightModel);
+
+                intent.putExtras(bundle);
+
+                startActivity(intent);
             }
         });
     }
@@ -272,9 +344,14 @@ public class AutoModeFragment extends BaseFragment {
             }
         };
 
+        // 添加蓝牙监听
         BleManager.getInstance().addBleCommunicateListener(mBleCommunicateListener);
 
+        // 刷新数据
         refreshData();
+
+        // 初始化定时器
+        mTimer = new Timer();
     }
 
     private void refreshData() {

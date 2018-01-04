@@ -76,7 +76,6 @@ public class SliderAdapter extends BaseAdapter
             holder = (ViewHolder) convertView.getTag();
         }
         final Channel channel = mChannels.get( position );
-        //        holder.layout.setBackgroundColor( channel.getColor() );
         holder.tv_name.setText( channel.getName() );
         holder.slider.setProgress( channel.getValue() );
         int[] thumbs = DeviceUtil.getThumb( devid );
@@ -94,14 +93,12 @@ public class SliderAdapter extends BaseAdapter
             holder.slider.setThumb( thumb );
         }
         final TextView percent = holder.tv_percent;
-//        percent.setText( channel.getValue() / 10 + "%" );
         percent.setText( getPercent( channel.getValue() ) );
         holder.slider.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener()
         {
             @Override
             public void onProgressChanged ( SeekBar seekBar, int progress, boolean fromUser )
             {
-//                percent.setText( progress / 10 + "%" );
                 percent.setText( getPercent( (short) progress ) );
                 if ( fromUser )
                 {
@@ -129,7 +126,6 @@ public class SliderAdapter extends BaseAdapter
             @Override
             public void onStopTrackingTouch ( final SeekBar seekBar )
             {
-//                percent.setText( seekBar.getProgress() / 10 + "%" );
                 percent.setText( getPercent( (short) seekBar.getProgress() ) );
                 channel.setValue( (short) seekBar.getProgress() );
                 new Handler().postDelayed( new Runnable()
@@ -153,21 +149,6 @@ public class SliderAdapter extends BaseAdapter
 
     private String getPercent ( short value )
     {
-//        if ( value >= 1000 )
-//        {
-//            return "100%";
-//        }
-//        if ( value <= 0 )
-//        {
-//            return "0.0%";
-//        }
-//        if ( value > 99 )
-//        {
-//            return value/10 + "%";
-//        }
-//        float fl = ((float)value)/10;
-//        DecimalFormat df = new DecimalFormat( "0.0" );
-//        return df.format( fl )+"%";
         if ( value > 1000 )
         {
             return "100%";

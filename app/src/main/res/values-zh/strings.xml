@@ -71,4 +71,6 @@
     <string name="device_press_to_scan">点击 + 扫描新设备</string>
     <string name="auto_mode_run">运行</string>
     <string name="auto_mode_edit">编辑</string>
+    <string name="delete">删除</string>
+    <string name="add">添加</string>
 </resources>
