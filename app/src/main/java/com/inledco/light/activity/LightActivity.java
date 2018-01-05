@@ -369,6 +369,7 @@ public class LightActivity extends BaseActivity implements DataInvalidFragment.O
                 dialog.dismiss();
             }
         } );
+
         btn_rename.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick ( View view )

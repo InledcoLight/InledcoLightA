@@ -12,6 +12,8 @@ import com.inledco.light.R;
 import com.inledco.light.bean.TimePoint;
 import com.inledco.light.util.MeasureUtil;
 
+import java.util.ArrayList;
+
 /**
  * Created by huangzhengguo on 2018/1/4.
  * 时间点列表适配器
@@ -20,19 +22,24 @@ import com.inledco.light.util.MeasureUtil;
 public class TimePointAdapter extends RecyclerView.Adapter {
 
     // 数据源
-    private TimePoint[] mTimePoints;
+    private ArrayList<TimePoint> mTimePoints;
     // 时间段索引
     private int mLastTimePointIndex = 0;
     private int mTimePointIndex = 0;
     // 代理
     private TimePointInterface mTimePointInterface = null;
 
-    public TimePointAdapter(TimePoint[] timePoints) {
+    public TimePointAdapter(ArrayList<TimePoint> timePoints) {
         mTimePoints = timePoints;
     }
 
-    public void setmTimePointInterface(TimePointInterface mTimePointInterface) {
-        this.mTimePointInterface = mTimePointInterface;
+    public void setTimePointInterface(TimePointInterface timePointInterface) {
+        this.mTimePointInterface = timePointInterface;
+    }
+
+    public void setTimePointIndex(int timePointIndex) {
+        this.mTimePointIndex = timePointIndex;
+        this.mLastTimePointIndex = timePointIndex;
     }
 
     @Override
@@ -68,13 +75,26 @@ public class TimePointAdapter extends RecyclerView.Adapter {
             }
         });
 
+        viewHolder.mTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                View parentView = (View) view.getParent();
+
+                int position = (int) parentView.getTag();
+
+                if (mTimePointInterface != null) {
+                    mTimePointInterface.datePickerValueChanged(position, hourOfDay, minute);
+                }
+            }
+        });
+
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         TimePointViewHolder timePointViewHolder = (TimePointViewHolder) viewHolder;
-        TimePoint timePoint = mTimePoints[i];
+        TimePoint timePoint = mTimePoints.get(i);
 
         viewHolder.itemView.setTag(i);
 
@@ -94,7 +114,7 @@ public class TimePointAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         // 可以防止数据为空的情况，如果为空，则返回0
-        return mTimePoints == null ? 0 : mTimePoints.length;
+        return mTimePoints == null ? 0 : mTimePoints.size();
     }
 
     private class TimePointViewHolder extends RecyclerView.ViewHolder {
@@ -112,5 +132,6 @@ public class TimePointAdapter extends RecyclerView.Adapter {
 
     public interface TimePointInterface {
         void checkBoxChanged(int position);
+        void datePickerValueChanged(int position, int hourOfDay, int minute);
     }
 }

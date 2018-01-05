@@ -133,6 +133,7 @@ public class ManualModeFragment extends BaseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // 使用相对布局，由于灯具的路数不一定，所以使用代码布局
         mColorRelativeLayout = new RelativeLayout(getContext());
+
         // 初始化
         initView(mColorRelativeLayout);
         initData();
@@ -226,7 +227,7 @@ public class ManualModeFragment extends BaseFragment
         mPowerButton = new CheckableImageButton(getContext());
 
         mPowerButton.setId(20000 + 1);
-        mPowerButton.setBackgroundColor(R.drawable.ripple_theme);
+        mPowerButton.setBackgroundColor(getResources().getColor(R.color.colorTransparent));
         if (mLightManual.isOn()) {
             mPowerButton.setImageResource(R.drawable.ic_power);
         } else {
@@ -259,6 +260,7 @@ public class ManualModeFragment extends BaseFragment
 
             userDefineButton.setId(30000 + i);
             userDefineButton.setTag(i);
+            userDefineButton.setBackgroundColor(getResources().getColor(R.color.colorPureBlue));
             userDefineButton.setText("M" + Integer.toString(i + 1));
             userDefineButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -322,8 +324,6 @@ public class ManualModeFragment extends BaseFragment
 
             mColorRelativeLayout.addView(userDefineButton, userDefineButtonParams);
         }
-
-        mColorRelativeLayout.setBackgroundColor(getResources().getColor(R.color.colorCyan));
     }
 
     @Override

@@ -189,10 +189,10 @@ public class MainActivity extends BaseActivity
                         transaction.replace( R.id.main_fl_show, new DeviceFragment() ).commit();
                         menuItemBleSearch.setVisible( true );
                         break;
-                    case R.id.menu_btm_news:
-                        transaction.replace( R.id.main_fl_show, new NewsFragment() ).commit();
-                        menuItemBleSearch.setVisible( false );
-                        break;
+//                    case R.id.menu_btm_news:
+//                        transaction.replace( R.id.main_fl_show, new NewsFragment() ).commit();
+//                        menuItemBleSearch.setVisible( false );
+//                        break;
                     case R.id.menu_btm_setting:
                         transaction.replace( R.id.main_fl_show, new UserFragment() ).commit();
                         menuItemBleSearch.setVisible( false );

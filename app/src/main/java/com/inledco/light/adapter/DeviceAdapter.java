@@ -83,6 +83,10 @@ public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceView
                 }
             }
         } );
+
+        // 隐藏升级和移除
+        holder.tv_upgrade.setVisibility(View.INVISIBLE);
+        holder.tv_remove.setVisibility(View.INVISIBLE);
     }
 
     @Override

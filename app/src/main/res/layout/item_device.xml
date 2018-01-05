@@ -10,7 +10,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:clickable="true"
-                android:background="@color/colorWindowBackgroud">
+                android:background="@color/colorTransparent">
 
     <ImageView
         android:id="@+id/item_device_icon"
@@ -40,12 +40,4 @@
         android:layout_marginLeft="16dp"
         android:textColor="@color/colorTextSecond"
         android:textSize="12sp"/>
-
-    <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="0.6dp"-->
-        <!--android:layout_below="@id/item_device_icon"-->
-        <!--android:layout_marginLeft="16dp"-->
-        <!--android:layout_marginRight="16dp"-->
-        <!--android:background="@color/colorDivider"/>-->
 </RelativeLayout>

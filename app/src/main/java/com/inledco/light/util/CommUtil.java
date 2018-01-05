@@ -285,16 +285,15 @@ public class CommUtil
                 {
                     int timeQuantum = 2;
                     int index = 0;
-                    TimePoint[] timePoints = new TimePoint[timeQuantum * 2];
+                    ArrayList<TimePoint> timePoints = new ArrayList<>();
                     Map<Short, byte[]> timePointColorValue = new LinkedHashMap<>();
                     for (int i=0; i<timeQuantum; i++) {
                         index = 3 + i * (chns + 4);
                         TimePoint startTimePoint = new TimePoint(bytes.get(index), bytes.get(index + 1));
                         TimePoint endTimePoint = new TimePoint(bytes.get(index + 2), bytes.get(index + 3));
 
-
-                        timePoints[2 * i] = startTimePoint;
-                        timePoints[2 * i + 1] = endTimePoint;
+                        timePoints.add(2 * i, startTimePoint);
+                        timePoints.add(2 * i + 1, endTimePoint);
 
                         byte[] lightValues = new byte[chns];
                         for (int j=0; j<chns; j++) {

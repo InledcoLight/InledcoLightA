@@ -73,4 +73,8 @@
     <string name="auto_mode_edit">编辑</string>
     <string name="delete">删除</string>
     <string name="add">添加</string>
+    <string name="confirm">确认</string>
+    <string name="give_up_save">放弃保存?</string>
+    <string name="confirm_delete">"确认删除 "</string>
+    <string name="time_point_24">24小时</string>
 </resources>

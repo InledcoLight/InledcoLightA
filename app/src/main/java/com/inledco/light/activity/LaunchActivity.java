@@ -65,7 +65,6 @@ public class LaunchActivity extends BaseActivity
             @Override
             public void onBluetoothDenied ()
             {
-//                Snackbar.make( null, R.string.snackbar_bluetooth_denied, Snackbar.LENGTH_LONG ).show();
                 Toast.makeText( LaunchActivity.this, R.string.snackbar_bluetooth_denied, Toast.LENGTH_LONG )
                      .show();
                 mCountDownTimer.start();
@@ -122,15 +121,5 @@ public class LaunchActivity extends BaseActivity
             finish();
             return;
         }
-        //启动页面1s后进入主页面
-//        new Handler().postDelayed( new Runnable()
-//        {
-//            @Override
-//            public void run ()
-//            {
-//                startActivity( new Intent( LaunchActivity.this, MainActivity.class ) );
-//                finish();
-//            }
-//        }, 1000 );
     }
 }

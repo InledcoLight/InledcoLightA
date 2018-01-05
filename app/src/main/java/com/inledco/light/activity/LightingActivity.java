@@ -63,13 +63,6 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
         colorFrameLayout.setLayoutParams(layoutParams);
 
-        // 设置手动自动模式切换按钮
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mPrefer.getDeviceMac(),
-                                                                                         mPrefer.getDevId()))
-                .commit();
-
         // 获取各个控件
         mLightingToolbar = (Toolbar) findViewById(R.id.lightingToolbar);
 
@@ -234,6 +227,12 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                     {
                         mProgressDialog.dismiss();
                         if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III) {
+                            // 设置手动自动模式切换按钮
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mPrefer.getDeviceMac(),
+                                            mPrefer.getDevId(), false))
+                                    .commit();
                             fragmentTransaction.replace(R.id.lighting_fragment,
                                     AutoModeFragment.newInstance(mPrefer.getDeviceMac(),
                                                                  mPrefer.getDevId(),
@@ -258,6 +257,12 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                         // 根据灯具类型显示不同灯具的手动调光界面
                         if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III)
                         {
+                            // 设置手动自动模式切换按钮
+                            getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mPrefer.getDeviceMac(),
+                                            mPrefer.getDevId(), true))
+                                    .commit();
                             // 显示圆盘手动调光界面
                             fragmentTransaction.replace(R.id.lighting_fragment,
                                                         ManualModeFragment.newInstance(mPrefer.getDeviceMac(),

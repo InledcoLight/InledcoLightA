@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@mipmap/background"
     tools:context="com.inledco.light.activity.AutoModeEditActivity">
 
     <!--导航栏-->
@@ -15,12 +16,20 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/auto_mode_edit_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:navigationIcon="@drawable/ic_chevron_left_white_36dp">
+            android:layout_height="match_parent" >
 
+            <!--标题-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/time_point_24"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:textAlignment="center"
+                />
         </android.support.v7.widget.Toolbar>
-
     </android.support.design.widget.AppBarLayout>
+
+
 
     <!--滑动条-->
     <android.support.v7.widget.RecyclerView
@@ -51,6 +60,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/add"
+        android:backgroundTint="@color/colorPureBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/auto_mode_edit_delete_button"/>
 
@@ -59,6 +69,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/delete"
+        android:backgroundTint="@color/colorPureBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/layout_horizontal_button"/>
 
@@ -68,7 +79,7 @@
         android:layout_width="1dp"
         android:layout_height="1dp"
         android:visibility="invisible"
-        android:background="@color/colorColdWhite"
+        android:backgroundTint="@color/colorColdWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -78,6 +89,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/save"
+        android:backgroundTint="@color/colorPureBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/layout_horizontal_button"/>
 
@@ -86,6 +98,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/cancel"
+        android:backgroundTint="@color/colorPureBlue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/auto_mode_edit_save_button"/>
 

@@ -1,6 +1,10 @@
 package com.inledco.light.activity;
 
+import android.annotation.SuppressLint;
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,16 +12,21 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TimePicker;
 
 import com.inledco.light.R;
 import com.inledco.light.adapter.ColorSliderAdapter;
 import com.inledco.light.adapter.TimePointAdapter;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
+import com.inledco.light.bean.TimePoint;
 import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class AutoModeEditActivity extends BaseActivity {
 
@@ -57,6 +66,8 @@ public class AutoModeEditActivity extends BaseActivity {
         initEvent();
     }
 
+
+
     @Override
     protected void initView() {
         mColorSliderRecyclerView = (RecyclerView) findViewById(R.id.auto_mode_edit_color_slider_recyclerView);
@@ -65,6 +76,108 @@ public class AutoModeEditActivity extends BaseActivity {
         mDeleteButton = (Button) findViewById(R.id.auto_mode_edit_delete_button);
         mSaveButton = (Button) findViewById(R.id.auto_mode_edit_save_button);
         mCancelButton = (Button) findViewById(R.id.auto_mode_edit_cancel_button);
+
+
+        // 滑动条线性布局管理器
+        LinearLayoutManager colorLayoutManager = new LinearLayoutManager(this);
+
+        colorLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mColorSliderRecyclerView.setLayoutManager(colorLayoutManager);
+
+        // 时间点线性布局管理器
+        LinearLayoutManager timePointLayoutManager = new LinearLayoutManager(this);
+        mTimePointRecyclerView.setLayoutManager(timePointLayoutManager);
+    }
+
+    @Override
+    protected void initEvent() {
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 增加一个时间点
+                TimePickerDialog timePickerDialog = new TimePickerDialog(AutoModeEditActivity.this,
+                        new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                // 添加到当前模型中
+                                int currentTimeCount = hourOfDay * 60 + minute;
+                                int insertIndex = 0;
+                                for (TimePoint timePoint: mLightModel.getTimePoints()) {
+                                    if (currentTimeCount < timePoint.getmHour() * 60 + timePoint.getmMinute()) {
+                                        break;
+                                    }
+
+                                    insertIndex ++;
+                                }
+
+                                // 添加时间点
+                                TimePoint insertTimePoint = new TimePoint((byte) hourOfDay, (byte) minute);
+                                mLightModel.getTimePoints().add(insertIndex, insertTimePoint);
+
+                                // 添加时间点对应的颜色值
+                                for (int i=mLightModel.getTimePointColorValue().size()-1;i>=0;i--) {
+                                    mLightModel.getTimePointColorValue()
+                                            .put((short)(i+1), mLightModel.getTimePointColorValue().get((short)i));
+                                    if (i == insertIndex) {
+                                        byte[] insertValues = new byte[DeviceUtil.getChannelCount(mLightModel.getDeviceId())];
+
+                                        for (int j=0;j<insertValues.length;j++) {
+                                            insertValues[j] = 0;
+                                        }
+
+                                        mLightModel.getTimePointColorValue().put((short)insertIndex, insertValues);
+                                        break;
+                                    }
+                                }
+
+                                mTimePointIndex = insertIndex;
+
+                                // 更新视图
+                                updateRecyclerView();
+                            }
+                        },
+                        Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+                        Calendar.getInstance().get(Calendar.MINUTE),
+                        true);
+
+                timePickerDialog.show();
+            }
+        });
+
+        mDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 删除时间点
+                @SuppressLint("DefaultLocale") String s = getResources().getString(R.string.confirm_delete) +
+                        String.format("%02d", mLightModel.getTimePoints().get(mTimePointIndex).getmHour()) + ":" +
+                        String.format("%02d", mLightModel.getTimePoints().get(mTimePointIndex).getmMinute()) + " ?";
+                new AlertDialog.Builder(AutoModeEditActivity.this)
+                        .setTitle(null)
+                        .setMessage(s)
+                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 删除操作
+                                ArrayList<TimePoint> lightModels = mLightModel.getTimePoints();
+
+                                // 删除时间点
+                                lightModels.remove(mTimePointIndex);
+
+                                // 删除时间点对应的颜色值
+                                for (int i=mTimePointIndex;i<mLightModel.getTimePointColorValue().keySet().size()-1; i++) {
+                                    mLightModel.getTimePointColorValue().put((short)i,
+                                            mLightModel.getTimePointColorValue().get((short)(i+1)));
+                                }
+
+                                mTimePointIndex = 0;
+                                // 更新视图
+                                updateRecyclerView();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel,null)
+                        .show();
+            }
+        });
 
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,24 +199,20 @@ public class AutoModeEditActivity extends BaseActivity {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 提示是否放弃即可
-                finish();
+                new AlertDialog.Builder(AutoModeEditActivity.this)
+                        .setTitle(null)
+                        .setMessage(R.string.give_up_save)
+                        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // 放弃的话直接返回即可
+                                finish();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel,null)
+                        .show();
             }
         });
-
-        // 滑动条线性布局管理器
-        LinearLayoutManager colorLayoutManager = new LinearLayoutManager(this);
-
-        colorLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        mColorSliderRecyclerView.setLayoutManager(colorLayoutManager);
-
-        // 时间点线性布局管理器
-        LinearLayoutManager timePointLayoutManager = new LinearLayoutManager(this);
-        mTimePointRecyclerView.setLayoutManager(timePointLayoutManager);
-    }
-
-    @Override
-    protected void initEvent() {
 
     }
 
@@ -129,32 +238,32 @@ public class AutoModeEditActivity extends BaseActivity {
             }
         });
         mColorSliderRecyclerView.setAdapter(mColorSliderAdapter);
-        mColorSliderAdapter.notifyDataSetChanged();
 
         // 时间点列表
         mTimePointAdapter = new TimePointAdapter(mLightModel.getTimePoints());
 
-        mTimePointAdapter.setmTimePointInterface(new TimePointAdapter.TimePointInterface() {
+        mTimePointAdapter.setTimePointInterface(new TimePointAdapter.TimePointInterface() {
             @Override
             public void checkBoxChanged(int position) {
                 mTimePointIndex = position;
                 mChannels = getChannels(position);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mColorSliderAdapter.notifyDataSetChanged();
-                    }
-                });
+                mColorSliderAdapter.notifyDataSetChanged();
+            }
 
+            @Override
+            public void datePickerValueChanged(int position, int hourOfDay, int minute) {
+                // 更改时间点设置
+                TimePoint timePoint = new TimePoint((byte)hourOfDay, (byte)minute);
+
+                mLightModel.getTimePoints().set(position, timePoint);
             }
         });
 
         mTimePointRecyclerView.setAdapter(mTimePointAdapter);
-        mTimePointAdapter.notifyDataSetChanged();
     }
 
-    public Channel[] getChannels(int timePointIndex) {
+    private Channel[] getChannels(int timePointIndex) {
         if (mLightModel == null) {
             return null;
         }
@@ -177,6 +286,13 @@ public class AutoModeEditActivity extends BaseActivity {
         }
 
         return mChannels;
+    }
+
+    private void updateRecyclerView() {
+        mChannels = getChannels(mTimePointIndex);
+        mTimePointAdapter.setTimePointIndex(mTimePointIndex);
+        mColorSliderAdapter.notifyDataSetChanged();
+        mTimePointAdapter.notifyDataSetChanged();
     }
 }
 

@@ -21,10 +21,12 @@ public class ManualAutoSwitchFragment extends BaseFragment {
     // 参数
     private static final String ARG_PARAM_DEVICE_ADDRESS = "address";
     private static final String ARG_PARAM_DEVICE_ID = "deviceId";
+    private static final String ARG_PARAM_MANUAL_AUTO = "manual_auto";
 
     // 传递的变量
     private String mDeviceAddress;
     private Short mDeviceId;
+    private boolean isManualMode;
 
     private OnFragmentInteractionListener mListener;
     private int mPadding = 20;
@@ -35,13 +37,14 @@ public class ManualAutoSwitchFragment extends BaseFragment {
         // Required empty public constructor
     }
 
-    public static ManualAutoSwitchFragment newInstance(String address, short deviceId) {
+    public static ManualAutoSwitchFragment newInstance(String address, short deviceId, boolean manualAuto) {
         ManualAutoSwitchFragment fragment = new ManualAutoSwitchFragment();
 
         Bundle args = new Bundle();
 
         args.putString(ARG_PARAM_DEVICE_ADDRESS, address);
         args.putShort(ARG_PARAM_DEVICE_ID, deviceId);
+        args.putBoolean(ARG_PARAM_MANUAL_AUTO, manualAuto);
 
         fragment.setArguments(args);
 
@@ -55,6 +58,7 @@ public class ManualAutoSwitchFragment extends BaseFragment {
         if (getArguments() != null) {
             mDeviceAddress = getArguments().getString(ARG_PARAM_DEVICE_ADDRESS);
             mDeviceId = getArguments().getShort(ARG_PARAM_DEVICE_ID);
+            isManualMode = getArguments().getBoolean(ARG_PARAM_MANUAL_AUTO);
         }
     }
 
@@ -90,6 +94,21 @@ public class ManualAutoSwitchFragment extends BaseFragment {
     protected void initView(View view) {
         mManualButton = (Button) view.findViewById(R.id.manualButton);
         mAutoButton = (Button) view.findViewById(R.id.autoButton);
+
+        if (isManualMode) {
+            mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
+            mManualButton.setTextColor(getResources().getColor(R.color.colorPureBlue));
+
+            mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
+            mAutoButton.setTextColor(getResources().getColor(R.color.colorWhite));
+
+        } else {
+            mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
+            mAutoButton.setTextColor(getResources().getColor(R.color.colorPureBlue));
+
+            mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
+            mManualButton.setTextColor(getResources().getColor(R.color.colorWhite));
+        }
     }
 
     @Override
@@ -97,14 +116,14 @@ public class ManualAutoSwitchFragment extends BaseFragment {
         mManualButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Button btn = (Button) v;
-
-                btn.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
-                mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
-                mAutoButton.setPadding(mPadding,mPadding,mPadding,mPadding);
-                mAutoButton.setWidth(mAutoButton.getWidth() - mPadding);
-                mAutoButton.setHeight(mAutoButton.getHeight() - mPadding);
-
+//                Button btn = (Button) v;
+//
+//                btn.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
+//                mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
+//                mAutoButton.setPadding(mPadding,mPadding,mPadding,mPadding);
+//                mAutoButton.setWidth(mAutoButton.getWidth() - mPadding);
+//                mAutoButton.setHeight(mAutoButton.getHeight() - mPadding);
+//                mManualButton.setTextColor(getResources().getColor(R.color.colorWhite));
                 CommUtil.setManual(mDeviceAddress);
             }
         });
@@ -112,13 +131,13 @@ public class ManualAutoSwitchFragment extends BaseFragment {
         mAutoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Button btn = (Button) v;
-
-                btn.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
-                mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
-                mManualButton.setPadding(mPadding,mPadding,mPadding,mPadding);
-                mManualButton.setWidth(mAutoButton.getWidth() - mPadding);
-                mManualButton.setHeight(mAutoButton.getHeight() - mPadding);
+//                Button btn = (Button) v;
+//
+//                btn.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
+//                mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
+//                mManualButton.setPadding(mPadding,mPadding,mPadding,mPadding);
+//                mManualButton.setWidth(mAutoButton.getWidth() - mPadding);
+//                mManualButton.setHeight(mAutoButton.getHeight() - mPadding);
 
                 CommUtil.setAuto(mDeviceAddress);
             }

@@ -73,4 +73,7 @@
     <string name="auto_mode_edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="add">Add</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirm_delete">"Confirm delete "</string>
+    <string name="time_point_24">Time Points-24H</string>
 </resources>

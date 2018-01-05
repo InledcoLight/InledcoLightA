@@ -396,8 +396,8 @@ public class AutoModeFragment extends BaseFragment {
             // 添加坐标0处的点
             byte[] bytes = mLightModel.getTimePointColorValue().get((short) 0);
             entryList.add( new Entry( 0,  bytes[i]) );
-            for (int j=0;j<mLightModel.getTimePoints().length;j++) {
-                entryList.add( new Entry( mLightModel.getTimePoints()[j].getmHour() * 60 + mLightModel.getTimePoints()[j].getmMinute(),
+            for (int j=0;j<mLightModel.getTimePoints().size();j++) {
+                entryList.add( new Entry( mLightModel.getTimePoints().get(j).getmHour() * 60 + mLightModel.getTimePoints().get(j).getmMinute(),
                                         mLightModel.getTimePointColorValue().get((short)j)[i]) );
             }
             // 添加坐标24*60处的点

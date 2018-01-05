@@ -1,6 +1,7 @@
 package com.inledco.light.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -24,7 +25,7 @@ public class LightModel implements Serializable {
 
     // 自动模式数据
     // 时间点数组
-    private TimePoint[] mTimePoints;
+    private ArrayList<TimePoint> mTimePoints;
     // 时间点对应颜色值，时间点按照索引从0开始计算
     private Map<Short, byte[]> mTimePointColorValue;
     // 动态效果标记
@@ -44,7 +45,7 @@ public class LightModel implements Serializable {
     // 动态效果类型
     private byte mDynamicMode;
 
-    public LightModel(short deviceId, TimePoint[] timePoints, Map<Short, byte[]> timePointColorValue) {
+    public LightModel(short deviceId, ArrayList<TimePoint> timePoints, Map<Short, byte[]> timePointColorValue) {
         mDeviceId = deviceId;
         mTimePoints = timePoints;
         mTimePointColorValue = timePointColorValue;
@@ -131,11 +132,11 @@ public class LightModel implements Serializable {
         this.mUserDefineColorValue = mUserDefineColorValue;
     }
 
-    public TimePoint[] getTimePoints() {
+    public ArrayList<TimePoint> getTimePoints() {
         return mTimePoints;
     }
 
-    public void setTimePoints(TimePoint[] timePoints) {
+    public void setTimePoints(ArrayList<TimePoint> timePoints) {
         this.mTimePoints = timePoints;
     }
 
