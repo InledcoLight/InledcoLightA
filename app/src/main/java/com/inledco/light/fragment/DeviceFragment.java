@@ -109,12 +109,12 @@ public class DeviceFragment extends BaseFragment
     {
         mDevices = new ArrayList<>();
         SharedPreferences sp = getContext().getSharedPreferences( ConstVal.DEV_PREFER_FILENAME, Context.MODE_PRIVATE );
-        for ( String key : sp.getAll()
-                             .keySet() )
+        for ( String key : sp.getAll().keySet() )
         {
             DevicePrefer prefer = (DevicePrefer) PreferenceUtil.getObjectFromPrefer( getContext(), ConstVal.DEV_PREFER_FILENAME, key );
             mDevices.add( new BaseDevice( prefer, false ) );
         }
+
         if ( getFlag() || mDevices.size() > 0 )
         {
             device_iv_add.setVisibility( View.GONE );
@@ -127,21 +127,22 @@ public class DeviceFragment extends BaseFragment
             device_tv_add.setVisibility( View.VISIBLE );
             device_rv_show.setVisibility( View.GONE );
         }
+
         mDeviceAdapter = new DeviceAdapter( getContext(), mDevices );
         device_rv_show.setAdapter( mDeviceAdapter );
+
         ItemTouchHelperCallback callback = new ItemTouchHelperCallback();
         ItemTouchHelperExtension mItemTouchHelperExtension = new ItemTouchHelperExtension( callback );
         mItemTouchHelperExtension.attachToRecyclerView( device_rv_show );
+
         mDeviceAdapter.setSwipeItemActionClickListener( new SwipeItemActionClickListener() {
             @Override
             public void onClickContent ( int position )
             {
                 BaseDevice device = mDevices.get( position );
 
-                // 跳转设置界面，跳转到新的
-                Intent intent = new Intent( getContext(), LightingActivity.class );
-                intent.putExtra( "DevicePrefer", device.getDevicePrefer() );
-                startActivity( intent );
+                // 弹出操作选择框
+                showOperationDialog(device);
             }
 
             @Override
@@ -201,6 +202,7 @@ public class DeviceFragment extends BaseFragment
                 }
             }
         } );
+
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside( false );
         dialog.show();
@@ -215,8 +217,44 @@ public class DeviceFragment extends BaseFragment
             {
                 Intent intent = new Intent( getContext(), ScanActivity.class );
                 startActivityForResult( intent, 1 );
-//                setFlag();
             }
         } );
+    }
+
+    private void showOperationDialog(final BaseDevice baseDevice) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle(baseDevice.getDevicePrefer().getDeviceName());
+
+        final CharSequence[] operations = new CharSequence[] {
+                getString(R.string.delete),
+                getString(R.string.connect)
+        };
+
+        builder.setItems(operations, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        // 删除设备
+                        showRemoveDeviceDialog(which);
+                        break;
+                    case 1:
+                        // 跳转设置界面，跳转到新的设置界面
+                        Intent intent = new Intent( getContext(), LightingActivity.class );
+
+                        intent.putExtra( "DevicePrefer", baseDevice.getDevicePrefer() );
+
+                        startActivity( intent );
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        builder.setNegativeButton(R.string.cancel, null);
+
+        builder.show();
     }
 }

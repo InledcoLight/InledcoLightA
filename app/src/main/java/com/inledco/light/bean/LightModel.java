@@ -12,12 +12,14 @@ import java.util.Map;
 public class LightModel implements Serializable {
     private static final long serialVersionUID = 7284666673318500459L;
     // 设备id
-    private short mDeviceId;
+    private short deviceId;
+    // 通道数量
+    private short channelNum;
 
     // 手动模式数据
     private boolean isPowerOn;
     // 手动模式动态效果
-    private byte mManualDynamic;
+    private byte manualDynamic;
     // 手动模式通道数据
     private short[] mChnValues;
     // 用户自定义数据
@@ -45,14 +47,19 @@ public class LightModel implements Serializable {
     // 动态效果类型
     private byte mDynamicMode;
 
-    public LightModel(short deviceId, ArrayList<TimePoint> timePoints, Map<Short, byte[]> timePointColorValue) {
-        mDeviceId = deviceId;
-        mTimePoints = timePoints;
-        mTimePointColorValue = timePointColorValue;
+    public LightModel(short deviceId, short channelNum, ArrayList<TimePoint> timePoints, Map<Short, byte[]> timePointColorValue) {
+        this.deviceId = deviceId;
+        this.channelNum = channelNum;
+        this.mTimePoints = timePoints;
+        this.mTimePointColorValue = timePointColorValue;
     }
 
     public short getDeviceId() {
-        return mDeviceId;
+        return deviceId;
+    }
+
+    public short getChannelNum() {
+        return channelNum;
     }
 
     public void setTimePointColorValue(int timePointIndex, int colorIndex, int colorValue) {
@@ -116,12 +123,12 @@ public class LightModel implements Serializable {
         isPowerOn = powerOn;
     }
 
-    public byte getmManualDynamic() {
-        return mManualDynamic;
+    public byte getManualDynamic() {
+        return manualDynamic;
     }
 
-    public void setmManualDynamic(byte mManualDynamic) {
-        this.mManualDynamic = mManualDynamic;
+    public void setmManualDynamic(byte manualDynamic) {
+        this.manualDynamic = manualDynamic;
     }
 
     public Map<Short, byte[]> getmUserDefineColorValue() {

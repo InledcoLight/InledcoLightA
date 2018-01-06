@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.inledco.light.R;
 import com.inledco.light.util.CommUtil;
+import com.inledco.light.util.MeasureUtil;
 
 public class ManualAutoSwitchFragment extends BaseFragment {
 
@@ -102,28 +104,35 @@ public class ManualAutoSwitchFragment extends BaseFragment {
             mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
             mAutoButton.setTextColor(getResources().getColor(R.color.colorWhite));
 
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mAutoButton.getLayoutParams();
+
+            layoutParams.width = layoutParams.width - 30;
+            layoutParams.height = layoutParams.height - 30;
+
+            mAutoButton.setLayoutParams(layoutParams);
+
         } else {
             mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
             mAutoButton.setTextColor(getResources().getColor(R.color.colorPureBlue));
 
             mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
             mManualButton.setTextColor(getResources().getColor(R.color.colorWhite));
+
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mManualButton.getLayoutParams();
+
+            layoutParams.width = layoutParams.width - 30;
+            layoutParams.height = layoutParams.height - 30;
+
+            mManualButton.setLayoutParams(layoutParams);
         }
     }
 
     @Override
     protected void initEvent() {
+        // 手动自动模式切换方法
         mManualButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Button btn = (Button) v;
-//
-//                btn.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
-//                mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
-//                mAutoButton.setPadding(mPadding,mPadding,mPadding,mPadding);
-//                mAutoButton.setWidth(mAutoButton.getWidth() - mPadding);
-//                mAutoButton.setHeight(mAutoButton.getHeight() - mPadding);
-//                mManualButton.setTextColor(getResources().getColor(R.color.colorWhite));
                 CommUtil.setManual(mDeviceAddress);
             }
         });
@@ -131,14 +140,6 @@ public class ManualAutoSwitchFragment extends BaseFragment {
         mAutoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Button btn = (Button) v;
-//
-//                btn.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
-//                mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
-//                mManualButton.setPadding(mPadding,mPadding,mPadding,mPadding);
-//                mManualButton.setWidth(mAutoButton.getWidth() - mPadding);
-//                mManualButton.setHeight(mAutoButton.getHeight() - mPadding);
-
                 CommUtil.setAuto(mDeviceAddress);
             }
         });

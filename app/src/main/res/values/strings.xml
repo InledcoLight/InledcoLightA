@@ -105,4 +105,7 @@
     <string name="give_up_save">Give Up Save?</string>
     <string name="confirm_delete">Confirm delete</string>
     <string name="time_point_24">Time Points-24H</string>
+    <string name="home">Home</string>
+    <string name="operation">Operation</string>
+    <string name="connect">Connect</string>
 </resources>

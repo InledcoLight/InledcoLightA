@@ -97,12 +97,6 @@ public class UserFragment extends BaseFragment
                 setting_lang.setText( R.string.mode_auto );
                 break;
         }
-//        Resources resources = getContext().getResources();
-//        DisplayMetrics dm = resources.getDisplayMetrics();
-//        Configuration config = resources.getConfiguration();
-        // 应用用户选择语言
-//        config.setLocale( Locale.getDefault() );
-//        resources.updateConfiguration(config, dm);
     }
 
     @Override

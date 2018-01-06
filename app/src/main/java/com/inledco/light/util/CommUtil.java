@@ -195,8 +195,7 @@ public class CommUtil
         BleManager.getInstance().sendBytes( mac, txs );
     }
 
-    public static Object decodeLight ( ArrayList<Byte> bytes, short devid )
-    {
+    public static Object decodeLight ( ArrayList<Byte> bytes, short devid ) {
         LightManual lightManual = null;
         LightAuto lightAuto = null;
         int chns = DeviceUtil.getChannelCount( devid );
@@ -309,7 +308,7 @@ public class CommUtil
                         }
                     }
 
-                    lightAuto = new LightModel(devId, timePoints, timePointColorValue);
+                    lightAuto = new LightModel(devId, (short) chns, timePoints, timePointColorValue);
 
                     return lightAuto;
                 }
@@ -424,5 +423,42 @@ public class CommUtil
         }
         datas[len-1] = getCRC( datas, len-1 );
         BleManager.getInstance().sendBytes( mac, datas );
+    }
+
+    public static void runAutoMode(String mac, LightModel lightModel) {
+        // 数据长度：命令头 + （时间长度 + 通道数量）* 时间段数量
+        int dataLength = 2 + (lightModel.getChannelNum() + 4) * lightModel.getTimePoints().size() /  2 + 1;
+
+        if (lightModel.ismDynamicEnable())
+        {
+            dataLength += 6;
+        }
+
+        byte[] values = new byte[dataLength];
+        values[0] = FRM_HDR;
+        values[1] = CMD_CYCLE;
+        for (int i=0;i<lightModel.getTimePoints().size() / 2;i++) {
+            // 填充时间
+            TimePoint startTimePoint = lightModel.getTimePoints().get(2 * i);
+            TimePoint endTimePoint = lightModel.getTimePoints().get(2 * i + 1);
+            values[2 + i * (lightModel.getChannelNum() + lightModel.getTimePoints().size())] = startTimePoint.getmHour();
+            values[2 + i * (lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 1] = startTimePoint.getmMinute();
+            values[2 + i * (lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 2] = endTimePoint.getmHour();
+            values[2 + i * (lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 3] = endTimePoint.getmMinute();
+
+            // 填充颜色值
+            byte[] colorValues = lightModel.getTimePointColorValue().get((short) (2 * i + 1));
+            for (int j=0;j<colorValues.length;j++) {
+                values[2 + i * (lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 4 + j] = colorValues[j];
+            }
+        }
+
+        // 动态模式
+        if (lightModel.ismDynamicEnable()) {
+
+        }
+
+        values[dataLength-1] = getCRC( values, dataLength-1 );
+        BleManager.getInstance().sendBytes( mac, values );
     }
 }

@@ -307,7 +307,7 @@ public class AutoModeFragment extends BaseFragment {
         mRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                CommUtil.runAutoMode(mDeviceMacAddress, mLightModel);
             }
         });
 

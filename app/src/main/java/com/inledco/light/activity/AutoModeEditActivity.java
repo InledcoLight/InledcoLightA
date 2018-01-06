@@ -77,7 +77,6 @@ public class AutoModeEditActivity extends BaseActivity {
         mSaveButton = (Button) findViewById(R.id.auto_mode_edit_save_button);
         mCancelButton = (Button) findViewById(R.id.auto_mode_edit_cancel_button);
 
-
         // 滑动条线性布局管理器
         LinearLayoutManager colorLayoutManager = new LinearLayoutManager(this);
 

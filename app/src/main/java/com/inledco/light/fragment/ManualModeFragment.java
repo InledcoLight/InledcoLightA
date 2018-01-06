@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
@@ -62,6 +63,9 @@ public class ManualModeFragment extends BaseFragment
     // 开关按钮
     private CheckableImageButton mPowerButton;
 
+    // 显示百分比
+    private TextView percentTextView;
+
     // 圆形滑动回调
     private CircleSeekBar.OnSeekBarChangeListener mColorSeekBarChangeListener = new CircleSeekBar.OnSeekBarChangeListener() {
         @Override
@@ -69,6 +73,8 @@ public class ManualModeFragment extends BaseFragment
             // 设置手动模式数据
             // 获取颜色索引
             int colorIndex = (int) circleSeekBar.getTag();
+
+            percentTextView.setText(String.format("%s%%", i / 10));
 
             long currentTime = System.currentTimeMillis();
             if (currentTime - mCurrentMillisSecond > 32) {
@@ -194,6 +200,21 @@ public class ManualModeFragment extends BaseFragment
         // 圆环宽度
         float circleWidth = (displayMetrics.widthPixels - distance * 2 - diameter) / (mChannelsValues.length * 2);
 
+        // 添加百分比显示
+        percentTextView = new TextView(getContext());
+        percentTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        RelativeLayout.LayoutParams textViewLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+        textViewLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        textViewLayoutParams.width = diameter;
+        textViewLayoutParams.height = diameter;
+        textViewLayoutParams.topMargin = (int) circleWidth * (mChannelsValues.length) + circleDistance + 3 * diameter / 8;
+
+
+        mColorRelativeLayout.addView(percentTextView, textViewLayoutParams);
+
         // 根据通道数量创建圆环
         for (int i=0; i<mChannelsValues.length; i++) {
             // 圆环
@@ -221,6 +242,11 @@ public class ManualModeFragment extends BaseFragment
             circleSeekBarLayoutParams.topMargin = (int) circleWidth * i + circleDistance;
 
             mColorRelativeLayout.addView(circleSeekBar, circleSeekBarLayoutParams);
+
+            // 设置第一个颜色值
+            if (i == 0) {
+                percentTextView.setText(String.format("%s%%", mChannelsValues[i] / 10));
+            }
         }
 
         // 添加开关按钮

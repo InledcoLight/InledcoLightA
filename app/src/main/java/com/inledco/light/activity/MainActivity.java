@@ -43,26 +43,6 @@ public class MainActivity extends BaseActivity
         initView();
         initEvent();
         initData();
-//        Setting.initSetting( this );
-
-//        if ( BleManager.getInstance().checkBleSupported( this ) )
-//        {
-//            if ( BleManager.getInstance().isBluetoothEnabled() || (Setting.mBleEnabled && BleManager.getInstance().autoOpenBluetooth()) )
-//            {
-//                BleManager.getInstance().bindService( this );
-//            }
-//            else
-//            {
-//                BleManager.getInstance().requestBluetoothEnable( this );
-//            }
-//        }
-//        else
-//        {
-//            Toast.makeText( this, R.string.ble_no_support, Toast.LENGTH_SHORT )
-//                 .show();
-//            finish();
-//        }
-//        initData();
     }
 
     @Override
@@ -89,7 +69,7 @@ public class MainActivity extends BaseActivity
     protected void onActivityResult ( int requestCode, int resultCode, Intent data )
     {
         super.onActivityResult( requestCode, resultCode, data );
-//        BleManager.getInstance().getResultForBluetoothEnable( requestCode, resultCode );
+
         if ( requestCode == 1 && resultCode == 1 )
         {
             setFlag();
@@ -113,7 +93,6 @@ public class MainActivity extends BaseActivity
             public boolean onMenuItemClick ( MenuItem item )
             {
                 startScanActivity();
-//                BleManager.getInstance().requestLocationPermison( MainActivity.this );
                 return false;
             }
         } );
@@ -189,10 +168,6 @@ public class MainActivity extends BaseActivity
                         transaction.replace( R.id.main_fl_show, new DeviceFragment() ).commit();
                         menuItemBleSearch.setVisible( true );
                         break;
-//                    case R.id.menu_btm_news:
-//                        transaction.replace( R.id.main_fl_show, new NewsFragment() ).commit();
-//                        menuItemBleSearch.setVisible( false );
-//                        break;
                     case R.id.menu_btm_setting:
                         transaction.replace( R.id.main_fl_show, new UserFragment() ).commit();
                         menuItemBleSearch.setVisible( false );
@@ -205,9 +180,9 @@ public class MainActivity extends BaseActivity
 
     /**
      * back按键关闭app时 弹出确认关闭蓝牙dialog
-     * @param keyCode
-     * @param event
-     * @return
+     * @param keyCode 按键代码
+     * @param event 按键事件
+     * @return 是否响应按键事件
      */
     @Override
     public boolean onKeyDown ( int keyCode, KeyEvent event )

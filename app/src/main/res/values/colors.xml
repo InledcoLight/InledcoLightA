@@ -36,5 +36,11 @@
     
     <!--纯绿色-->
     <color name="colorPureBlue">#0000FF</color>
-    
+
+    <!--50%-100%透明颜色-->
+    <color name="colorTransparent50">#80FFFFFF</color>
+    <color name="colorTransparent60">#99FFFFFF</color>
+    <color name="colorTransparent70">#B3FFFFFF</color>
+    <color name="colorTransparent80">#CCFFFFFF</color>
+    <color name="colorTransparent90">#E6FFFFFF</color>
 </resources>
