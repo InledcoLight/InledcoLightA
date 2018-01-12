@@ -320,7 +320,13 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                     public void run()
                     {
                         mProgressDialog.dismiss();
-                        if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III) {
+                        if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_ONE_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_TWO_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_THREE_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_FOUR_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_FIVE_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_SIX_COLOR) {
                             // 设置手动自动模式切换按钮
                             getSupportFragmentManager()
                                     .beginTransaction()
@@ -349,7 +355,13 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                     {
                         mProgressDialog.dismiss();
                         // 根据灯具类型显示不同灯具的手动调光界面
-                        if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III)
+                        if (mPrefer.getDevId() == DeviceUtil.LIGHT_ID_STRIP_III ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_ONE_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_TWO_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_THREE_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_FOUR_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_FIVE_COLOR ||
+                                mPrefer.getDevId() == DeviceUtil.LIGHT_ID_SIX_COLOR)
                         {
                             // 设置手动自动模式切换按钮
                             getSupportFragmentManager()

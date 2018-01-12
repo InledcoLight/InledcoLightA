@@ -91,14 +91,14 @@
     <string name="device_press_to_scan">Press + to scan for new devices</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
 
     <!-- 设置界面默认标题 -->
-    <string name="default_lighting_navigation_title">Device Name</string>
+    <string name="default_lighting_navigation_title" translatable="false">Device Name</string>
     <string name="auto_mode_run">Run</string>
     <string name="auto_mode_edit">Edit</string>
-    <string name="title_activity_auto_mode_edit">AutoModeEditActivity</string>
-    <string name="title_activity_auto_mode_setting">AutoModeSettingActivity</string>
+    <string name="title_activity_auto_mode_edit" translatable="false">AutoModeEditActivity</string>
+    <string name="title_activity_auto_mode_setting" translatable="false">AutoModeSettingActivity</string>
     <string name="delete">Delete</string>
     <string name="add">Add</string>
     <string name="confirm">Confirm</string>

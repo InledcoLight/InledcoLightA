@@ -29,12 +29,14 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private Channel[] mChannels;
+    int[] thumbs;
     // 滑动条代理
     private ColorSliderInterface mColorSliderInterface;
 
-    public ColorSliderAdapter(Context context, Channel[] channels) {
+    public ColorSliderAdapter(Context context, Channel[] channels, int[] thumbs) {
         mContext = context;
         mChannels = channels;
+        this.thumbs = thumbs;
     }
 
     public void setColorSliderInterface(ColorSliderInterface colorSliderInterface) {
@@ -96,6 +98,7 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
 
         colorSliderItemViewHolder.mNameTextView.setText(channel.getName());
         colorSliderItemViewHolder.mColorSeekBar.setProgress(channel.getValue() * 10);
+        colorSliderItemViewHolder.mColorSeekBar.setThumb(mContext.getResources().getDrawable(thumbs[i]));
         colorSliderItemViewHolder.mPercentTextView.setText(String.format("%s%%", channel.getValue()));
     }
 

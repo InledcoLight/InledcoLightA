@@ -225,7 +225,8 @@ public class AutoModeEditActivity extends BaseActivity {
         // 初始化滑动条列表适配器
         mChannels = getChannels(0);
 
-        mColorSliderAdapter = new ColorSliderAdapter(this, mChannels);
+        int[] thumbs = DeviceUtil.getThumb(mLightModel.getDeviceId());
+        mColorSliderAdapter = new ColorSliderAdapter(this, mChannels, thumbs);
 
         mColorSliderAdapter.setColorSliderInterface(new ColorSliderAdapter.ColorSliderInterface() {
             @Override
@@ -262,6 +263,11 @@ public class AutoModeEditActivity extends BaseActivity {
         mTimePointRecyclerView.setAdapter(mTimePointAdapter);
     }
 
+    /**
+     *
+     * @param timePointIndex 时间点索引
+     * @return 时间点对应的通道数据
+     */
     private Channel[] getChannels(int timePointIndex) {
         if (mLightModel == null) {
             return null;

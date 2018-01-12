@@ -79,4 +79,5 @@
     <string name="home">Home</string>
     <string name="operation">Operation</string>
     <string name="connect">Connect</string>
+    <string name="give_up_save">Give Up Save?</string>
 </resources>

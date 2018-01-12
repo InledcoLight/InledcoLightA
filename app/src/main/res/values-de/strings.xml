@@ -69,4 +69,15 @@
     <string name="app_name">InledcoLight</string>
     <string name="setting_version">Version</string>
     <string name="device_press_to_scan">Drücken Sie +, um nach neuen Geräten zu suchen</string>
+    <string name="auto_mode_run">Run</string>
+    <string name="auto_mode_edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="add">Add</string>
+    <string name="confirm">Confirm</string>
+    <string name="give_up_save">Give Up Save?</string>
+    <string name="confirm_delete">Confirm delete</string>
+    <string name="time_point_24">Time Points-24H</string>
+    <string name="home">Home</string>
+    <string name="operation">Operation</string>
+    <string name="connect">Connect</string>
 </resources>
