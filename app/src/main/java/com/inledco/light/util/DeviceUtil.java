@@ -108,26 +108,26 @@ public class DeviceUtil
         mDeviceMap.put(LIGHT_ID_SIX_COLOR, LIGHT_TYPE_SIX_COLOR);
 
 
-        mIconMap.put( LIGHT_ID_RGBW, R.mipmap.ic_light_rgbw_ii );
-        mIconMap.put( LIGHT_ID_STRIP_III, R.mipmap.ic_light_strip_iii );
-        mIconMap.put( LIGHT_ID_EGG, R.mipmap.ic_light_egg );
-        mIconMap.put( LIGHT_ID_MARINE_500, R.mipmap.ic_light_marine );
-        mIconMap.put( LIGHT_ID_MARINE_800, R.mipmap.ic_light_marine );
-        mIconMap.put( LIGHT_ID_MARINE_1100, R.mipmap.ic_light_marine );
-        mIconMap.put( LIGHT_ID_FRESH_500, R.mipmap.ic_light_fresh );
-        mIconMap.put( LIGHT_ID_FRESH_800, R.mipmap.ic_light_fresh );
-        mIconMap.put( LIGHT_ID_FRESH_1100, R.mipmap.ic_light_fresh );
-        mIconMap.put( LIGHT_ID_AQUASKY_600, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_900, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_1200, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_380, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_530, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_835, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_990, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_750, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_AQUASKY_1150, R.mipmap.ic_light_aquasky );
-        mIconMap.put( LIGHT_ID_NANO_MARINE, R.mipmap.ic_light_nano_marine );
-        mIconMap.put( LIGHT_ID_NANO_FRESH, R.mipmap.ic_light_nano_fresh );
+        mIconMap.put( LIGHT_ID_RGBW, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_STRIP_III, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_EGG, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_MARINE_500, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_MARINE_800, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_MARINE_1100, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_FRESH_500, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_FRESH_800, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_FRESH_1100, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_600, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_900, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_1200, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_380, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_530, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_835, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_990, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_750, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_AQUASKY_1150, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_NANO_MARINE, R.mipmap.led );
+        mIconMap.put( LIGHT_ID_NANO_FRESH, R.mipmap.led );
 
         // 一到六路图标
         mIconMap.put(LIGHT_ID_ONE_COLOR, R.mipmap.led);

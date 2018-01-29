@@ -66,7 +66,7 @@
     <string name="weekday_thu">" 四 "</string>
     <string name="weekday_fri">" 五 "</string>
     <string name="weekday_sat">" 六 "</string>
-    <string name="app_name">InledcoLight</string>
+    <string name="app_name">Inledco</string>
     <string name="setting_version">版本</string>
     <string name="device_press_to_scan">点击 + 扫描新设备</string>
     <string name="auto_mode_run">运行</string>
