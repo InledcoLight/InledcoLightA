@@ -319,7 +319,7 @@ public class CommUtil
 
                     return lightAuto;
                 }
-                else if (len == 2* channelNum +18)
+                else if (len == 2 * channelNum +18)
                 {
                     // 包含动态模式的情况
                 }
@@ -335,7 +335,7 @@ public class CommUtil
                     byte[] p2Values = new byte[channelNum];
                     byte[] p3Values = new byte[channelNum];
                     byte[] p4Values = new byte[channelNum];
-                    for (int i = 0; i < channelNum; i++ )
+                    for (int i = 0; i < channelNum; i++)
                     {
                         chnValues[i] = (short) ( ( ( bytes.get( 6 + 2 * i ) & 0xFF) << 8) | ( bytes.get( 5 + 2 * i ) & 0xFF ) );
                         p1Values[i] = bytes.get( 5+2* channelNum +i );

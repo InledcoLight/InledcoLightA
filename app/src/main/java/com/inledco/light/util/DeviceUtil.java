@@ -100,10 +100,10 @@ public class DeviceUtil
         mDeviceMap.put( LIGHT_ID_NANO_FRESH, LIGHT_TYPE_NANO_FRESH );
 
         // 一到六路类型定义
-        mDeviceMap.put(LIGHT_ID_FIVE_COLOR, LIGHT_TYPE_ONE_COLOR);
-        mDeviceMap.put(LIGHT_ID_SIX_COLOR, LIGHT_TYPE_TWO_COLOR);
-        mDeviceMap.put(LIGHT_ID_FIVE_COLOR, LIGHT_TYPE_THREE_COLOR);
-        mDeviceMap.put(LIGHT_ID_SIX_COLOR, LIGHT_TYPE_FOUR_COLOR);
+        mDeviceMap.put(LIGHT_ID_ONE_COLOR, LIGHT_TYPE_ONE_COLOR);
+        mDeviceMap.put(LIGHT_ID_TWO_COLOR, LIGHT_TYPE_TWO_COLOR);
+        mDeviceMap.put(LIGHT_ID_THREE_COLOR, LIGHT_TYPE_THREE_COLOR);
+        mDeviceMap.put(LIGHT_ID_FOUR_COLOR, LIGHT_TYPE_FOUR_COLOR);
         mDeviceMap.put(LIGHT_ID_FIVE_COLOR, LIGHT_TYPE_FIVE_COLOR);
         mDeviceMap.put(LIGHT_ID_SIX_COLOR, LIGHT_TYPE_SIX_COLOR);
 
@@ -373,7 +373,7 @@ public class DeviceUtil
                 break;
             case LIGHT_ID_TWO_COLOR:
                 seekBars = new int[]{ R.drawable.custom_seekebar_red,
-                        R.drawable.custom_seekebar_green};
+                        R.drawable.custom_seekebar_green };
                 break;
             case LIGHT_ID_THREE_COLOR:
                 seekBars = new int[]{ R.drawable.custom_seekebar_red,
@@ -399,7 +399,7 @@ public class DeviceUtil
                         R.drawable.custom_seekebar_blue,
                         R.drawable.custom_seekbar_purple,
                         R.drawable.custom_seekebar_coldwhite,
-                        R.drawable.custom_seekebar_coldwhite  };
+                        R.drawable.custom_seekebar_coldwhite };
                 break;
             case LIGHT_ID_RGBW:
             case LIGHT_ID_STRIP_III:
@@ -455,7 +455,7 @@ public class DeviceUtil
 
     public static Map<String, LightAuto> getPresetProfiles (short devid, boolean hasAutoDynamic )
     {
-        Map<String, LightAuto> profiles = new LinkedHashMap<>(  );
+        Map<String, LightAuto> profiles = new LinkedHashMap<>();
         switch ( devid )
         {
             case LIGHT_ID_MARINE_500:

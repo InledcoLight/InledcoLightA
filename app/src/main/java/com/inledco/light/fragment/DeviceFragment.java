@@ -50,10 +50,10 @@ public class DeviceFragment extends BaseFragment
     private DeviceAdapter mDeviceAdapter;
 
     @Override
-    public View onCreateView ( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState )
+    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View view = inflater.inflate( R.layout.fragment_device, null );
-        initView( view );
+        View view = inflater.inflate(R.layout.fragment_device, null);
+        initView(view);
         initEvent();
         return view;
     }
@@ -85,17 +85,17 @@ public class DeviceFragment extends BaseFragment
     }
 
     @Override
-    public void onActivityResult ( int requestCode, int resultCode, Intent data )
+    public void onActivityResult (int requestCode, int resultCode, Intent data)
     {
-        super.onActivityResult( requestCode, resultCode, data );
-        if ( requestCode == 1 && resultCode == 1 )
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == 1)
         {
             setFlag();
         }
     }
 
     @Override
-    protected void initView ( View view )
+    protected void initView (View view)
     {
         device_iv_add = (ImageView) view.findViewById( R.id.device_iv_add );
         device_tv_add = (TextView) view.findViewById( R.id.device_tv_add );

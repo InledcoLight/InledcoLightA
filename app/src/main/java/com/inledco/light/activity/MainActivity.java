@@ -35,10 +35,10 @@ public class MainActivity extends BaseActivity
     private BleStateListener mBleStateListener;
 
     @Override
-    protected void onCreate ( Bundle savedInstanceState )
+    protected void onCreate (Bundle savedInstanceState)
     {
-        super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_main );
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         initView();
         initEvent();
@@ -60,17 +60,17 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onDestroy ()
     {
-        BleManager.getInstance().unbindService( this );
+        BleManager.getInstance().unbindService(this);
         BleManager.getInstance().disConnectAll();
         super.onDestroy();
     }
 
     @Override
-    protected void onActivityResult ( int requestCode, int resultCode, Intent data )
+    protected void onActivityResult (int requestCode, int resultCode, Intent data)
     {
-        super.onActivityResult( requestCode, resultCode, data );
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if ( requestCode == 1 && resultCode == 1 )
+        if (requestCode == 1 && resultCode == 1)
         {
             setFlag();
         }
@@ -102,11 +102,11 @@ public class MainActivity extends BaseActivity
     @Override
     protected void initView ()
     {
-        main_bottom_navigation = (BottomNavigationView) findViewById( R.id.main_bottom_navigation );
+        main_bottom_navigation = (BottomNavigationView) findViewById(R.id.main_bottom_navigation);
 
-        toolbar = (Toolbar) findViewById( R.id.toolbar );
-        toolbar.setTitle( "" );
-        setSupportActionBar( toolbar );
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class MainActivity extends BaseActivity
             @Override
             public void onCoarseLocationDenied ()
             {
-                Snackbar.make( main_bottom_navigation, R.string.snackbar_coarselocation_denied, Snackbar.LENGTH_LONG ).show();
+                Snackbar.make(main_bottom_navigation, R.string.snackbar_coarselocation_denied, Snackbar.LENGTH_LONG).show();
             }
 
             @Override
@@ -148,29 +148,29 @@ public class MainActivity extends BaseActivity
             }
         };
 
-        BleManager.getInstance().setBleStateListener( mBleStateListener );
-        BleManager.getInstance().bindService( this );
+        BleManager.getInstance().setBleStateListener(mBleStateListener);
+        BleManager.getInstance().bindService(this);
 
-        getSupportFragmentManager().beginTransaction().replace( R.id.main_fl_show, new DeviceFragment() ).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_fl_show, new DeviceFragment()).commit();
     }
 
     @Override
     protected void initEvent()
     {
-        main_bottom_navigation.setOnNavigationItemSelectedListener( new BottomNavigationView.OnNavigationItemSelectedListener() {
+        main_bottom_navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected ( @NonNull MenuItem item )
+            public boolean onNavigationItemSelected (@NonNull MenuItem item)
             {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                switch ( item.getItemId() )
+                switch (item.getItemId())
                 {
                     case R.id.menu_btm_device:
-                        transaction.replace( R.id.main_fl_show, new DeviceFragment() ).commit();
-                        menuItemBleSearch.setVisible( true );
+                        transaction.replace(R.id.main_fl_show, new DeviceFragment()).commit();
+                        menuItemBleSearch.setVisible(true);
                         break;
                     case R.id.menu_btm_setting:
-                        transaction.replace( R.id.main_fl_show, new UserFragment() ).commit();
-                        menuItemBleSearch.setVisible( false );
+                        transaction.replace(R.id.main_fl_show, new UserFragment()).commit();
+                        menuItemBleSearch.setVisible(false);
                         break;
                 }
                 return true;

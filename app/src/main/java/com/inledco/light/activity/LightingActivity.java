@@ -316,7 +316,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                 mCountDownTimer.cancel();
                 // 设置模型
                 mLight.setAuto(true);
-                mLight.setmLightModel((LightModel) object);
+                mLight.setmLightModel((LightModel)object);
 
                 // 切换到自动模式界面
                 runOnUiThread(new Runnable()
@@ -352,7 +352,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
                 // 设置模型为手动模式
                 mLight.setAuto(false);
-                mLight.setLightManual((LightManual) object);
+                mLight.setLightManual((LightManual)object);
                 runOnUiThread(new Runnable()
                 {
                     @Override
