@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class DeviceUtil
 {
-    //灯具类别--0x**** 前两位表示设备类型,如灯,插座,第三位表示设备子类型,如marine,fresh,第四位表示该设备的不同规格 如长度500,800,1100
+    // 灯具类别--0x**** 前两位表示设备类型,如灯,插座,第三位表示设备子类型,如marine,fresh,第四位表示该设备的不同规格 如长度500,800,1100
 //    public static final byte LIGHT_MAINID = 0x01;
     public static final short LIGHT_ID_RGBW = 0x0105;
     public static final short LIGHT_ID_STRIP_III = 0x0111;
@@ -533,68 +533,15 @@ public class DeviceUtil
         return profiles;
     }
 
-//    public static byte[] getDayBright ( short devid )
-//    {
-//        byte[] brts = null;
-//        switch ( devid )
-//        {
-//            case LIGHT_ID_RGBW:
-//            case LIGHT_ID_STRIP_III:
-//                brts = new byte[]{ 100, 100, 100, 100 };
-//                break;
-//            case LIGHT_ID_MARINE_500:
-//            case LIGHT_ID_MARINE_800:
-//            case LIGHT_ID_MARINE_1100:
-//                brts = new byte[]{ 100, 100, 100, 100, 100 };
-//                break;
-//            case LIGHT_ID_FRESH_500:
-//            case LIGHT_ID_FRESH_800:
-//            case LIGHT_ID_FRESH_1100:
-//                brts = new byte[]{ 100, 100, 100, 100, 100 };
-//                break;
-//            case LIGHT_ID_AQUASKY_600:
-//            case LIGHT_ID_AQUASKY_900:
-//            case LIGHT_ID_AQUASKY_1200:
-//                brts = new byte[]{ 100, 100, 100, 100 };
-//                break;
-//        }
-//
-//        return brts;
-//    }
-//
-//    public static byte[] getNightBright ( short devid )
-//    {
-//        byte[] brts = null;
-//        switch ( devid )
-//        {
-//            case LIGHT_ID_RGBW:
-//            case LIGHT_ID_STRIP_III:
-//                brts = new byte[]{ 0, 0, 5, 0 };
-//                break;
-//            case LIGHT_ID_MARINE_500:
-//            case LIGHT_ID_MARINE_800:
-//            case LIGHT_ID_MARINE_1100:
-//                brts = new byte[]{ 0, 0, 0, 0, 5 };
-//                break;
-//            case LIGHT_ID_FRESH_500:
-//            case LIGHT_ID_FRESH_800:
-//            case LIGHT_ID_FRESH_1100:
-//                brts = new byte[]{ 0, 0, 0, 0, 5 };
-//                break;
-//            case LIGHT_ID_AQUASKY_600:
-//            case LIGHT_ID_AQUASKY_900:
-//            case LIGHT_ID_AQUASKY_1200:
-//                brts = new byte[]{ 0, 0, 5, 0 };
-//                break;
-//        }
-//
-//        return brts;
-//    }
-
-    public static int getChannelCount ( short devid )
+    /**
+     * 根据设备ID获取设备通道数量
+     * @param devId 设备标识
+     * @return 设备通道数量
+     */
+    public static int getChannelCount (short devId)
     {
-        int chns = 0;
-        switch ( devid )
+        int channelNum = 0;
+        switch ( devId )
         {
             case LIGHT_ID_RGBW:
             case LIGHT_ID_STRIP_III:
@@ -607,7 +554,7 @@ public class DeviceUtil
             case LIGHT_ID_AQUASKY_990:
             case LIGHT_ID_AQUASKY_750:
             case LIGHT_ID_AQUASKY_1150:
-                chns = 4;
+                channelNum = 4;
                 break;
             case LIGHT_ID_EGG:
             case LIGHT_ID_MARINE_500:
@@ -618,9 +565,28 @@ public class DeviceUtil
             case LIGHT_ID_FRESH_1100:
             case LIGHT_ID_NANO_MARINE:
             case LIGHT_ID_NANO_FRESH:
-                chns = 5;
+                channelNum = 5;
+                break;
+            case LIGHT_ID_ONE_COLOR:
+                channelNum = 1;
+                break;
+            case LIGHT_ID_TWO_COLOR:
+                channelNum = 2;
+                break;
+            case LIGHT_ID_THREE_COLOR:
+                channelNum = 3;
+                break;
+            case LIGHT_ID_FOUR_COLOR:
+                channelNum = 4;
+                break;
+            case  LIGHT_ID_FIVE_COLOR:
+                channelNum = 5;
+                break;
+            case LIGHT_ID_SIX_COLOR:
+                channelNum = 6;
                 break;
         }
-        return chns;
+
+        return channelNum;
     }
 }

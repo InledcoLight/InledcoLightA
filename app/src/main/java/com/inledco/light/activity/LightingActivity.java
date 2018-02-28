@@ -299,8 +299,13 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
         }
     }
 
-    // 解析获取到的数据
-    private void decodeReceiveData(final String mac, ArrayList< Byte > list)
+
+    /**
+     * 解析设备数据
+     * @param mac 设备MAC地址
+     * @param list 数据
+     */
+    private void decodeReceiveData(final String mac, ArrayList<Byte> list)
     {
         Object object = CommUtil.decodeOldInledcoLight(list, mPrefer.getDevId());
         if (object != null)

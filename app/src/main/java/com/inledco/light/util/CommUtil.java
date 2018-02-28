@@ -270,32 +270,39 @@ public class CommUtil
         return null;
     }
 
+
+    /**
+     * 解析旧协议方法
+     * @param bytes 字节数组
+     * @param devId 设备标识
+     * @return 设备参数
+     */
     public static Object decodeOldInledcoLight (ArrayList<Byte> bytes, short devId) {
         LightManual lightManual = null;
         LightModel lightAuto = null;
-        int chns = DeviceUtil.getChannelCount(devId);
+        int channelNum = DeviceUtil.getChannelCount(devId);
         int len = bytes.size();
         if (bytes.get(1) == CMD_READ && getCRC(bytes, len) == 0x00)
         {
             boolean fAuto = (bytes.get(2) != 0x00);
             if (fAuto)
             {
-                if (len == 2*chns+12)
+                if (len == 2* channelNum +12)
                 {
                     int timeQuantum = 2;
                     int index = 0;
                     ArrayList<TimePoint> timePoints = new ArrayList<>();
                     Map<Short, byte[]> timePointColorValue = new LinkedHashMap<>();
                     for (int i=0; i<timeQuantum; i++) {
-                        index = 3 + i * (chns + 4);
+                        index = 3 + i * (channelNum + 4);
                         TimePoint startTimePoint = new TimePoint(bytes.get(index), bytes.get(index + 1));
                         TimePoint endTimePoint = new TimePoint(bytes.get(index + 2), bytes.get(index + 3));
 
                         timePoints.add(2 * i, startTimePoint);
                         timePoints.add(2 * i + 1, endTimePoint);
 
-                        byte[] lightValues = new byte[chns];
-                        for (int j=0; j<chns; j++) {
+                        byte[] lightValues = new byte[channelNum];
+                        for (int j = 0; j< channelNum; j++) {
                             lightValues[j] = bytes.get(index + 4 + j);
                         }
 
@@ -308,33 +315,33 @@ public class CommUtil
                         }
                     }
 
-                    lightAuto = new LightModel(devId, (short) chns, timePoints, timePointColorValue);
+                    lightAuto = new LightModel(devId, (short) channelNum, timePoints, timePointColorValue);
 
                     return lightAuto;
                 }
-                else if (len == 2*chns+18)
+                else if (len == 2* channelNum +18)
                 {
-
+                    // 包含动态模式的情况
                 }
             }
             else
             {
-                if ( len == 6*chns+6 )
+                if ( len == 6* channelNum +6 )
                 {
                     boolean on = ( bytes.get( 3 ) != 0x00 );
                     byte dyn = bytes.get( 4 );
-                    short[] chnValues = new short[chns];
-                    byte[] p1Values = new byte[chns];
-                    byte[] p2Values = new byte[chns];
-                    byte[] p3Values = new byte[chns];
-                    byte[] p4Values = new byte[chns];
-                    for ( int i = 0; i < chns; i++ )
+                    short[] chnValues = new short[channelNum];
+                    byte[] p1Values = new byte[channelNum];
+                    byte[] p2Values = new byte[channelNum];
+                    byte[] p3Values = new byte[channelNum];
+                    byte[] p4Values = new byte[channelNum];
+                    for (int i = 0; i < channelNum; i++ )
                     {
                         chnValues[i] = (short) ( ( ( bytes.get( 6 + 2 * i ) & 0xFF) << 8) | ( bytes.get( 5 + 2 * i ) & 0xFF ) );
-                        p1Values[i] = bytes.get( 5+2*chns+i );
-                        p2Values[i] = bytes.get( 5+3*chns+i );
-                        p3Values[i] = bytes.get( 5+4*chns+i );
-                        p4Values[i] = bytes.get( 5+5*chns+i );
+                        p1Values[i] = bytes.get( 5+2* channelNum +i );
+                        p2Values[i] = bytes.get( 5+3* channelNum +i );
+                        p3Values[i] = bytes.get( 5+4* channelNum +i );
+                        p4Values[i] = bytes.get( 5+5* channelNum +i );
                     }
                     lightManual = new LightManual( on, dyn, chnValues, p1Values, p2Values, p3Values, p4Values );
                     return lightManual;
