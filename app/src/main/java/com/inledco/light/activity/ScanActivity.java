@@ -207,6 +207,7 @@ public class ScanActivity extends BaseActivity
 
             }
         };
+
         BleManager.getInstance().addBleScanListener( mScanListener );
         BleManager.getInstance().addBleCommunicateListener( mCommunicateListener );
 
@@ -266,6 +267,7 @@ public class ScanActivity extends BaseActivity
             } );
             return;
         }
+
         short devid = 0;
         if ( bytes == null )
         {

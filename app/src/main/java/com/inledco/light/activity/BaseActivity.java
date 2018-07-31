@@ -3,7 +3,6 @@ package com.inledco.light.activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
 import com.inledco.blemanager.LogUtil;
 import com.inledco.light.prefer.Setting;
 

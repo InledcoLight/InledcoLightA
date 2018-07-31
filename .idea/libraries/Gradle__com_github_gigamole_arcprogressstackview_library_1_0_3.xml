@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.gigamole.arcprogressstackview:library-1.0.3">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-1.0.3.aar/d770e0b7001e3d722fb6bcc4d5202118/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-1.0.3.aar/d770e0b7001e3d722fb6bcc4d5202118/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.gigamole.arcprogressstackview/library/1.0.3/2f58c8e990a41140b6396a19f96e9ec64d325fc3/library-1.0.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -7,8 +7,6 @@ package com.inledco.light.bean;
 
 public class SelectDevice
 {
-
-
     private String mBrand; // 品牌
     private String mGroup; // 分组
     private boolean mSelectable;
