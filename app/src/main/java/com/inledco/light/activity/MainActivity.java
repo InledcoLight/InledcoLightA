@@ -19,7 +19,6 @@ import com.inledco.blemanager.BleManager;
 import com.inledco.blemanager.BleStateListener;
 import com.inledco.light.R;
 import com.inledco.light.fragment.DeviceFragment;
-import com.inledco.light.fragment.NewsFragment;
 import com.inledco.light.fragment.UserFragment;
 import com.inledco.light.prefer.Setting;
 
@@ -29,7 +28,7 @@ public class MainActivity extends BaseActivity
     private MenuItem menuItemBleSearch;
     private BottomNavigationView main_bottom_navigation;
 
-    //双击back退出标志位
+    // 双击back退出标志位
     private boolean mExiting;
 
     private BleStateListener mBleStateListener;
@@ -80,6 +79,7 @@ public class MainActivity extends BaseActivity
     public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults )
     {
         super.onRequestPermissionsResult( requestCode, permissions, grantResults );
+
         BleManager.getInstance().getResultForCoarseLocation( requestCode, permissions[0], grantResults[0] );
     }
 
@@ -121,7 +121,6 @@ public class MainActivity extends BaseActivity
             @Override
             public void onBluetoothDisabled ()
             {
-
             }
 
             @Override

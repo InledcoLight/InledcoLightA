@@ -10,123 +10,99 @@ import android.widget.TextView;
 
 import com.inledco.light.R;
 import com.inledco.light.bean.BaseDevice;
+import com.inledco.light.bean.LightDevice;
+import com.inledco.light.bean.ListItem;
 import com.inledco.light.impl.SwipeItemActionClickListener;
 import com.inledco.light.util.DeviceUtil;
 import com.inledco.itemtouchhelperextension.SwipeItemViewHolder;
 
 import java.util.List;
 
-/**
- * Created by liruya on 2016/10/26.
- */
-
-public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder>
+public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 {
     private Context mContext;
-    private List< BaseDevice > mDevices;
+    private List<ListItem> mDevices;
     private SwipeItemActionClickListener mSwipeItemActionClickListener;
 
-    public DeviceAdapter ( Context context, List< BaseDevice > devices )
-    {
+    public DeviceAdapter (Context context, List<ListItem> devices) {
         mContext = context;
         mDevices = devices;
     }
 
-    public void setSwipeItemActionClickListener( SwipeItemActionClickListener listener )
-    {
+    public void setSwipeItemActionClickListener(SwipeItemActionClickListener listener) {
         mSwipeItemActionClickListener = listener;
     }
 
     @Override
-    public DeviceViewHolder onCreateViewHolder ( ViewGroup parent, int viewType )
-    {
-        DeviceViewHolder holder = new DeviceViewHolder( LayoutInflater.from( mContext )
-                                                     .inflate( R.layout.item_device_with_action, parent,false ) );
-        return holder;
+    public RecyclerView.ViewHolder onCreateViewHolder (ViewGroup parent, int viewType) {
+        if (viewType == ListItem.TYPE_HEADER) {
+            return new DeviceHeaderViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_list_header, parent,false));
+        } else {
+            return new DeviceViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_device, parent,false));
+        }
     }
 
     @Override
-    public void onBindViewHolder ( final DeviceViewHolder holder, int position )
-    {
-        BaseDevice device = mDevices.get( holder.getAdapterPosition() );
-        holder.iv_icon.setImageResource( DeviceUtil.getDeviceIcon( device.getDevicePrefer()
-                                                                        .getDevId() ) );
-        holder.tv_name.setText( device.getDevicePrefer().getDeviceName() );
-        holder.tv_tank.setText( DeviceUtil.getDeviceType( device.getDevicePrefer().getDevId() ) );
-        holder.item_content.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick ( View v )
-            {
-                if ( mSwipeItemActionClickListener != null )
-                {
-                    mSwipeItemActionClickListener.onClickContent( holder.getAdapterPosition() );
-                }
-            }
-        } );
-        holder.tv_remove.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick ( View v )
-            {
-                if ( mSwipeItemActionClickListener != null )
-                {
-                    mSwipeItemActionClickListener.onClickAction( v.getId(), holder.getAdapterPosition() );
-                }
-            }
-        } );
-        holder.tv_upgrade.setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick ( View v )
-            {
-                if ( mSwipeItemActionClickListener != null )
-                {
-                    mSwipeItemActionClickListener.onClickAction( v.getId(), holder.getAdapterPosition() );
-                }
-            }
-        } );
+    public int getItemViewType(int position) {
+        ListItem item = mDevices.get(position);
 
-        // 隐藏升级和移除
-        holder.tv_upgrade.setVisibility(View.INVISIBLE);
-        holder.tv_remove.setVisibility(View.INVISIBLE);
+        return item.getType();
     }
 
     @Override
-    public int getItemCount ()
-    {
+    public void onBindViewHolder (final RecyclerView.ViewHolder holder, int position) {
+        ListItem itemModel = mDevices.get(holder.getAdapterPosition());
+        if (itemModel.getType() == ListItem.TYPE_HEADER) {
+            DeviceHeaderViewHolder deviceHeaderViewHolder = (DeviceHeaderViewHolder)holder;
+            LightDevice lightDevice = (LightDevice)itemModel;
+
+            deviceHeaderViewHolder.controllerNameTextView.setText("");
+        } else if (itemModel.getType() == ListItem.TYPE_LIGHT) {
+            DeviceViewHolder deviceViewHolder = (DeviceViewHolder)holder;
+            BaseDevice device = (BaseDevice)itemModel;
+
+            deviceViewHolder.iv_icon.setImageResource(DeviceUtil.getDeviceIcon(device.getDevicePrefer().getDevId()));
+            deviceViewHolder.tv_name.setText(device.getDevicePrefer().getDeviceName());
+            deviceViewHolder.tv_tank.setText(DeviceUtil.getDeviceType(device.getDevicePrefer().getDevId()));
+
+            deviceViewHolder.item_content.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick (View v) {
+                    if (mSwipeItemActionClickListener != null) {
+                        mSwipeItemActionClickListener.onClickContent(holder.getAdapterPosition());
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public int getItemCount () {
         return mDevices == null ? 0 : mDevices.size();
     }
 
-    public class DeviceViewHolder extends SwipeItemViewHolder
-    {
+    public class DeviceHeaderViewHolder extends RecyclerView.ViewHolder {
+        private TextView controllerNameTextView;
+
+        public DeviceHeaderViewHolder(View itemView) {
+            super(itemView);
+
+            controllerNameTextView = (TextView)itemView.findViewById(R.id.item_list_header_name);
+        }
+    }
+
+    public class DeviceViewHolder extends RecyclerView.ViewHolder {
         private ImageView iv_icon;
         private TextView tv_name;
         private TextView tv_tank;
-        private TextView tv_remove;
-        private TextView tv_upgrade;
         private View item_content;
-        private View item_action;
 
-        public DeviceViewHolder ( View itemView )
-        {
-            super( itemView );
-            iv_icon = (ImageView) itemView.findViewById( R.id.item_device_icon );
-            tv_name = (TextView) itemView.findViewById( R.id.item_device_name );
-            tv_tank = (TextView) itemView.findViewById( R.id.item_device_tank );
-            tv_remove = (TextView) itemView.findViewById( R.id.item_action_remove );
-            tv_upgrade = (TextView) itemView.findViewById( R.id.item_action_upgrade );
-            item_content = itemView.findViewById( R.id.item_content );
-            item_action = itemView.findViewById( R.id.item_action );
-        }
-
-        @Override
-        public float getActionWidth ()
-        {
-            return item_action.getWidth();
-        }
-
-        @Override
-        public View getContentView ()
-        {
-            return item_content;
+        public DeviceViewHolder (View itemView) {
+            super(itemView);
+            iv_icon = (ImageView) itemView.findViewById(R.id.item_device_icon);
+            tv_name = (TextView) itemView.findViewById(R.id.item_device_name);
+            tv_tank = (TextView) itemView.findViewById(R.id.item_device_tank);
+            item_content = itemView.findViewById(R.id.item_content);
         }
     }
 }

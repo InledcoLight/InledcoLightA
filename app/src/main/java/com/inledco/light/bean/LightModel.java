@@ -13,8 +13,16 @@ public class LightModel implements Serializable {
     private static final long serialVersionUID = 7284666673318500459L;
     // 设备id
     private short deviceId;
+    // 设备名称
+    private String mDeviceName;
+    // mac地址
+    private String mMacAddress;
+    // 控制器通道数量:默认为最大5
+    private int controllerNum = 5;
     // 通道数量
     private short channelNum;
+    // 运行模式
+    private RunMode runMode;
 
     // 手动模式数据
     private boolean isPowerOn;
@@ -23,13 +31,16 @@ public class LightModel implements Serializable {
     // 手动模式通道数据
     private short[] mChnValues;
     // 用户自定义数据
-    private Map<Short, byte[]> mUserDefineColorValue;
+    private ArrayList<byte[]> mUserDefineColorValue;
 
     // 自动模式数据
+    // 时间点个数
+    private int mTimePointCount;
     // 时间点数组
-    private ArrayList<TimePoint> mTimePoints;
-    // 时间点对应颜色值，时间点按照索引从0开始计算
-    private Map<Short, byte[]> mTimePointColorValue;
+    private TimePoint[] mTimePoints;
+    // 时间点对应颜色值，使用数组列表存储
+    private ArrayList<byte[]> mTimePointColorValue;
+
     // 动态效果标记
     private boolean mHasDynamic;
     // 是否开启动态效果
@@ -47,7 +58,11 @@ public class LightModel implements Serializable {
     // 动态效果类型
     private byte mDynamicMode;
 
-    public LightModel(short deviceId, short channelNum, ArrayList<TimePoint> timePoints, Map<Short, byte[]> timePointColorValue) {
+    public LightModel() {
+
+    }
+
+    public LightModel(short deviceId, short channelNum, TimePoint[] timePoints, ArrayList<byte[]> timePointColorValue) {
         this.deviceId = deviceId;
         this.channelNum = channelNum;
         this.mTimePoints = timePoints;
@@ -63,7 +78,7 @@ public class LightModel implements Serializable {
     }
 
     public void setTimePointColorValue(int timePointIndex, int colorIndex, int colorValue) {
-        if (timePointIndex > mTimePointColorValue.keySet().size() - 1) {
+        if (timePointIndex > mTimePointColorValue.size() - 1) {
             return;
         }
 
@@ -131,27 +146,11 @@ public class LightModel implements Serializable {
         this.manualDynamic = manualDynamic;
     }
 
-    public Map<Short, byte[]> getmUserDefineColorValue() {
-        return mUserDefineColorValue;
-    }
-
-    public void setmUserDefineColorValue(Map<Short, byte[]> mUserDefineColorValue) {
-        this.mUserDefineColorValue = mUserDefineColorValue;
-    }
-
-    public ArrayList<TimePoint> getTimePoints() {
-        return mTimePoints;
-    }
-
-    public void setTimePoints(ArrayList<TimePoint> timePoints) {
-        this.mTimePoints = timePoints;
-    }
-
-    public Map<Short, byte[]> getTimePointColorValue() {
+    public ArrayList<byte[]> getTimePointColorValue() {
         return mTimePointColorValue;
     }
 
-    public void setTimePointColorValue(Map<Short, byte[]> timePointColorValue) {
+    public void setTimePointColorValue(ArrayList<byte[]> timePointColorValue) {
         this.mTimePointColorValue = timePointColorValue;
     }
 
@@ -255,6 +254,70 @@ public class LightModel implements Serializable {
 
     public void setmDynamicMode(byte mDynamicMode) {
         this.mDynamicMode = mDynamicMode;
+    }
+
+    public short[] getmChnValues() {
+        return mChnValues;
+    }
+
+    public void setmChnValues(short[] mChnValues) {
+        this.mChnValues = mChnValues;
+    }
+
+    public RunMode getRunMode() {
+        return runMode;
+    }
+
+    public void setRunMode(RunMode runMode) {
+        this.runMode = runMode;
+    }
+
+    public int getControllerNum() {
+        return controllerNum;
+    }
+
+    public void setControllerNum(int controllerNum) {
+        this.controllerNum = controllerNum;
+    }
+
+    public int getTimePointCount() {
+        return mTimePointCount;
+    }
+
+    public void setTimePointCount(int timePointCount) {
+        this.mTimePointCount = timePointCount;
+    }
+
+    public ArrayList<byte[]> getUserDefineColorValue() {
+        return mUserDefineColorValue;
+    }
+
+    public void setUserDefineColorValue(ArrayList<byte[]> userDefineColorValue) {
+        mUserDefineColorValue = userDefineColorValue;
+    }
+
+    public TimePoint[] getTimePoints() {
+        return mTimePoints;
+    }
+
+    public void setTimePoints(TimePoint[] timePoints) {
+        mTimePoints = timePoints;
+    }
+
+    public String getMacAddress() {
+        return mMacAddress;
+    }
+
+    public void setMacAddress(String macAddress) {
+        mMacAddress = macAddress;
+    }
+
+    public String getDeviceName() {
+        return mDeviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        mDeviceName = deviceName;
     }
 }
 

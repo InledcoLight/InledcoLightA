@@ -29,16 +29,11 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.LightActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activity.WebActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.LightingActivity" />
         <activity android:name=".activity.AutoModeEditActivity" />
-        <activity android:name=".activity.Scam2Activity"></activity>
     </application>
 
 </manifest>

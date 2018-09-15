@@ -15,10 +15,9 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
-import com.inledco.light.bean.LightManual;
+import com.inledco.light.bean.LightModel;
 import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
 
@@ -38,12 +37,12 @@ public class ManualModeFragment extends BaseFragment
     // 参数的键值
     private static final String ARG_PARAM_DEVICE_ADDRESS = "address";
     private static final String ARG_PARAM_DEVICE_ID = "deviceId";
-    private static final String ARG_PARAM_MANUAL_MODEL = "manualModel";
+    private static final String ARG_PARAM_LIGHT_MODEL = "lightModel";
 
     // 传递的设备参数
     private String mDeviceMacAddress;
     private Short mDeviceId;
-    private LightManual mLightManual;
+    private LightModel mLightModel;
 
     // 当前时间秒数
     private long mCurrentMillisSecond = System.currentTimeMillis();
@@ -58,7 +57,7 @@ public class ManualModeFragment extends BaseFragment
     private short[] mChannelsValues;
 
     // 圆弧
-    private CircleSeekBar[] mCircleSeekBars;
+    private CircleSeekBar mCircleSeekBar;
 
     // 开关按钮
     private CheckableImageButton mPowerButton;
@@ -70,8 +69,6 @@ public class ManualModeFragment extends BaseFragment
     private CircleSeekBar.OnSeekBarChangeListener mColorSeekBarChangeListener = new CircleSeekBar.OnSeekBarChangeListener() {
         @Override
         public void onChanged(CircleSeekBar circleSeekBar, int i) {
-            // 设置手动模式数据
-            // 获取颜色索引
             int colorIndex = (int) circleSeekBar.getTag();
 
             percentTextView.setText(String.format("%s%%", i / 10));
@@ -107,17 +104,18 @@ public class ManualModeFragment extends BaseFragment
      *
      * @param address MAC 地址.
      * @param deviceId 设备 Id.
-     * @param lightManual 手动模式.
+     * @param lightModel 手动模式.
      * @return 一个新的实例.
      */
-    public static ManualModeFragment newInstance(String address, short deviceId, LightManual lightManual)
+    public static ManualModeFragment newInstance(String address, short deviceId, LightModel lightModel)
     {
         ManualModeFragment fragment = new ManualModeFragment();
         Bundle args = new Bundle();
 
         args.putString(ARG_PARAM_DEVICE_ADDRESS, address);
         args.putShort(ARG_PARAM_DEVICE_ID, deviceId);
-        args.putSerializable(ARG_PARAM_MANUAL_MODEL, lightManual);
+        args.putSerializable(ARG_PARAM_LIGHT_MODEL, lightModel);
+
         fragment.setArguments(args);
 
         return fragment;
@@ -131,7 +129,7 @@ public class ManualModeFragment extends BaseFragment
         {
             mDeviceMacAddress = getArguments().getString(ARG_PARAM_DEVICE_ADDRESS);
             mDeviceId = getArguments().getShort(ARG_PARAM_DEVICE_ID);
-            mLightManual = (LightManual) getArguments().getSerializable(ARG_PARAM_MANUAL_MODEL);
+            mLightModel = (LightModel) getArguments().getSerializable(ARG_PARAM_LIGHT_MODEL);
         }
     }
 
@@ -174,13 +172,10 @@ public class ManualModeFragment extends BaseFragment
     @Override
     protected void initView(View view) {
         // 通道数值
-        mChannelsValues = mLightManual.getChnValues();
+        mChannelsValues = mLightModel.getmChnValues();
 
         // 获取通道数量
-        int channelNum = mLightManual.getChnValues().length;
-
-        // 初始化圆盘数组
-        mCircleSeekBars = new CircleSeekBar[channelNum];
+        int channelNum = mChannelsValues.length;
 
         // 初始化类型数据
         mChannels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
@@ -212,36 +207,32 @@ public class ManualModeFragment extends BaseFragment
         textViewLayoutParams.height = diameter;
         textViewLayoutParams.topMargin = (int) circleWidth * (mChannelsValues.length) + circleDistance + 3 * diameter / 8;
 
-
         mColorRelativeLayout.addView(percentTextView, textViewLayoutParams);
 
         // 根据通道数量创建圆环
-        for (int i=0; i<mChannelsValues.length; i++) {
+        for (int i=0; i<1; i++) {
             // 圆环
-            CircleSeekBar circleSeekBar = new CircleSeekBar(getContext());
+            mCircleSeekBar = new CircleSeekBar(getContext());
 
-            circleSeekBar.setId(10000 + i);
-            circleSeekBar.setReachedColor(mChannels[i].getColor());
-            circleSeekBar.setUnreachedColor(mChannels[i].getColor() & 0x80FFFFFF);
-            circleSeekBar.setReachedWidth(circleWidth);
-            circleSeekBar.setUnreachedWidth(circleWidth);
-            circleSeekBar.setMaxProcess(1000);
-            circleSeekBar.setCurProcess(mChannelsValues[i]);
-            circleSeekBar.setTag(i);
-            circleSeekBar.setOnSeekBarChangeListener(mColorSeekBarChangeListener);
-
-            // 添加到数组中
-            mCircleSeekBars[i] = circleSeekBar;
+            mCircleSeekBar.setId(10000 + i);
+            mCircleSeekBar.setReachedColor(mChannels[i].getColor());
+            mCircleSeekBar.setUnreachedColor(mChannels[i].getColor() & 0x80FFFFFF);
+            mCircleSeekBar.setReachedWidth(circleWidth);
+            mCircleSeekBar.setUnreachedWidth(circleWidth);
+            mCircleSeekBar.setMaxProcess(1000);
+            mCircleSeekBar.setCurProcess(mChannelsValues[i]);
+            mCircleSeekBar.setTag(i);
+            mCircleSeekBar.setOnSeekBarChangeListener(mColorSeekBarChangeListener);
 
             // 布局参数
             RelativeLayout.LayoutParams circleSeekBarLayoutParams =
-                    new RelativeLayout.LayoutParams(displayMetrics.widthPixels - distance * 2 - i * (int)circleSeekBar.getReachedWidth() * 2,
-                                                    displayMetrics.widthPixels - distance * 2 - i * (int)circleSeekBar.getReachedWidth() * 2);
+                    new RelativeLayout.LayoutParams(displayMetrics.widthPixels - distance * 2 - i * (int)mCircleSeekBar.getReachedWidth() * 2,
+                                                    displayMetrics.widthPixels - distance * 2 - i * (int)mCircleSeekBar.getReachedWidth() * 2);
 
             circleSeekBarLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
             circleSeekBarLayoutParams.topMargin = (int) circleWidth * i + circleDistance;
 
-            mColorRelativeLayout.addView(circleSeekBar, circleSeekBarLayoutParams);
+            mColorRelativeLayout.addView(mCircleSeekBar, circleSeekBarLayoutParams);
 
             // 设置第一个颜色值
             if (i == 0) {
@@ -249,12 +240,32 @@ public class ManualModeFragment extends BaseFragment
             }
         }
 
+        // 添加中间百分比及微调按钮
+        TextView centerTextView = new TextView(getContext());
+
+        mColorRelativeLayout.addView(centerTextView);
+
+        Button decreaseBtn = new Button(getContext());
+
+        mColorRelativeLayout.addView(decreaseBtn);
+
+        Button increaseBtn = new Button(getContext());
+
+        mColorRelativeLayout.addView(increaseBtn);
+
+        // 添加颜色选择
+        for (int i = 0; i < channelNum; i++) {
+            Button btn = new Button(getContext());
+
+            mColorRelativeLayout.addView(btn);
+        }
+
         // 添加开关按钮
         mPowerButton = new CheckableImageButton(getContext());
 
         mPowerButton.setId(20000 + 1);
         mPowerButton.setBackgroundColor(getResources().getColor(R.color.colorTransparent));
-        if (mLightManual.isOn()) {
+        if (mLightModel.isPowerOn()) {
             mPowerButton.setImageResource(R.drawable.ic_power);
         } else {
             mPowerButton.setImageResource(R.drawable.ic_power_off);
@@ -263,7 +274,7 @@ public class ManualModeFragment extends BaseFragment
         mPowerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mLightManual.isOn()) {
+                if (mLightModel.isPowerOn()) {
                     CommUtil.turnOffLed(mDeviceMacAddress);
                 } else {
                     CommUtil.turnOnLed(mDeviceMacAddress);
@@ -276,7 +287,7 @@ public class ManualModeFragment extends BaseFragment
                 RelativeLayout.LayoutParams.WRAP_CONTENT);
 
         powerButtonLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        powerButtonLayoutParams.addRule(RelativeLayout.BELOW, mCircleSeekBars[0].getId());
+        powerButtonLayoutParams.addRule(RelativeLayout.BELOW, mCircleSeekBar.getId());
 
         mColorRelativeLayout.addView(mPowerButton, powerButtonLayoutParams);
 
@@ -293,31 +304,15 @@ public class ManualModeFragment extends BaseFragment
                 public void onClick(View v) {
                     int userDefineIndex = (int) v.getTag();
 
-                    byte[] userDefineValues;
-                    switch (userDefineIndex) {
-                        case 0:
-                            userDefineValues = mLightManual.getCustomP1Values();
-                            break;
-                        case 1:
-                            userDefineValues = mLightManual.getCustomP2Values();
-                            break;
-                        case 2:
-                            userDefineValues = mLightManual.getCustomP3Values();
-                            break;
-                        case 3:
-                            userDefineValues = mLightManual.getCustomP4Values();
-                            break;
-                        default:
-                                userDefineValues = mLightManual.getCustomP1Values();
-                                break;
-                    }
+                    byte[] userDefineValues = mLightModel.getUserDefineColorValue().get(userDefineIndex);
+                    
                     // 设置对应的用户设置
                     short[] values = new short[userDefineValues.length];
-                    for ( int i = 0; i < userDefineValues.length; i++ )
+                    for (int i = 0; i < userDefineValues.length; i++)
                     {
-                        values[i] = (short) ( ( userDefineValues[i] & 0xFF ) * 10 );
+                        values[i] = (short) ((userDefineValues[i] & 0xFF) * 10);
                     }
-                    CommUtil.setLed( mDeviceMacAddress, values );
+                    CommUtil.setLed(mDeviceMacAddress, values);
                 }
             });
 
@@ -326,8 +321,7 @@ public class ManualModeFragment extends BaseFragment
                 public boolean onLongClick(View v) {
                     int userDefineIndex = (int) v.getTag();
 
-                    CommUtil.setLedCustom( mDeviceMacAddress, (byte) userDefineIndex );
-                    // 还应该提示设置成功的提示
+                    CommUtil.setLedCustom(mDeviceMacAddress, (byte) userDefineIndex);
 
                     return true;
                 }
@@ -365,11 +359,11 @@ public class ManualModeFragment extends BaseFragment
     private void refreshData() {
         Channel[] channels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
         // 获取圆盘数据
-        for (int i=0; i< mLightManual.getChnValues().length; i++) {
-            short value = mLightManual.getChnValues()[i];
-
-            channels[i].setValue(value);
-        }
+//        for (int i=0; i< mLightManual.getChnValues().length; i++) {
+//            short value = mLightManual.getChnValues()[i];
+//
+//            channels[i].setValue(value);
+//        }
     }
 
     /**

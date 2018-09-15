@@ -3,7 +3,6 @@ package com.inledco.light.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.inledco.light.bean.LightAuto;
 import com.inledco.light.bean.RampTime;
 
 import java.util.HashMap;

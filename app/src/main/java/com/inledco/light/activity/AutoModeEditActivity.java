@@ -115,8 +115,7 @@ public class AutoModeEditActivity extends BaseActivity {
 
                                 // 添加时间点对应的颜色值
                                 for (int i=mLightModel.getTimePointColorValue().size()-1;i>=0;i--) {
-                                    mLightModel.getTimePointColorValue()
-                                            .put((short)(i+1), mLightModel.getTimePointColorValue().get((short)i));
+                                    mLightModel.getTimePointColorValue().add(mLightModel.getTimePointColorValue().get((short)i));
                                     if (i == insertIndex) {
                                         byte[] insertValues = new byte[DeviceUtil.getChannelCount(mLightModel.getDeviceId())];
 
@@ -124,7 +123,7 @@ public class AutoModeEditActivity extends BaseActivity {
                                             insertValues[j] = 0;
                                         }
 
-                                        mLightModel.getTimePointColorValue().put((short)insertIndex, insertValues);
+                                        mLightModel.getTimePointColorValue().add(insertValues);
                                         break;
                                     }
                                 }
@@ -163,9 +162,8 @@ public class AutoModeEditActivity extends BaseActivity {
                                 lightModels.remove(mTimePointIndex);
 
                                 // 删除时间点对应的颜色值
-                                for (int i=mTimePointIndex;i<mLightModel.getTimePointColorValue().keySet().size()-1; i++) {
-                                    mLightModel.getTimePointColorValue().put((short)i,
-                                            mLightModel.getTimePointColorValue().get((short)(i+1)));
+                                for (int i=mTimePointIndex;i<mLightModel.getTimePointColorValue().size()-1; i++) {
+                                    mLightModel.getTimePointColorValue().add(mLightModel.getTimePointColorValue().get((short)(i+1)));
                                 }
 
                                 mTimePointIndex = 0;
@@ -273,7 +271,7 @@ public class AutoModeEditActivity extends BaseActivity {
             return null;
         }
 
-        if (timePointIndex > mLightModel.getTimePointColorValue().keySet().size() - 1) {
+        if (timePointIndex > mLightModel.getTimePointColorValue().size() - 1) {
             return null;
         }
 

@@ -27,37 +27,37 @@ public class PreferenceUtil
      * @param object        对象
      * @param key
      */
-    public static void setObjectToPrefer( Context context, String preferName, Object object, String key)
+    public static void setObjectToPrefer(Context context, String preferName, Object object, String key)
     {
         SharedPreferences objectPrefer
-            = context.getSharedPreferences( preferName, Context.MODE_PRIVATE );
-        if ( object == null )
+            = context.getSharedPreferences(preferName, Context.MODE_PRIVATE);
+        if (object == null)
         {
-            SharedPreferences.Editor editor = objectPrefer.edit().remove( key );
-            SharedPreferencesCompat.EditorCompat.getInstance().apply( editor );
+            SharedPreferences.Editor editor = objectPrefer.edit().remove(key);
+            SharedPreferencesCompat.EditorCompat.getInstance().apply(editor);
             return;
         }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = null;
         try
         {
-            oos = new ObjectOutputStream( baos );
-            oos.writeObject( object );
-        } catch ( IOException e )
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(object);
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
-        String objectStr = new String( Base64.encode( baos.toByteArray(), Base64.DEFAULT ));
+        String objectStr = new String(Base64.encode(baos.toByteArray(), Base64.DEFAULT));
         try
         {
             baos.close();
             oos.close();
-        } catch ( IOException e )
+        } catch (IOException e)
         {
             e.printStackTrace();
         }
-        SharedPreferences.Editor editor = objectPrefer.edit().putString( key, objectStr );
-        SharedPreferencesCompat.EditorCompat.getInstance().apply( editor );
+        SharedPreferences.Editor editor = objectPrefer.edit().putString(key, objectStr);
+        SharedPreferencesCompat.EditorCompat.getInstance().apply(editor);
     }
 
     /**
@@ -69,25 +69,25 @@ public class PreferenceUtil
      */
     public static Object getObjectFromPrefer(Context context, String preferName, String key)
     {
-        SharedPreferences objectPrefer = context.getSharedPreferences( preferName, Context.MODE_PRIVATE );
-        String objectStr = objectPrefer.getString( key, "" );
-        if ( objectStr == null || objectStr.equals( "" ) )
+        SharedPreferences objectPrefer = context.getSharedPreferences(preferName, Context.MODE_PRIVATE);
+        String objectStr = objectPrefer.getString(key, "");
+        if (objectStr == null || objectStr.equals(""))
         {
             return  null;
         }
-        byte[] objBytes = Base64.decode( objectStr.getBytes(), Base64.DEFAULT );
-        ByteArrayInputStream bais = new ByteArrayInputStream( objBytes );
+        byte[] objBytes = Base64.decode(objectStr.getBytes(), Base64.DEFAULT);
+        ByteArrayInputStream bais = new ByteArrayInputStream(objBytes);
         try
         {
-            ObjectInputStream ois = new ObjectInputStream( bais );
+            ObjectInputStream ois = new ObjectInputStream(bais);
             Object object = ois.readObject();
             bais.close();
             ois.close();
             return object;
-        } catch ( IOException e )
+        } catch (IOException e)
         {
             e.printStackTrace();
-        } catch ( ClassNotFoundException e )
+        } catch (ClassNotFoundException e)
         {
             e.printStackTrace();
         }
@@ -99,15 +99,15 @@ public class PreferenceUtil
      * @param preferName
      * @return
      */
-    public static <T> ArrayList<T> getAllObjectFromPrefer ( Context context, String preferName )
+    public static <T> ArrayList<T> getAllObjectFromPrefer (Context context, String preferName)
     {
         ArrayList<T> objects = new ArrayList<>();
-        SharedPreferences objectPrefer = context.getSharedPreferences( preferName, Context.MODE_PRIVATE );
-        for ( String key : objectPrefer.getAll()
-                                       .keySet() )
+        SharedPreferences objectPrefer = context.getSharedPreferences(preferName, Context.MODE_PRIVATE);
+        for (String key : objectPrefer.getAll()
+                                       .keySet())
         {
-            Object object = getObjectFromPrefer( context, preferName, key );
-            objects.add( (T) object );
+            Object object = getObjectFromPrefer(context, preferName, key);
+            objects.add((T) object);
         }
         return objects;
     }
@@ -117,15 +117,15 @@ public class PreferenceUtil
      * @param preferName
      * @return
      */
-    public static <T> HashMap<String, T> getAllObjectMapFromPrefer ( Context context, String preferName )
+    public static <T> HashMap<String, T> getAllObjectMapFromPrefer (Context context, String preferName)
     {
         HashMap<String, T> objects = new HashMap<>();
-        SharedPreferences objectPrefer = context.getSharedPreferences( preferName, Context.MODE_PRIVATE );
-        for ( String key : objectPrefer.getAll()
-                                       .keySet() )
+        SharedPreferences objectPrefer = context.getSharedPreferences(preferName, Context.MODE_PRIVATE);
+        for (String key : objectPrefer.getAll()
+                                       .keySet())
         {
-            Object object = getObjectFromPrefer( context, preferName, key );
-            objects.put( key, (T) object );
+            Object object = getObjectFromPrefer(context, preferName, key);
+            objects.put(key, (T) object);
         }
         return objects;
     }
@@ -135,9 +135,9 @@ public class PreferenceUtil
      * @param preferName
      * @return
      */
-    public static Set<String> getAllKeyFromPrefer ( Context context, String preferName )
+    public static Set<String> getAllKeyFromPrefer (Context context, String preferName)
     {
-        return context.getSharedPreferences( preferName, Context.MODE_PRIVATE ).getAll().keySet();
+        return context.getSharedPreferences(preferName, Context.MODE_PRIVATE).getAll().keySet();
     }
 
     /**
@@ -146,15 +146,15 @@ public class PreferenceUtil
      * @param preferName
      * @param key
      */
-    public static void deleteObjectFromPrefer( Context context, String preferName, String key)
+    public static void deleteObjectFromPrefer(Context context, String preferName, String key)
     {
         SharedPreferences objectPrefer
-            = context.getSharedPreferences( preferName, Context.MODE_PRIVATE );
+            = context.getSharedPreferences(preferName, Context.MODE_PRIVATE);
 
-        if ( objectPrefer.contains( key ) )
+        if (objectPrefer.contains(key))
         {
-            SharedPreferences.Editor editor = objectPrefer.edit().remove( key );
-            SharedPreferencesCompat.EditorCompat.getInstance().apply( editor );
+            SharedPreferences.Editor editor = objectPrefer.edit().remove(key);
+            SharedPreferencesCompat.EditorCompat.getInstance().apply(editor);
         }
     }
 }

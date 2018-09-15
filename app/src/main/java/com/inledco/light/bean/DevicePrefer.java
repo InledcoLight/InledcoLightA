@@ -2,10 +2,6 @@ package com.inledco.light.bean;
 
 import java.io.Serializable;
 
-/**
- * Created by Administrator on 2016/10/20.
- */
-
 public class DevicePrefer implements Serializable
 {
     private static final long serialVersionUID = -3359140079103510542L;
@@ -14,13 +10,13 @@ public class DevicePrefer implements Serializable
     private String mDeviceName;
     private String mTank;
 
-    public DevicePrefer ( String deviceMac, String deviceName )
+    public DevicePrefer (String deviceMac, String deviceName)
     {
         mDeviceMac = deviceMac;
         mDeviceName = deviceName;
     }
 
-    public DevicePrefer ( short devId, String deviceMac, String deviceName )
+    public DevicePrefer (short devId, String deviceMac, String deviceName)
     {
         mDevId = devId;
         mDeviceMac = deviceMac;
@@ -32,7 +28,7 @@ public class DevicePrefer implements Serializable
         return mDevId;
     }
 
-    public void setDevId ( short devId )
+    public void setDevId (short devId)
     {
         mDevId = devId;
     }
@@ -42,7 +38,7 @@ public class DevicePrefer implements Serializable
         return mDeviceName;
     }
 
-    public void setDeviceName ( String deviceName )
+    public void setDeviceName (String deviceName)
     {
         mDeviceName = deviceName;
     }
@@ -52,7 +48,7 @@ public class DevicePrefer implements Serializable
         return mDeviceMac;
     }
 
-    public void setDeviceMac ( String deviceMac )
+    public void setDeviceMac (String deviceMac)
     {
         mDeviceMac = deviceMac;
     }
@@ -62,7 +58,7 @@ public class DevicePrefer implements Serializable
         return mTank;
     }
 
-    public void setTank ( String tank )
+    public void setTank (String tank)
     {
         mTank = tank;
     }

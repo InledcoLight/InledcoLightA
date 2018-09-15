@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
@@ -20,16 +19,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.inledco.blemanager.BleManager;
-import com.inledco.bleota.BleOTAActivity;
 import com.inledco.light.R;
-import com.inledco.light.activity.LightActivity;
 import com.inledco.light.activity.LightingActivity;
 import com.inledco.light.activity.ScanActivity;
 import com.inledco.light.adapter.DeviceAdapter;
 import com.inledco.light.bean.BaseDevice;
 import com.inledco.light.bean.DevicePrefer;
+import com.inledco.light.bean.ListItem;
 import com.inledco.light.constant.ConstVal;
 import com.inledco.light.impl.SwipeItemActionClickListener;
+import com.inledco.light.util.DeviceUtil;
 import com.inledco.light.util.PreferenceUtil;
 import com.inledco.itemtouchhelperextension.ItemTouchHelperCallback;
 import com.inledco.itemtouchhelperextension.ItemTouchHelperExtension;
@@ -37,196 +36,185 @@ import com.inledco.itemtouchhelperextension.ItemTouchHelperExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class DeviceFragment extends BaseFragment
 {
     private ImageView device_iv_add;
     private TextView device_tv_add;
     private RecyclerView device_rv_show;
 
-    private List< BaseDevice > mDevices;
+    private List<ListItem> mDevices;
     private DeviceAdapter mDeviceAdapter;
 
     @Override
-    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.fragment_device, null);
+        View view =  inflater.inflate(R.layout.fragment_device, null);
+        
         initView(view);
         initEvent();
+
         return view;
     }
 
     @Override
-    public void onResume ()
-    {
+    public void onResume() {
         super.onResume();
+
         initData();
+        
         BleManager.getInstance().disConnectAll();
     }
 
     @Override
-    public void onPause ()
-    {
+    public void onPause() {
         super.onPause();
     }
 
     @Override
-    public void onStop ()
-    {
+    public void onStop() {
         super.onStop();
     }
 
     @Override
-    public void onDestroy ()
-    {
+    public void onDestroy() {
         super.onDestroy();
     }
 
     @Override
-    public void onActivityResult (int requestCode, int resultCode, Intent data)
-    {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == 1)
-        {
+
+        if(requestCode ==  1 && resultCode ==  1) {
             setFlag();
         }
     }
 
     @Override
-    protected void initView (View view)
-    {
-        device_iv_add = (ImageView) view.findViewById( R.id.device_iv_add );
-        device_tv_add = (TextView) view.findViewById( R.id.device_tv_add );
-        device_rv_show = (RecyclerView) view.findViewById( R.id.device_rv_show );
-        device_rv_show.setLayoutManager( new LinearLayoutManager( getContext(), LinearLayoutManager.VERTICAL, false ) );
-        device_rv_show.addItemDecoration( new DividerItemDecoration( getContext(), OrientationHelper.VERTICAL ) );
+    protected void initView(View view) {
+        device_iv_add = (ImageView) view.findViewById(R.id.device_iv_add);
+        device_tv_add = (TextView) view.findViewById(R.id.device_tv_add);
+        device_rv_show = (RecyclerView) view.findViewById(R.id.device_rv_show);
+        device_rv_show.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        device_rv_show.addItemDecoration(new DividerItemDecoration(getContext(), OrientationHelper.VERTICAL));
     }
 
     @Override
-    protected void initData ()
-    {
+    protected void initData() {
         mDevices = new ArrayList<>();
-        SharedPreferences sp = getContext().getSharedPreferences( ConstVal.DEV_PREFER_FILENAME, Context.MODE_PRIVATE );
-        for ( String key : sp.getAll().keySet() )
-        {
-            DevicePrefer prefer = (DevicePrefer) PreferenceUtil.getObjectFromPrefer( getContext(), ConstVal.DEV_PREFER_FILENAME, key );
-            mDevices.add( new BaseDevice( prefer, false ) );
+        SharedPreferences sp =  getContext().getSharedPreferences(ConstVal.DEV_PREFER_FILENAME, Context.MODE_PRIVATE);
+        for(String key : sp.getAll().keySet()) {
+            DevicePrefer prefer = (DevicePrefer) PreferenceUtil.getObjectFromPrefer(getContext(), ConstVal.DEV_PREFER_FILENAME, key);
+            BaseDevice baseDevice = new BaseDevice(prefer, false);
+            mDevices.add(baseDevice);
+
+            for (int i=0;i<DeviceUtil.getSupportLight(prefer.getDevId()).length;i++) {
+                mDevices.add(DeviceUtil.getSupportLight(prefer.getDevId())[i]);
+            }
         }
 
-        if ( getFlag() || mDevices.size() > 0 )
-        {
-            device_iv_add.setVisibility( View.GONE );
-            device_tv_add.setVisibility( View.GONE );
-            device_rv_show.setVisibility( View.VISIBLE );
-        }
-        else
-        {
-            device_iv_add.setVisibility( View.VISIBLE );
-            device_tv_add.setVisibility( View.VISIBLE );
-            device_rv_show.setVisibility( View.GONE );
+        if(getFlag() || mDevices.size() > 0) {
+            device_iv_add.setVisibility(View.GONE);
+            device_tv_add.setVisibility(View.GONE);
+            device_rv_show.setVisibility(View.VISIBLE);
+        } else {
+            device_iv_add.setVisibility(View.VISIBLE);
+            device_tv_add.setVisibility(View.VISIBLE);
+            device_rv_show.setVisibility(View.GONE);
         }
 
-        mDeviceAdapter = new DeviceAdapter( getContext(), mDevices );
-        device_rv_show.setAdapter( mDeviceAdapter );
+        mDeviceAdapter =  new DeviceAdapter(getContext(), mDevices);
+        device_rv_show.setAdapter(mDeviceAdapter);
 
-        ItemTouchHelperCallback callback = new ItemTouchHelperCallback();
-        ItemTouchHelperExtension mItemTouchHelperExtension = new ItemTouchHelperExtension( callback );
-        mItemTouchHelperExtension.attachToRecyclerView( device_rv_show );
+        ItemTouchHelperCallback callback =  new ItemTouchHelperCallback();
+        ItemTouchHelperExtension mItemTouchHelperExtension =  new ItemTouchHelperExtension(callback);
+        mItemTouchHelperExtension.attachToRecyclerView(device_rv_show);
 
-        mDeviceAdapter.setSwipeItemActionClickListener( new SwipeItemActionClickListener() {
+        mDeviceAdapter.setSwipeItemActionClickListener(new SwipeItemActionClickListener() {
             @Override
-            public void onClickContent ( int position )
+            public void onClickContent(int position)
             {
-                BaseDevice device = mDevices.get( position );
+                BaseDevice device = (BaseDevice) mDevices.get(position);
 
                 // 弹出操作选择框
                 showOperationDialog(device);
             }
 
             @Override
-            public void onClickAction ( @IdRes int id, int position )
+            public void onClickAction(@IdRes int id, int position)
             {
-                switch ( id )
+                switch(id)
                 {
                     case R.id.item_action_remove:
-                        showRemoveDeviceDialog( position );
-                        break;
-                    case R.id.item_action_upgrade:
-                        Intent intent = new Intent( getContext(), BleOTAActivity.class );
-                        intent.putExtra( "devid", mDevices.get( position ).getDevicePrefer().getDevId() );
-                        intent.putExtra( "name", mDevices.get( position ).getDevicePrefer().getDeviceName() );
-                        intent.putExtra( "address", mDevices.get( position ).getDevicePrefer().getDeviceMac() );
-                        startActivity( intent );
+                        showRemoveDeviceDialog(position);
                         break;
                 }
             }
-        } );
+        });
     }
 
-    private void setFlag ()
+    private void setFlag()
     {
-        SharedPreferences sp = getContext().getSharedPreferences( "device_scan_flag", Context.MODE_PRIVATE );
-        SharedPreferences.Editor editor = sp.edit().putBoolean( "flag", true );
-        SharedPreferencesCompat.EditorCompat.getInstance().apply( editor );
+        SharedPreferences sp = getContext().getSharedPreferences("device_scan_flag", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit().putBoolean("flag", true);
+        SharedPreferencesCompat.EditorCompat.getInstance().apply(editor);
     }
 
-    private boolean getFlag ()
+    private boolean getFlag()
     {
-        SharedPreferences sp = getContext().getSharedPreferences( "device_scan_flag", Context.MODE_PRIVATE );
-        return sp.getBoolean( "flag", false );
+        SharedPreferences sp =  getContext().getSharedPreferences("device_scan_flag", Context.MODE_PRIVATE);
+
+        return sp.getBoolean("flag", false);
     }
 
-    private void showRemoveDeviceDialog ( final int position )
+    private void showRemoveDeviceDialog(final int position)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder( getContext() );
-        builder.setTitle( R.string.remove_device );
-        builder.setNegativeButton( R.string.cancel, null );
-        builder.setPositiveButton( R.string.remove, new DialogInterface.OnClickListener()
+        AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
+        builder.setTitle(R.string.remove_device);
+        builder.setNegativeButton(R.string.cancel, null);
+        builder.setPositiveButton(R.string.remove, new DialogInterface.OnClickListener()
         {
             @Override
-            public void onClick ( DialogInterface dialogInterface, int i )
+            public void onClick(DialogInterface dialogInterface, int i)
             {
-                if ( mDevices.size() > position )
+                if(mDevices.size() > position)
                 {
-                    PreferenceUtil.deleteObjectFromPrefer( getContext(),
+                    PreferenceUtil.deleteObjectFromPrefer(getContext(),
                                                            ConstVal.DEV_PREFER_FILENAME,
-                                                           mDevices.get( position )
+                                                                   ((BaseDevice)(mDevices.get(position)))
                                                                    .getDevicePrefer()
-                                                                   .getDeviceMac() );
+                                                                   .getDeviceMac());
 
-                    mDevices.remove( position );
+                    mDevices.remove(position);
                     mDeviceAdapter.notifyItemRemoved(position);
                     dialogInterface.dismiss();
                 }
             }
-        } );
+        });
 
-        AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside( false );
+        AlertDialog dialog =  builder.create();
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 
     @Override
-    protected void initEvent ()
+    protected void initEvent()
     {
-        device_iv_add.setOnClickListener( new View.OnClickListener() {
+        device_iv_add.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick ( View v )
+            public void onClick(View v)
             {
-                Intent intent = new Intent( getContext(), ScanActivity.class );
-                startActivityForResult( intent, 1 );
+                Intent intent =  new Intent(getContext(), ScanActivity.class);
+                startActivityForResult(intent, 1);
             }
-        } );
+        });
     }
 
     private void showOperationDialog(final BaseDevice baseDevice) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
 
         builder.setTitle(baseDevice.getDevicePrefer().getDeviceName());
 
-        final CharSequence[] operations = new CharSequence[] {
+        final CharSequence[] operations =  new CharSequence[] {
                 getString(R.string.delete),
                 getString(R.string.connect)
         };
@@ -234,18 +222,18 @@ public class DeviceFragment extends BaseFragment
         builder.setItems(operations, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
+                switch(which) {
                     case 0:
                         // 删除设备
                         showRemoveDeviceDialog(which);
                         break;
                     case 1:
                         // 跳转设置界面，跳转到新的设置界面
-                        Intent intent = new Intent( getContext(), LightingActivity.class );
+                        Intent intent =  new Intent(getContext(), LightingActivity.class);
 
-                        intent.putExtra( "DevicePrefer", baseDevice.getDevicePrefer() );
+                        intent.putExtra("DevicePrefer", baseDevice.getDevicePrefer());
 
-                        startActivity( intent );
+                        startActivity(intent);
                         break;
                     default:
                         break;
