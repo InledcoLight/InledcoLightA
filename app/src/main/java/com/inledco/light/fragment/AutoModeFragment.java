@@ -1,17 +1,23 @@
 package com.inledco.light.fragment;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -28,7 +34,6 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.inledco.blemanager.BleCommunicateListener;
 import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
-import com.inledco.light.activity.AutoModeEditActivity;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
 import com.inledco.light.constant.CustomColor;
@@ -55,6 +60,9 @@ public class AutoModeFragment extends BaseFragment {
     private static final String ARG_DEVICE_ID = "deviceId";
     private static final String ARG_DEVICE_MODEL = "deviceModel";
 
+    // 整个布局
+    private ConstraintLayout mConstraintLayout;
+
     private String mDeviceMacAddress;
     private short mDeviceId;
     private LightModel mLightModel;
@@ -77,6 +85,9 @@ public class AutoModeFragment extends BaseFragment {
     // 定时器
     private Timer mTimer;
     private PreviewTimerTask mPreviewTimerTask;
+
+    // 编辑区域
+    private FrameLayout mAutoModeEditFl;
 
     private OnFragmentInteractionListener mListener;
 
@@ -129,7 +140,6 @@ public class AutoModeFragment extends BaseFragment {
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -182,10 +192,13 @@ public class AutoModeFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
-        mLineChart = (LineChart) view.findViewById(R.id.auto_mode_chart);
-        mPreviewButton = (Button) view.findViewById(R.id.auto_mode_preview);
-        mRunButton = (Button) view.findViewById(R.id.auto_mode_run);
-        mEditButton = (Button) view.findViewById(R.id.auto_mode_edit);
+        mConstraintLayout = view.findViewById(R.id.auto_mode_constrainLayout);
+
+        mLineChart = view.findViewById(R.id.auto_mode_chart);
+        mPreviewButton = view.findViewById(R.id.auto_mode_preview);
+        mRunButton = view.findViewById(R.id.auto_mode_run);
+        mEditButton = view.findViewById(R.id.auto_mode_edit);
+        mAutoModeEditFl = view.findViewById(R.id.auto_mode_edit_view_fragment);
 
         XAxis xAxis = mLineChart.getXAxis();
 
@@ -303,23 +316,22 @@ public class AutoModeFragment extends BaseFragment {
         mRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommUtil.runAutoMode(mDeviceMacAddress, mLightModel);
+            CommUtil.runAutoMode(mDeviceMacAddress, mLightModel);
             }
         });
 
         mEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 跳转到编辑界面
-                Intent intent = new Intent(getContext(), AutoModeEditActivity.class);
+                // 弹出编辑界面
+                if (mConstraintLayout != null) {
+                    final FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
 
-                Bundle bundle = new Bundle();
+                    // 设置可见
+                    mAutoModeEditFl.setVisibility(View.VISIBLE);
 
-                bundle.putSerializable("LIGHT_AUTO_MODE_MODEL", mLightModel);
-
-                intent.putExtras(bundle);
-
-                startActivityForResult(intent, 10);
+                    fragmentTransaction.replace(R.id.auto_mode_edit_view_fragment, AutoModeEditFragment.newInstance(mLightModel));
+                }
             }
         });
     }

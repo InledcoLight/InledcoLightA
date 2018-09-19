@@ -76,26 +76,26 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public void onRequestPermissionsResult ( int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults )
+    public void onRequestPermissionsResult (int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
-        super.onRequestPermissionsResult( requestCode, permissions, grantResults );
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        BleManager.getInstance().getResultForCoarseLocation( requestCode, permissions[0], grantResults[0] );
+        BleManager.getInstance().getResultForCoarseLocation(requestCode, permissions[0], grantResults[0]);
     }
 
     @Override
-    public boolean onCreateOptionsMenu ( Menu menu )
+    public boolean onCreateOptionsMenu (Menu menu)
     {
-        getMenuInflater().inflate( R.menu.menu_main, menu );
-        menuItemBleSearch = menu.findItem( R.id.menu_search_ble );
-        menuItemBleSearch.setOnMenuItemClickListener( new MenuItem.OnMenuItemClickListener() {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        menuItemBleSearch = menu.findItem(R.id.menu_search_ble);
+        menuItemBleSearch.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
-            public boolean onMenuItemClick ( MenuItem item )
+            public boolean onMenuItemClick (MenuItem item)
             {
                 startScanActivity();
                 return false;
             }
-        } );
+        });
         return true;
     }
 
@@ -174,7 +174,7 @@ public class MainActivity extends BaseActivity
                 }
                 return true;
             }
-        } );
+        });
     }
 
     /**
@@ -184,27 +184,27 @@ public class MainActivity extends BaseActivity
      * @return 是否响应按键事件
      */
     @Override
-    public boolean onKeyDown ( int keyCode, KeyEvent event )
+    public boolean onKeyDown (int keyCode, KeyEvent event)
     {
-        if ( keyCode == KeyEvent.KEYCODE_BACK )
+        if (keyCode == KeyEvent.KEYCODE_BACK)
         {
-            if ( !mExiting )
+            if (!mExiting)
             {
                 mExiting = true;
-                new Handler().postDelayed( new Runnable()
+                new Handler().postDelayed(new Runnable()
                 {
                     @Override
                     public void run ()
                     {
                         mExiting = false;
                     }
-                }, 1500 );
-                Toast.makeText( MainActivity.this, R.string.exit_app_tips, Toast.LENGTH_SHORT ).show();
+                }, 1500);
+                Toast.makeText(MainActivity.this, R.string.exit_app_tips, Toast.LENGTH_SHORT).show();
             }
             else
             {
                 //如果退出时不提示 且设置为退出关闭BLE
-                if ( Setting.mExitTurnOffBle )
+                if (Setting.mExitTurnOffBle)
                 {
                     BleManager.getInstance().closeBluetooth();
                 }
@@ -216,14 +216,14 @@ public class MainActivity extends BaseActivity
 
     private void setFlag ()
     {
-        SharedPreferences sp = getSharedPreferences( "device_scan_flag", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit().putBoolean( "flag", true );
-        SharedPreferencesCompat.EditorCompat.getInstance().apply( editor );
+        SharedPreferences sp = getSharedPreferences("device_scan_flag", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit().putBoolean("flag", true);
+        SharedPreferencesCompat.EditorCompat.getInstance().apply(editor);
     }
 
     private void startScanActivity()
     {
-        Intent intent = new Intent( this, ScanActivity.class );
-        startActivityForResult( intent, 1 );
+        Intent intent = new Intent(this, ScanActivity.class);
+        startActivityForResult(intent, 1);
     }
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.AutoModeEditFragment">
+
+    <Button
+        android:id="@+id/auto_mode_edit_addTimePoint"
+        android:text="增加"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"/>
+    <Button
+        android:id="@+id/auto_mode_edit_deleteTimePoint"
+        android:text="删除"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/auto_mode_edit_addTimePoint"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"/>
+
+    <TimePicker
+        android:id="@+id/auto_mode_edit_timePicker"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        app:layout_constraintStart_toEndOf="@id/auto_mode_edit_deleteTimePoint"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:timePickerMode="spinner">
+    </TimePicker>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/auto_mode_edit_timePointList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/auto_mode_edit_addTimePoint"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/auto_mode_edit_timePicker"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/auto_mode_edit_saveBtn"
+        android:text="保存"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"/>
+
+    <Button
+        android:id="@+id/auto_mode_edit_cancelBtn"
+        android:text="取消"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/auto_mode_edit_saveBtn"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/auto_mode_edit_colorSlider"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/auto_mode_edit_timePicker"
+        app:layout_constraintBottom_toTopOf="@id/auto_mode_edit_saveBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/auto_mode_edit_timePointList">
+
+    </android.support.v7.widget.RecyclerView>
+
+</android.support.constraint.ConstraintLayout>

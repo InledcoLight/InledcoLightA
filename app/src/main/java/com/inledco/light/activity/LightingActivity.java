@@ -278,16 +278,18 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
             // 没有连接则连接设备
             mProgressDialog.setMessage(getString(R.string.msg_connecting_device));
             mProgressDialog.show();
+
             BleManager.getInstance().connectDevice(mPrefer.getDeviceMac());
         } else if (BleManager.getInstance().isDataValid(mPrefer.getDeviceMac())) {
             // 如果已经连接，并且MAC地址合法，则同步设备时间
             mProgressDialog.setMessage(getString(R.string.msg_get_device_data));
             mProgressDialog.show();
+
             CommUtil.syncDeviceTime(mPrefer.getDeviceMac());
+
             mCountDownTimer.start();
         }
     }
-
 
     /**
      * 解析设备数据

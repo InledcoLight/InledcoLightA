@@ -5,6 +5,7 @@ import android.content.Context;
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightDevice;
+import com.inledco.light.bean.LightModel;
 import com.inledco.light.bean.RampTime;
 import com.inledco.light.constant.CustomColor;
 
@@ -272,9 +273,9 @@ public class DeviceUtil
         return seekBars;
     }
 
-    public static Map<String, LightAuto> getPresetProfiles (short devid, boolean hasAutoDynamic)
+    public static Map<String, LightModel> getPresetProfiles (short devid, boolean hasAutoDynamic)
     {
-        Map<String, LightAuto> profiles = new LinkedHashMap<>();
+        Map<String, LightModel> profiles = new LinkedHashMap<>();
         switch (devid)
         {
 
@@ -283,7 +284,7 @@ public class DeviceUtil
         {
             for (String key : profiles.keySet())
             {
-                profiles.get(key).setHasDynamic(true);
+                // profiles.get(key).setHasDynamic(true);
                 profiles.get(key).setSun(false);
                 profiles.get(key).setMon(false);
                 profiles.get(key).setTue(false);
@@ -291,9 +292,9 @@ public class DeviceUtil
                 profiles.get(key).setThu(false);
                 profiles.get(key).setFri(false);
                 profiles.get(key).setSat(false);
-                profiles.get(key).setDynamicEnable(false);
-                profiles.get(key).setDynamicPeriod(new RampTime((byte) 0, (byte) 0, (byte) 0, (byte) 0));
-                profiles.get(key).setDynamicMode((byte) 0);
+//                profiles.get(key).setDynamicEnable(false);
+//                profiles.get(key).setDynamicPeriod(new RampTime((byte) 0, (byte) 0, (byte) 0, (byte) 0));
+//                profiles.get(key).setDynamicMode((byte) 0);
             }
         }
         return profiles;

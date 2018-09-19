@@ -18,8 +18,7 @@ import com.inledco.itemtouchhelperextension.SwipeItemViewHolder;
 
 import java.util.List;
 
-public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
-{
+public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private List<ListItem> mDevices;
     private SwipeItemActionClickListener mSwipeItemActionClickListener;

@@ -91,9 +91,9 @@ public class DeviceFragment extends BaseFragment
 
     @Override
     protected void initView(View view) {
-        device_iv_add = (ImageView) view.findViewById(R.id.device_iv_add);
-        device_tv_add = (TextView) view.findViewById(R.id.device_tv_add);
-        device_rv_show = (RecyclerView) view.findViewById(R.id.device_rv_show);
+        device_iv_add = view.findViewById(R.id.device_iv_add);
+        device_tv_add = view.findViewById(R.id.device_tv_add);
+        device_rv_show = view.findViewById(R.id.device_rv_show);
         device_rv_show.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         device_rv_show.addItemDecoration(new DividerItemDecoration(getContext(), OrientationHelper.VERTICAL));
     }

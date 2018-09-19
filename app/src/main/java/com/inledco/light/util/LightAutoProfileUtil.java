@@ -3,6 +3,7 @@ package com.inledco.light.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.inledco.light.bean.LightModel;
 import com.inledco.light.bean.RampTime;
 
 import java.util.HashMap;
@@ -27,9 +28,9 @@ public class LightAutoProfileUtil
 //        return lightAuto;
 //    }
 
-    public static void saveProfile ( Context context, LightAuto lightAuto, short devid, String name )
+    public static void saveProfile (Context context, LightModel lightModel, short devid, String name )
     {
-        PreferenceUtil.setObjectToPrefer( context, LIGHT_AUTO_PROFILE_FILENAME + devid, lightAuto, name );
+        PreferenceUtil.setObjectToPrefer( context, LIGHT_AUTO_PROFILE_FILENAME + devid, lightModel, name );
     }
 
     public static void deleteProfile ( Context context, short devid, String name )
@@ -37,11 +38,11 @@ public class LightAutoProfileUtil
         PreferenceUtil.deleteObjectFromPrefer( context, LIGHT_AUTO_PROFILE_FILENAME + devid, name );
     }
 
-    public static Map<String, LightAuto> getLocalProfiles ( Context context, short devid, boolean hasAutoDynamic )
+    public static Map<String, LightModel> getLocalProfiles ( Context context, short devid, boolean hasAutoDynamic )
     {
         SharedPreferences sp = context.getSharedPreferences( LIGHT_AUTO_PROFILE_FILENAME + devid,
                                                              Context.MODE_PRIVATE );
-        Map<String, LightAuto> map = DeviceUtil.getPresetProfiles( devid, hasAutoDynamic );
+        Map<String, LightModel> map = DeviceUtil.getPresetProfiles( devid, hasAutoDynamic );
         if ( map == null )
         {
             map = new HashMap<>();
@@ -49,7 +50,7 @@ public class LightAutoProfileUtil
 //        map.put( context.getResources().getString( R.string.custom_default ), getDefaultProfile( devid ) );
         for ( String key : sp.getAll().keySet() )
         {
-            map.put( key, (LightAuto) PreferenceUtil.getObjectFromPrefer( context, LIGHT_AUTO_PROFILE_FILENAME + devid, key ) );
+            map.put( key, (LightModel) PreferenceUtil.getObjectFromPrefer( context, LIGHT_AUTO_PROFILE_FILENAME + devid, key ) );
         }
         return map;
     }

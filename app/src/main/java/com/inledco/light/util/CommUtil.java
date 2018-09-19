@@ -301,48 +301,48 @@ public class CommUtil
         BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_READTIME, FRM_HDR^CMD_READTIME});
     }
 
-    public static void setLedAuto(String mac, LightAuto lightAuto)
-    {
-        int dlen = lightAuto.getDayBright().length;
-        int nlen = lightAuto.getNightBright().length;
-        int len = 11 + dlen + nlen;
-        if(lightAuto.isHasDynamic())
-        {
-            len += 6;
-        }
-        byte[] datas = new byte[len];
-        RampTime sunrise = lightAuto.getSunrise();
-        RampTime sunset = lightAuto.getSunset();
-        datas[0] = FRM_HDR;
-        datas[1] = CMD_CYCLE;
-        datas[2] = sunrise.getStartHour();
-        datas[3] = sunrise.getStartMinute();
-        datas[4] = sunrise.getEndHour();
-        datas[5] = sunrise.getEndMinute();
-        datas[6+dlen] = sunset.getStartHour();
-        datas[7+dlen] = sunset.getStartMinute();
-        datas[8+dlen] = sunset.getEndHour();
-        datas[9+dlen] = sunset.getEndMinute();
-        for(int i = 0; i < dlen; i++)
-        {
-            datas[6+i] = lightAuto.getDayBright()[i];
-        }
-        for(int i = 0; i < nlen; i++)
-        {
-            datas[10+dlen+i] = lightAuto.getNightBright()[i];
-        }
-        if(lightAuto.isHasDynamic())
-        {
-            datas[10+dlen+nlen] = lightAuto.getWeek();
-            datas[11+dlen+nlen] = lightAuto.getDynamicPeriod().getStartHour();
-            datas[12+dlen+nlen] = lightAuto.getDynamicPeriod().getStartMinute();
-            datas[13+dlen+nlen] = lightAuto.getDynamicPeriod().getEndHour();
-            datas[14+dlen+nlen] = lightAuto.getDynamicPeriod().getEndMinute();
-            datas[15+dlen+nlen] = lightAuto.getDynamicMode();
-        }
-        datas[len-1] = getCRC(datas, len-1);
-        BleManager.getInstance().sendBytes(mac, datas);
-    }
+//    public static void setLedAuto(String mac, LightAuto lightAuto)
+//    {
+//        int dlen = lightAuto.getDayBright().length;
+//        int nlen = lightAuto.getNightBright().length;
+//        int len = 11 + dlen + nlen;
+//        if(lightAuto.isHasDynamic())
+//        {
+//            len += 6;
+//        }
+//        byte[] datas = new byte[len];
+//        RampTime sunrise = lightAuto.getSunrise();
+//        RampTime sunset = lightAuto.getSunset();
+//        datas[0] = FRM_HDR;
+//        datas[1] = CMD_CYCLE;
+//        datas[2] = sunrise.getStartHour();
+//        datas[3] = sunrise.getStartMinute();
+//        datas[4] = sunrise.getEndHour();
+//        datas[5] = sunrise.getEndMinute();
+//        datas[6+dlen] = sunset.getStartHour();
+//        datas[7+dlen] = sunset.getStartMinute();
+//        datas[8+dlen] = sunset.getEndHour();
+//        datas[9+dlen] = sunset.getEndMinute();
+//        for(int i = 0; i < dlen; i++)
+//        {
+//            datas[6+i] = lightAuto.getDayBright()[i];
+//        }
+//        for(int i = 0; i < nlen; i++)
+//        {
+//            datas[10+dlen+i] = lightAuto.getNightBright()[i];
+//        }
+//        if(lightAuto.isHasDynamic())
+//        {
+//            datas[10+dlen+nlen] = lightAuto.getWeek();
+//            datas[11+dlen+nlen] = lightAuto.getDynamicPeriod().getStartHour();
+//            datas[12+dlen+nlen] = lightAuto.getDynamicPeriod().getStartMinute();
+//            datas[13+dlen+nlen] = lightAuto.getDynamicPeriod().getEndHour();
+//            datas[14+dlen+nlen] = lightAuto.getDynamicPeriod().getEndMinute();
+//            datas[15+dlen+nlen] = lightAuto.getDynamicMode();
+//        }
+//        datas[len-1] = getCRC(datas, len-1);
+//        BleManager.getInstance().sendBytes(mac, datas);
+//}
 
     public static void runAutoMode(String mac, LightModel lightModel) {
         // 数据长度：命令头 + （时间长度 + 通道数量）* 时间段数量
