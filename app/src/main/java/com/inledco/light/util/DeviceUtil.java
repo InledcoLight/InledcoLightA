@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class DeviceUtil
 {
-    // 控制器ID
+    // 控制器ID:每种控制器支持多个灯具
     public static final short LIGHT_ID_ONE_COLOR = 0x0001;
     public static final short LIGHT_ID_TWO_COLOR = 0x0002;
     public static final short LIGHT_ID_THREE_COLOR = 0x0003;
@@ -57,12 +57,12 @@ public class DeviceUtil
         mDeviceMap.put(LIGHT_ID_SIX_COLOR, LIGHT_TYPE_SIX_COLOR);
 
         // 一到六路图标
-        mIconMap.put(LIGHT_ID_ONE_COLOR, R.mipmap.led);
-        mIconMap.put(LIGHT_ID_TWO_COLOR, R.mipmap.led);
-        mIconMap.put(LIGHT_ID_THREE_COLOR, R.mipmap.led);
-        mIconMap.put(LIGHT_ID_FOUR_COLOR, R.mipmap.led);
-        mIconMap.put(LIGHT_ID_FIVE_COLOR, R.mipmap.led);
-        mIconMap.put(LIGHT_ID_SIX_COLOR, R.mipmap.led);
+        mIconMap.put(SUPPORT_LIGHT_ID_ONE, R.mipmap.led);
+        mIconMap.put(SUPPORT_LIGHT_ID_TWO, R.mipmap.led);
+        mIconMap.put(SUPPORT_LIGHT_ID_THREE, R.mipmap.led);
+        mIconMap.put(SUPPORT_LIGHT_ID_FOUR, R.mipmap.led);
+        mIconMap.put(SUPPORT_LIGHT_ID_FIVE, R.mipmap.led);
+        mIconMap.put(SUPPORT_LIGHT_ID_SIX, R.mipmap.led);
     }
 
 
@@ -130,7 +130,9 @@ public class DeviceUtil
                 listItem = new LightDevice[] {};
                 break;
             case LIGHT_ID_FIVE_COLOR:
-                listItem = new LightDevice[] { new LightDevice("五路", "图片", "0005","0005") };
+                listItem = new LightDevice[] { new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light1", "0005","0005"),
+                                               new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light2", "0005","0005"),
+                                               new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light3", "0005","0005") };
                 break;
             case LIGHT_ID_SIX_COLOR:
                 listItem = new LightDevice[] {};

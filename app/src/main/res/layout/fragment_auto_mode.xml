@@ -10,10 +10,9 @@
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/auto_mode_chart"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="200dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/auto_mode_run"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
@@ -58,11 +57,12 @@
     <FrameLayout
         android:id="@+id/auto_mode_edit_view_fragment"
         android:layout_width="0dp"
-        android:layout_height="500dp"
+        android:layout_height="0dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/auto_mode_chart">
 
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>

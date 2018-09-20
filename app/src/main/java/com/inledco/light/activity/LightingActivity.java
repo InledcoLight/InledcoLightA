@@ -10,6 +10,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,18 +74,18 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
     @Override
     protected void initView() {
         // 设置圆形颜色设置宽高相同
-        FrameLayout colorFrameLayout = (FrameLayout)findViewById(R.id.lighting_fragment);
+        FrameLayout colorFrameLayout = findViewById(R.id.lighting_fragment);
 
         ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)colorFrameLayout.getLayoutParams();
 
         colorFrameLayout.setLayoutParams(layoutParams);
 
         // 获取各个控件
-        mLightingToolbar = (Toolbar)findViewById(R.id.lightingToolbar);
+        mLightingToolbar = findViewById(R.id.lightingToolbar);
         // 这个不设置的话，重命名和查找菜单显示不出来
         setSupportActionBar(mLightingToolbar);
 
-        mTitleTextView = (TextView)findViewById(R.id.titleTextView);
+        mTitleTextView = findViewById(R.id.titleTextView);
         mTitleTextView.setText(mPrefer.getDeviceName());
 
         // 初始化提示框
@@ -127,7 +128,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance( mPrefer.getDeviceMac()))
+                        .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mPrefer.getDeviceMac()))
                         .commit();
             }
         };
@@ -159,7 +160,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
                             getSupportFragmentManager()
                                     .beginTransaction()
-                                    .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance( mPrefer.getDeviceMac()))
+                                    .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mPrefer.getDeviceMac()))
                                     .commit();
                         }
                     });
@@ -224,50 +225,50 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
         return true;
     }
 
-    private void showRenameDialog ( final DevicePrefer prefer )
+    private void showRenameDialog (final DevicePrefer prefer )
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder( this );
+        AlertDialog.Builder builder = new AlertDialog.Builder(this );
         final AlertDialog dialog = builder.create();
-        dialog.setTitle( R.string.rename_device );
+        dialog.setTitle(R.string.rename_device );
 
-        View view = LayoutInflater.from( this ).inflate( R.layout.dialog_rename, null );
-        Button btn_cancel = (Button)view.findViewById( R.id.rename_cancel );
-        Button btn_rename = (Button)view.findViewById( R.id.rename_confirm );
+        View view = LayoutInflater.from(this ).inflate(R.layout.dialog_rename, null );
+        Button btn_cancel = (Button)view.findViewById(R.id.rename_cancel );
+        Button btn_rename = (Button)view.findViewById(R.id.rename_confirm );
 
-        final EditText newname = (EditText)view.findViewById( R.id.rename_newname );
-        newname.setText( prefer.getDeviceName());
-        btn_cancel.setOnClickListener( new View.OnClickListener(){
+        final EditText newname = (EditText)view.findViewById(R.id.rename_newname );
+        newname.setText(prefer.getDeviceName());
+        btn_cancel.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick ( View view )
+            public void onClick (View view )
             {
                 dialog.dismiss();
             }
         } );
 
-        btn_rename.setOnClickListener( new View.OnClickListener(){
+        btn_rename.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick ( View view )
+            public void onClick (View view )
             {
-                if ( TextUtils.isEmpty( newname.getText().toString()))
+                if (TextUtils.isEmpty(newname.getText().toString()))
                 {
-                    newname.setError( getString( R.string.error_input_empty ));
+                    newname.setError(getString(R.string.error_input_empty ));
                 }
-                else if ( newname.getText().toString().equals( prefer.getDeviceName()))
+                else if (newname.getText().toString().equals(prefer.getDeviceName()))
                 {
                     dialog.dismiss();
                 }
                 else
                 {
-                    prefer.setDeviceName( newname.getText().toString());
-                    BleManager.getInstance().setSlaverName( prefer.getDeviceMac(), prefer.getDeviceName());
-                    PreferenceUtil.setObjectToPrefer( LightingActivity.this, ConstVal.DEV_PREFER_FILENAME, prefer, prefer.getDeviceMac());
+                    prefer.setDeviceName(newname.getText().toString());
+                    BleManager.getInstance().setSlaverName(prefer.getDeviceMac(), prefer.getDeviceName());
+                    PreferenceUtil.setObjectToPrefer(LightingActivity.this, ConstVal.DEV_PREFER_FILENAME, prefer, prefer.getDeviceMac());
                     dialog.dismiss();
                 }
             }
         } );
 
-        dialog.setView( view );
-        dialog.setCanceledOnTouchOutside( false );
+        dialog.setView(view );
+        dialog.setCanceledOnTouchOutside(false );
         dialog.show();
     }
 
@@ -298,6 +299,8 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
      */
     private void decodeReceiveData(final String mac, ArrayList<Byte> list) {
         mLightModel = CommUtil.decodeLightModel(list, mPrefer.getDevId());
+        mLightModel.setDeviceId(mPrefer.getDevId());
+
         if (mLightModel != null) {
             final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             mCountDownTimer.cancel();

@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +16,13 @@ import android.widget.Button;
 import android.widget.TimePicker;
 
 import com.inledco.light.R;
+import com.inledco.light.adapter.ColorSliderAdapter;
+import com.inledco.light.adapter.TimePointAdapter;
+import com.inledco.light.bean.Channel;
+import com.inledco.light.bean.LightDevice;
 import com.inledco.light.bean.LightModel;
+import com.inledco.light.bean.TimePoint;
+import com.inledco.light.util.DeviceUtil;
 
 /**
  * 自动模式编辑界面
@@ -29,6 +38,12 @@ public class AutoModeEditFragment extends BaseFragment {
     private LightModel mLightModel;
 
     private OnFragmentInteractionListener mListener;
+
+    private TimePointAdapter mTimePointAdapter;
+
+    // 颜色条适配器
+    private ColorSliderAdapter mColorSliderAdapter;
+    private Channel[] mChannels;
 
     // 控件
     private Button mAddTimePointBtn;
@@ -91,8 +106,8 @@ public class AutoModeEditFragment extends BaseFragment {
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+//            throw new RuntimeException(context.toString()
+//                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -131,6 +146,17 @@ public class AutoModeEditFragment extends BaseFragment {
         mColorSliderRv = view.findViewById(R.id.auto_mode_edit_colorSlider);
         mSaveBtn = view.findViewById(R.id.auto_mode_edit_saveBtn);
         mCancelBtn = view.findViewById(R.id.auto_mode_edit_cancelBtn);
+
+        mTimePointPicker.setIs24HourView(true);
+
+        mTimePointAdapter = new TimePointAdapter(mLightModel.getTimePoints());
+        mTimePointListRv.setAdapter(mTimePointAdapter);
+        mTimePointListRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mTimePointListRv.addItemDecoration(new DividerItemDecoration(getContext(), OrientationHelper.VERTICAL));
+
+        mColorSliderRv.setAdapter(new ColorSliderAdapter(getContext(), getChannels(mLightModel, 0), DeviceUtil.getThumb(mLightModel.getDeviceId())));
+        mColorSliderRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        mColorSliderRv.addItemDecoration(new DividerItemDecoration(getContext(), OrientationHelper.VERTICAL));
     }
 
     @Override
@@ -190,6 +216,27 @@ public class AutoModeEditFragment extends BaseFragment {
 
             }
         });
+    }
+
+    private Channel[] getChannels(LightModel lightModel, int timePointIndex) {
+        if (lightModel == null) {
+            return null;
+        }
+
+        if (timePointIndex > lightModel.getTimePointColorValue().size() - 1) {
+            return null;
+        }
+
+        Channel[] channels = DeviceUtil.getLightChannel(getContext(), lightModel.getDeviceId());
+        // 获取第timePointIndex个时间点的颜色值
+        byte[] colors = lightModel.getTimePointColorValue().get((short)timePointIndex);
+        for (int i=0;i<channels.length;i++) {
+            Channel channel = channels[i];
+
+            channel.setColor(colors[i]);
+        }
+
+        return channels;
     }
 }
 

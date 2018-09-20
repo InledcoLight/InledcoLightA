@@ -2,24 +2,13 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="40dp">
 
-
-    <TimePicker
-        android:id="@+id/item_time_point_datePicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:timePickerMode="spinner"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/item_time_point_check_checkBox">
-
-    </TimePicker>
-
-    <CheckBox
-        android:id="@+id/item_time_point_check_checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true" />
+    <TextView
+        android:id="@+id/item_time_point_time"
+        android:text="@string/placeholder_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        android:gravity="fill_vertical"/>
 </RelativeLayout>

@@ -69,10 +69,6 @@ public class LightModel implements Serializable {
         this.mTimePointColorValue = timePointColorValue;
     }
 
-    public short getDeviceId() {
-        return deviceId;
-    }
-
     public short getChannelNum() {
         return channelNum;
     }
@@ -318,6 +314,14 @@ public class LightModel implements Serializable {
 
     public void setDeviceName(String deviceName) {
         mDeviceName = deviceName;
+    }
+
+    public short getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(short deviceId) {
+        this.deviceId = deviceId;
     }
 }
 

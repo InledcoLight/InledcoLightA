@@ -5,7 +5,6 @@ package com.inledco.light.bean;
  * 控制器设备模型
  */
 public class BaseDevice extends ListItem {
-    // 品牌及分组信息
     private byte mMajorVersion;
     private byte mMinorVersion;
     private DevicePrefer mDevicePrefer;

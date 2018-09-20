@@ -5,14 +5,17 @@ package com.inledco.light.bean;
  * 控制器支持灯具模型
  */
 public class LightDevice extends ListItem {
-    private String name;
-    private String imageName;
+    // 控制器信息
+    private DevicePrefer mDevicePrefer;
+    private short mLightId;
+    private String mLightName;
     private String lightCode;
     private String lightType;
 
-    public LightDevice(String name, String imageName, String lightCode, String lightType) {
-        this.name = name;
-        this.imageName = imageName;
+    public LightDevice(DevicePrefer devicePrefer, short lightId, String lightName, String lightCode, String lightType) {
+        mDevicePrefer = devicePrefer;
+        this.mLightId = lightId;
+        this.mLightName = lightName;
         this.lightCode = lightCode;
         this.lightType = lightType;
     }
@@ -20,23 +23,6 @@ public class LightDevice extends ListItem {
     @Override
     public int getType() {
         return TYPE_LIGHT;
-    }
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
     }
 
     public String getLightCode() {
@@ -53,5 +39,29 @@ public class LightDevice extends ListItem {
 
     public void setLightType(String lightType) {
         this.lightType = lightType;
+    }
+
+    public short getLightId() {
+        return mLightId;
+    }
+
+    public void setLightId(short lightId) {
+        mLightId = lightId;
+    }
+
+    public String getLightName() {
+        return mLightName;
+    }
+
+    public void setLightName(String lightName) {
+        mLightName = lightName;
+    }
+
+    public DevicePrefer getDevicePrefer() {
+        return mDevicePrefer;
+    }
+
+    public void setDevicePrefer(DevicePrefer devicePrefer) {
+        mDevicePrefer = devicePrefer;
     }
 }

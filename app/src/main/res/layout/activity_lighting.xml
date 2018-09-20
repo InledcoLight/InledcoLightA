@@ -32,16 +32,15 @@
         app:layout_constraintBottom_toBottomOf="@+id/lightingToolbar"
         app:layout_constraintEnd_toEndOf="@+id/lightingToolbar"
         app:layout_constraintStart_toStartOf="@+id/lightingToolbar"
-        app:layout_constraintTop_toTopOf="@+id/lightingToolbar" />
+        app:layout_constraintTop_toTopOf="@id/lightingToolbar" />
 
     <FrameLayout
         android:id="@+id/manual_auto_fragment"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lightingToolbar"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/lightingToolbar">
 
     </FrameLayout>
 
@@ -52,7 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/manual_auto_fragment">
+        app:layout_constraintTop_toBottomOf="@id/manual_auto_fragment">
 
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>

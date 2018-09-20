@@ -327,10 +327,16 @@ public class AutoModeFragment extends BaseFragment {
                 if (mConstraintLayout != null) {
                     final FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
 
+                    ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)mAutoModeEditFl.getLayoutParams();
                     // 设置可见
                     mAutoModeEditFl.setVisibility(View.VISIBLE);
 
+                    mAutoModeEditFl.setLayoutParams(layoutParams);
+
                     fragmentTransaction.replace(R.id.auto_mode_edit_view_fragment, AutoModeEditFragment.newInstance(mLightModel));
+                    fragmentTransaction.commit();
+                    // 显示到最前
+                    mAutoModeEditFl.bringToFront();
                 }
             }
         });
@@ -405,7 +411,7 @@ public class AutoModeFragment extends BaseFragment {
             byte[] bytes = mLightModel.getTimePointColorValue().get((short) 0);
             entryList.add( new Entry( 0,  bytes[i]) );
             for (int j=0;j<mLightModel.getTimePoints().length;j++) {
-                entryList.add( new Entry( mLightModel.getTimePoints()[j].getmHour() * 60 + mLightModel.getTimePoints()[j].getmMinute(),
+                entryList.add( new Entry( mLightModel.getTimePoints()[j].getHour() * 60 + mLightModel.getTimePoints()[j].getMinute(),
                                         mLightModel.getTimePointColorValue().get((short)j)[i]) );
             }
             // 添加坐标24*60处的点

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="main_device">Devices</string>
+    <string name="placeholder_text">Placeholder</string>
     <string name="main_news">News</string>
     <string name="ble_no_support">This device doesn\\\'t support BLE 4.x.</string>
     <string name="scan_devices">Devices</string>

@@ -16,19 +16,23 @@ public class TimePoint implements Serializable {
         mMinute = minute;
     }
 
-    public byte getmHour() {
+    public String getFormatTimePoint(String format) {
+        return String.format(format, mHour, mMinute);
+    }
+
+    public byte getHour() {
         return mHour;
     }
 
-    public void setmHour(byte mHour) {
-        this.mHour = mHour;
+    public void setHour(byte hour) {
+        this.mHour = hour;
     }
 
-    public byte getmMinute() {
+    public byte getMinute() {
         return mMinute;
     }
 
-    public void setmMinute(byte mMinute) {
-        this.mMinute = mMinute;
+    public void setMinute(byte minute) {
+        this.mMinute = minute;
     }
 }

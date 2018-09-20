@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="20dp">
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <!--
         需要的控件：
@@ -13,40 +14,6 @@
         3.一个Auto Button
     -->
     <Button
-        android:id="@+id/manual_auto_background"
-        android:layout_width="230dp"
-        android:layout_height="120dp"
-        android:background="@drawable/manual_auto_border"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
-        android:id="@+id/manualButton"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:background="@drawable/manual_auto_switch_manual_background"
-        android:text="@string/mode_manual"
-        android:textColor="@color/colorBlack"
-        app:layout_constraintDimensionRatio="1"
-        app:layout_constraintEnd_toStartOf="@id/layout_center_button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="10dp" />
-
-    <Button
-        android:id="@+id/autoButton"
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        android:background="@drawable/manual_auto_switch_manual_background"
-        android:text="@string/mode_auto"
-        app:layout_constraintDimensionRatio="1"
-        android:textColor="@color/colorBlack"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/layout_center_button"
-        android:layout_marginStart="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <Button
         android:id="@+id/layout_center_button"
         android:layout_width="1dp"
         android:layout_height="1dp"
@@ -54,5 +21,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/manual_auto_background"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:background="@drawable/manual_auto_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/manualButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/manual_auto_switch_manual_background"
+        android:text="@string/mode_manual"
+        android:textColor="@color/colorBlack"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintTop_toTopOf="@id/manual_auto_background"
+        app:layout_constraintEnd_toStartOf="@id/layout_center_button"
+        app:layout_constraintStart_toStartOf="@id/manual_auto_background"
+        app:layout_constraintBottom_toBottomOf="@id/manual_auto_background"
+        android:layout_margin="10dp"/>
+
+    <Button
+        android:id="@+id/autoButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/manual_auto_switch_manual_background"
+        android:text="@string/mode_auto"
+        app:layout_constraintDimensionRatio="1"
+        android:textColor="@color/colorBlack"
+        app:layout_constraintTop_toTopOf="@id/manual_auto_background"
+        app:layout_constraintStart_toEndOf="@id/layout_center_button"
+        app:layout_constraintEnd_toEndOf="@id/manual_auto_background"
+        app:layout_constraintBottom_toBottomOf="@id/manual_auto_background"
+        android:layout_margin="10dp"/>
 
 </android.support.constraint.ConstraintLayout>

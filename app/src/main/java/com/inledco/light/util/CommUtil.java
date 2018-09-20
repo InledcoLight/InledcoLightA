@@ -196,7 +196,7 @@ public class CommUtil
         LightModel lightModel = null;
         int receiveDataLength = bytes.size();
         // 检查数据完整性，第5个为数据字节，减去6：减去命令头 校验码 数据量等占用的数量
-        if (receiveDataLength > 5 && bytes.get(5) == receiveDataLength - 6 && getCRC(bytes, receiveDataLength) == 0x00) {
+        if (receiveDataLength > 5 && bytes.get(4) == receiveDataLength - 6 && getCRC(bytes, receiveDataLength) == 0x00) {
             lightModel = new LightModel();
 
             int dataIndex = 5;
@@ -360,10 +360,10 @@ public class CommUtil
             // 填充时间
             TimePoint startTimePoint = lightModel.getTimePoints()[2 * i];
             TimePoint endTimePoint = lightModel.getTimePoints()[2 * i + 1];
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length)] = startTimePoint.getmHour();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 1] = startTimePoint.getmMinute();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 2] = endTimePoint.getmHour();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 3] = endTimePoint.getmMinute();
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length)] = startTimePoint.getHour();
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 1] = startTimePoint.getMinute();
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 2] = endTimePoint.getHour();
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 3] = endTimePoint.getMinute();
 
             // 填充颜色值
             byte[] colorValues = lightModel.getTimePointColorValue().get((short)(2 * i + 1));

@@ -25,6 +25,8 @@ import com.inledco.light.activity.ScanActivity;
 import com.inledco.light.adapter.DeviceAdapter;
 import com.inledco.light.bean.BaseDevice;
 import com.inledco.light.bean.DevicePrefer;
+import com.inledco.light.bean.LightDevice;
+import com.inledco.light.bean.LightModel;
 import com.inledco.light.bean.ListItem;
 import com.inledco.light.constant.ConstVal;
 import com.inledco.light.impl.SwipeItemActionClickListener;
@@ -101,14 +103,19 @@ public class DeviceFragment extends BaseFragment
     @Override
     protected void initData() {
         mDevices = new ArrayList<>();
+
         SharedPreferences sp =  getContext().getSharedPreferences(ConstVal.DEV_PREFER_FILENAME, Context.MODE_PRIVATE);
         for(String key : sp.getAll().keySet()) {
             DevicePrefer prefer = (DevicePrefer) PreferenceUtil.getObjectFromPrefer(getContext(), ConstVal.DEV_PREFER_FILENAME, key);
             BaseDevice baseDevice = new BaseDevice(prefer, false);
+
             mDevices.add(baseDevice);
 
             for (int i=0;i<DeviceUtil.getSupportLight(prefer.getDevId()).length;i++) {
-                mDevices.add(DeviceUtil.getSupportLight(prefer.getDevId())[i]);
+                LightDevice lightDevice = DeviceUtil.getSupportLight(prefer.getDevId())[i];
+
+                lightDevice.setDevicePrefer(prefer);
+                mDevices.add(lightDevice);
             }
         }
 
@@ -133,7 +140,7 @@ public class DeviceFragment extends BaseFragment
             @Override
             public void onClickContent(int position)
             {
-                BaseDevice device = (BaseDevice) mDevices.get(position);
+                LightDevice device = (LightDevice) mDevices.get(position);
 
                 // 弹出操作选择框
                 showOperationDialog(device);
@@ -209,10 +216,10 @@ public class DeviceFragment extends BaseFragment
         });
     }
 
-    private void showOperationDialog(final BaseDevice baseDevice) {
+    private void showOperationDialog(final LightDevice lightDevice) {
         AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
 
-        builder.setTitle(baseDevice.getDevicePrefer().getDeviceName());
+        builder.setTitle(lightDevice.getLightName());
 
         final CharSequence[] operations =  new CharSequence[] {
                 getString(R.string.delete),
@@ -231,7 +238,7 @@ public class DeviceFragment extends BaseFragment
                         // 跳转设置界面，跳转到新的设置界面
                         Intent intent =  new Intent(getContext(), LightingActivity.class);
 
-                        intent.putExtra("DevicePrefer", baseDevice.getDevicePrefer());
+                        intent.putExtra("DevicePrefer", lightDevice.getDevicePrefer());
 
                         startActivity(intent);
                         break;

@@ -53,16 +53,17 @@ public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         ListItem itemModel = mDevices.get(holder.getAdapterPosition());
         if (itemModel.getType() == ListItem.TYPE_HEADER) {
             DeviceHeaderViewHolder deviceHeaderViewHolder = (DeviceHeaderViewHolder)holder;
-            LightDevice lightDevice = (LightDevice)itemModel;
 
-            deviceHeaderViewHolder.controllerNameTextView.setText("");
-        } else if (itemModel.getType() == ListItem.TYPE_LIGHT) {
-            DeviceViewHolder deviceViewHolder = (DeviceViewHolder)holder;
             BaseDevice device = (BaseDevice)itemModel;
 
-            deviceViewHolder.iv_icon.setImageResource(DeviceUtil.getDeviceIcon(device.getDevicePrefer().getDevId()));
-            deviceViewHolder.tv_name.setText(device.getDevicePrefer().getDeviceName());
-            deviceViewHolder.tv_tank.setText(DeviceUtil.getDeviceType(device.getDevicePrefer().getDevId()));
+            deviceHeaderViewHolder.controllerNameTextView.setText(device.getDevicePrefer().getDeviceName());
+        } else if (itemModel.getType() == ListItem.TYPE_LIGHT) {
+            DeviceViewHolder deviceViewHolder = (DeviceViewHolder)holder;
+            LightDevice lightDevice = (LightDevice)itemModel;
+
+            deviceViewHolder.iv_icon.setImageResource(DeviceUtil.getDeviceIcon(lightDevice.getLightId()));
+            deviceViewHolder.tv_name.setText(lightDevice.getLightName());
+            deviceViewHolder.tv_tank.setText(DeviceUtil.getDeviceType(lightDevice.getLightId()));
 
             deviceViewHolder.item_content.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -86,7 +87,7 @@ public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public DeviceHeaderViewHolder(View itemView) {
             super(itemView);
 
-            controllerNameTextView = (TextView)itemView.findViewById(R.id.item_list_header_name);
+            controllerNameTextView = itemView.findViewById(R.id.item_list_header_name);
         }
     }
 
@@ -98,9 +99,9 @@ public class DeviceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         public DeviceViewHolder (View itemView) {
             super(itemView);
-            iv_icon = (ImageView) itemView.findViewById(R.id.item_device_icon);
-            tv_name = (TextView) itemView.findViewById(R.id.item_device_name);
-            tv_tank = (TextView) itemView.findViewById(R.id.item_device_tank);
+            iv_icon = itemView.findViewById(R.id.item_device_icon);
+            tv_name = itemView.findViewById(R.id.item_device_name);
+            tv_tank = itemView.findViewById(R.id.item_device_tank);
             item_content = itemView.findViewById(R.id.item_content);
         }
     }

@@ -31,7 +31,6 @@ public class ManualAutoSwitchFragment extends BaseFragment {
     private boolean isManualMode;
 
     private OnFragmentInteractionListener mListener;
-    private int mPadding = 20;
     private Button mManualButton;
     private Button mAutoButton;
 
@@ -94,36 +93,28 @@ public class ManualAutoSwitchFragment extends BaseFragment {
 
     @Override
     protected void initView(View view) {
-        mManualButton = (Button) view.findViewById(R.id.manualButton);
-        mAutoButton = (Button) view.findViewById(R.id.autoButton);
+        mManualButton = view.findViewById(R.id.manualButton);
+        mAutoButton = view.findViewById(R.id.autoButton);
 
         if (isManualMode) {
             mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
             mManualButton.setTextColor(getResources().getColor(R.color.colorPureBlue));
 
-            mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
-            mAutoButton.setTextColor(getResources().getColor(R.color.colorWhite));
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mManualButton.getLayoutParams();
 
-            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mAutoButton.getLayoutParams();
+            layoutParams.setMargins(10,10,10,10);
 
-            layoutParams.width = layoutParams.width - 30;
-            layoutParams.height = layoutParams.height - 30;
-
-            mAutoButton.setLayoutParams(layoutParams);
+            mManualButton.setLayoutParams(layoutParams);
 
         } else {
             mAutoButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_background);
             mAutoButton.setTextColor(getResources().getColor(R.color.colorPureBlue));
 
-            mManualButton.setBackgroundResource(R.drawable.manual_auto_switch_manual_blue_background);
-            mManualButton.setTextColor(getResources().getColor(R.color.colorWhite));
+            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mAutoButton.getLayoutParams();
 
-            ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mManualButton.getLayoutParams();
+            layoutParams.setMargins(10,10,10,10);
 
-            layoutParams.width = layoutParams.width - 30;
-            layoutParams.height = layoutParams.height - 30;
-
-            mManualButton.setLayoutParams(layoutParams);
+            mAutoButton.setLayoutParams(layoutParams);
         }
     }
 
