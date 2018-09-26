@@ -1,5 +1,6 @@
 package com.inledco.light.fragment;
 
+import android.app.FragmentManager;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +37,7 @@ import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
+import com.inledco.light.bean.TimePoint;
 import com.inledco.light.constant.CustomColor;
 import com.inledco.light.impl.PreviewTaskListener;
 import com.inledco.light.util.CommUtil;
@@ -62,6 +64,7 @@ public class AutoModeFragment extends BaseFragment {
 
     // 整个布局
     private ConstraintLayout mConstraintLayout;
+    private FragmentTransaction mFragmentTransaction;
 
     private String mDeviceMacAddress;
     private short mDeviceId;
@@ -78,10 +81,6 @@ public class AutoModeFragment extends BaseFragment {
     // 蓝牙回调
     private BleCommunicateListener mBleCommunicateListener;
 
-    // 曲线图数据
-    private LineData mLineData;
-    private ArrayList<ILineDataSet> mLineDataSets;
-
     // 定时器
     private Timer mTimer;
     private PreviewTimerTask mPreviewTimerTask;
@@ -96,8 +95,7 @@ public class AutoModeFragment extends BaseFragment {
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * 工厂方法
      *
      * @param deviceMacAddress 设备MAC地址.
      * @param deviceId 设备ID.
@@ -130,7 +128,6 @@ public class AutoModeFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_auto_mode, container, false);
 
         initView(view);
@@ -167,7 +164,8 @@ public class AutoModeFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
 
-        refreshData();
+        mLineChart.setData(getLineData(mLightModel));
+        mLineChart.invalidate();
     }
 
     @Override
@@ -175,19 +173,6 @@ public class AutoModeFragment extends BaseFragment {
         super.onDestroy();
 
         BleManager.getInstance().removeBleCommunicateListener(mBleCommunicateListener);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 10 && data != null) {
-            Log.d("requestCode:",requestCode + "");
-
-            LightModel lightModel = (LightModel) data.getExtras().getSerializable("1");
-            mLightModel = lightModel;
-        } else {
-
-        }
     }
 
     @Override
@@ -228,7 +213,6 @@ public class AutoModeFragment extends BaseFragment {
         mLineChart.setScaleEnabled(false);
         mLineChart.setDescription(null);
         mLineChart.setPinchZoom(false);
-
 
         IAxisValueFormatter axisValueFormatter = new IAxisValueFormatter() {
             @Override
@@ -316,7 +300,7 @@ public class AutoModeFragment extends BaseFragment {
         mRunButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            CommUtil.runAutoMode(mDeviceMacAddress, mLightModel);
+                CommUtil.runAutoMode(mDeviceMacAddress, mLightModel);
             }
         });
 
@@ -325,18 +309,34 @@ public class AutoModeFragment extends BaseFragment {
             public void onClick(View v) {
                 // 弹出编辑界面
                 if (mConstraintLayout != null) {
-                    final FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-
                     ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)mAutoModeEditFl.getLayoutParams();
+
                     // 设置可见
                     mAutoModeEditFl.setVisibility(View.VISIBLE);
-
                     mAutoModeEditFl.setLayoutParams(layoutParams);
 
-                    fragmentTransaction.replace(R.id.auto_mode_edit_view_fragment, AutoModeEditFragment.newInstance(mLightModel));
-                    fragmentTransaction.commit();
                     // 显示到最前
                     mAutoModeEditFl.bringToFront();
+
+                    // 传递的模型不能是mLightModel，应该是一个副本
+                    final AutoModeEditFragment autoModeEditFragment = AutoModeEditFragment.newInstance((LightModel) mLightModel.clone());
+
+                    autoModeEditFragment.editAutoInterface = new AutoModeEditFragment.EditAutoInterface() {
+                        @Override
+                        public void refreshChart(LightModel lightModel) {
+                            mLineChart.setData(getLineData(lightModel));
+                            mLineChart.invalidate();
+                        }
+
+                        @Override
+                        public void cancelSave() {
+                            mLineChart.setData(getLineData(mLightModel));
+                            mLineChart.invalidate();
+                        }
+                    };
+
+                    mFragmentTransaction.replace(R.id.auto_mode_edit_view_fragment, autoModeEditFragment);
+                    mFragmentTransaction.commit();
                 }
             }
         });
@@ -344,6 +344,8 @@ public class AutoModeFragment extends BaseFragment {
 
     @Override
     protected void initData() {
+        mFragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+
         mBleCommunicateListener = new BleCommunicateListener() {
             @Override
             public void onDataValid(String mac) {
@@ -370,7 +372,8 @@ public class AutoModeFragment extends BaseFragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                refreshData();
+                                mLineChart.setData(getLineData(mLightModel));
+                                mLineChart.invalidate();
                                 Toast.makeText( getContext(), R.string.load_success, Toast.LENGTH_SHORT )
                                         .show();
                             }
@@ -384,54 +387,54 @@ public class AutoModeFragment extends BaseFragment {
         BleManager.getInstance().addBleCommunicateListener(mBleCommunicateListener);
 
         // 刷新数据
-        refreshData();
+        mLineChart.setData(getLineData(mLightModel));
+        mLineChart.invalidate();
 
         // 初始化定时器
         mTimer = new Timer();
     }
 
-    private void refreshData() {
-        // 构造曲线图数据
-        if (mLineDataSets == null) {
-            mLineDataSets = new ArrayList<>();
-        }
-
-        mLineDataSets.clear();
+    /**
+     * 根据模型数据获取曲线图数据
+     * @param lightModel 模型数据
+     * @return 曲线图数据
+     */
+    private LineData getLineData(LightModel lightModel) {
+        ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
 
         // 如果没有数据则返回
-        if (mLightModel.getTimePointColorValue() == null || mLightModel.getTimePoints() == null) {
-            return;
+        if (lightModel.getTimePointColorValue() == null || lightModel.getTimePoints() == null) {
+            return null;
         }
 
         // 获取通道数据
-        Channel[] channels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
+        Channel[] channels = DeviceUtil.getLightChannel(getContext(), lightModel.getDeviceId());
         for (int i=0;i<channels.length;i++) {
             List<Entry> entryList = new ArrayList<>();
+
             // 添加坐标0处的点
-            byte[] bytes = mLightModel.getTimePointColorValue().get((short) 0);
-            entryList.add( new Entry( 0,  bytes[i]) );
-            for (int j=0;j<mLightModel.getTimePoints().length;j++) {
-                entryList.add( new Entry( mLightModel.getTimePoints()[j].getHour() * 60 + mLightModel.getTimePoints()[j].getMinute(),
-                                        mLightModel.getTimePointColorValue().get((short)j)[i]) );
+            byte[] bytes = lightModel.getTimePointColorValue().get((short) 0);
+            entryList.add(new Entry(0, bytes[i]));
+            for (int j=0;j<lightModel.getTimePoints().size();j++) {
+                entryList.add(new Entry( lightModel.getTimePoints().get(j).getHour() * 60 + lightModel.getTimePoints().get(j).getMinute(),
+                        lightModel.getTimePointColorValue().get((short)j)[i]));
             }
+
             // 添加坐标24*60处的点
-            entryList.add( new Entry( 24 * 60,  bytes[i]) );
+            entryList.add(new Entry( 24 * 60,  bytes[i]));
 
             LineDataSet lineDataSet = new LineDataSet(entryList, channels[i].getName());
 
             lineDataSet.setColor(channels[i].getColor());
-            lineDataSet.setCircleRadius( 3.0f );
+            lineDataSet.setCircleRadius(3.0f);
             lineDataSet.setCircleColor(channels[i].getColor());
             lineDataSet.setDrawCircleHole(false);
             lineDataSet.setLineWidth(2.0f);
 
-            mLineDataSets.add(lineDataSet);
+            lineDataSets.add(lineDataSet);
         }
 
-        mLineData = new LineData(mLineDataSets);
-
-        mLineChart.setData(mLineData);
-        mLineChart.invalidate();
+        return new LineData(lineDataSets);
     }
 
     /**

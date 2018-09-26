@@ -8,18 +8,18 @@
 
     <Button
         android:id="@+id/auto_mode_edit_addTimePoint"
-        android:text="增加"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@mipmap/add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"/>
+        android:layout_marginStart="10dp" />
     <Button
         android:id="@+id/auto_mode_edit_deleteTimePoint"
-        android:text="删除"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@mipmap/delete"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/auto_mode_edit_addTimePoint"
         android:layout_marginTop="10dp"

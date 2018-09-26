@@ -68,10 +68,10 @@ public class PreviewTimerTask extends TimerTask
         short[] values = new short[mChannelNum];
 
         // 获取时间点个数
-        int timePointNum = lightModel.getTimePoints().length;
+        int timePointNum = lightModel.getTimePoints().size();
         int[] tms = tms = new int[timePointNum];
         for (int i=0;i<timePointNum;i++) {
-            tms[i] = lightModel.getTimePoints()[i].getHour() * 60 + lightModel.getTimePoints()[i].getMinute();
+            tms[i] = lightModel.getTimePoints().get(i).getHour() * 60 + lightModel.getTimePoints().get(i).getMinute();
         }
 
         // 构造颜色值信息

@@ -1,5 +1,7 @@
 package com.inledco.light.bean;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.Map;
  * 手动和自动模式应该使用一个模型
  */
 
-public class LightModel implements Serializable {
+public class LightModel implements Serializable,Cloneable {
     private static final long serialVersionUID = 7284666673318500459L;
     // 设备id
     private short deviceId;
@@ -37,7 +39,7 @@ public class LightModel implements Serializable {
     // 时间点个数
     private int mTimePointCount;
     // 时间点数组
-    private TimePoint[] mTimePoints;
+    private ArrayList<TimePoint> mTimePoints;
     // 时间点对应颜色值，使用数组列表存储
     private ArrayList<byte[]> mTimePointColorValue;
 
@@ -58,15 +60,29 @@ public class LightModel implements Serializable {
     // 动态效果类型
     private byte mDynamicMode;
 
-    public LightModel() {
+    public LightModel() {}
 
-    }
-
-    public LightModel(short deviceId, short channelNum, TimePoint[] timePoints, ArrayList<byte[]> timePointColorValue) {
+    public LightModel(short deviceId, short channelNum, ArrayList<TimePoint> timePoints, ArrayList<byte[]> timePointColorValue) {
         this.deviceId = deviceId;
         this.channelNum = channelNum;
         this.mTimePoints = timePoints;
         this.mTimePointColorValue = timePointColorValue;
+    }
+
+    public Object clone() {
+        LightModel o = null;
+        try {
+            o = (LightModel)super.clone();
+        }catch (CloneNotSupportedException ex) {
+            Log.d("Clone","不支持克隆");
+        }
+
+        o.mUserDefineColorValue = (ArrayList<byte[]>)mUserDefineColorValue.clone();
+        o.mTimePoints = (ArrayList<TimePoint>)mTimePoints.clone();
+        o.mTimePointColorValue = (ArrayList<byte[]>)mTimePointColorValue.clone();
+        o.mDynamicPeriod = (RampTime)mDynamicPeriod.clone();
+
+        return o;
     }
 
     public short getChannelNum() {
@@ -292,11 +308,11 @@ public class LightModel implements Serializable {
         mUserDefineColorValue = userDefineColorValue;
     }
 
-    public TimePoint[] getTimePoints() {
+    public ArrayList<TimePoint> getTimePoints() {
         return mTimePoints;
     }
 
-    public void setTimePoints(TimePoint[] timePoints) {
+    public void setTimePoints(ArrayList<TimePoint> timePoints) {
         mTimePoints = timePoints;
     }
 

@@ -81,4 +81,8 @@
     <string name="operation">Operation</string>
     <string name="connect">Connect</string>
     <string name="give_up_save">Give Up Save?</string>
+
+
+    <string name="lessThanMinTimePoint">At least four time points!</string>
+    <string name="moreThanMaxTimePoint">Up to ten points in time!</string>
 </resources>

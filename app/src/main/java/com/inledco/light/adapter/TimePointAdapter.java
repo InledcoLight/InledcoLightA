@@ -23,9 +23,9 @@ import java.util.ArrayList;
 public class TimePointAdapter extends RecyclerView.Adapter {
 
     // 数据源
-    private TimePoint[] mTimePoints;
+    private ArrayList<TimePoint> mTimePoints;
 
-    public TimePointAdapter(TimePoint[] timePoints) {
+    public TimePointAdapter(ArrayList<TimePoint>  timePoints) {
         mTimePoints = timePoints;
     }
 
@@ -47,7 +47,7 @@ public class TimePointAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
         TimePointViewHolder timePointViewHolder = (TimePointViewHolder)viewHolder;
-        TimePoint timePoint = mTimePoints[i];
+        TimePoint timePoint = mTimePoints.get(i);
 
         timePointViewHolder.mTimePointTv.setText(timePoint.getFormatTimePoint("%02d:%02d"));
 
@@ -57,7 +57,7 @@ public class TimePointAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         // 可以防止数据为空的情况，如果为空，则返回0
-        return mTimePoints == null ? 0 : mTimePoints.length;
+        return mTimePoints == null ? 0 : mTimePoints.size();
     }
 
     private class TimePointViewHolder extends RecyclerView.ViewHolder {

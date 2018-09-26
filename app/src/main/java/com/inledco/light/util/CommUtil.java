@@ -239,10 +239,10 @@ public class CommUtil
                 lightModel.setTimePointCount(bytes.get(dataIndex));
 
                 dataIndex = dataIndex + 1;
-                TimePoint[] timePoints = new TimePoint[lightModel.getTimePointCount()];
-                ArrayList<byte[]> timePointColorValue = new ArrayList<>();
+                ArrayList<TimePoint> timePointsArrayList = new ArrayList<>();
+                ArrayList<byte[]> timePointColorValueArrayList = new ArrayList<>();
                 for (int i = 0; i < lightModel.getTimePointCount(); i++) {
-                    timePoints[i] = new TimePoint(bytes.get(dataIndex),bytes.get(++dataIndex));
+                    timePointsArrayList.add(new TimePoint(bytes.get(dataIndex),bytes.get(++dataIndex)));
 
                     dataIndex ++;
                     byte[] colorValues = new byte[lightModel.getControllerNum()];
@@ -252,11 +252,11 @@ public class CommUtil
                         dataIndex ++;
                     }
 
-                    timePointColorValue.add(colorValues);
+                    timePointColorValueArrayList.add(colorValues);
                 }
 
-                lightModel.setTimePoints(timePoints);
-                lightModel.setTimePointColorValue(timePointColorValue);
+                lightModel.setTimePoints(timePointsArrayList);
+                lightModel.setTimePointColorValue(timePointColorValueArrayList);
             }
         }
 
@@ -301,52 +301,9 @@ public class CommUtil
         BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_READTIME, FRM_HDR^CMD_READTIME});
     }
 
-//    public static void setLedAuto(String mac, LightAuto lightAuto)
-//    {
-//        int dlen = lightAuto.getDayBright().length;
-//        int nlen = lightAuto.getNightBright().length;
-//        int len = 11 + dlen + nlen;
-//        if(lightAuto.isHasDynamic())
-//        {
-//            len += 6;
-//        }
-//        byte[] datas = new byte[len];
-//        RampTime sunrise = lightAuto.getSunrise();
-//        RampTime sunset = lightAuto.getSunset();
-//        datas[0] = FRM_HDR;
-//        datas[1] = CMD_CYCLE;
-//        datas[2] = sunrise.getStartHour();
-//        datas[3] = sunrise.getStartMinute();
-//        datas[4] = sunrise.getEndHour();
-//        datas[5] = sunrise.getEndMinute();
-//        datas[6+dlen] = sunset.getStartHour();
-//        datas[7+dlen] = sunset.getStartMinute();
-//        datas[8+dlen] = sunset.getEndHour();
-//        datas[9+dlen] = sunset.getEndMinute();
-//        for(int i = 0; i < dlen; i++)
-//        {
-//            datas[6+i] = lightAuto.getDayBright()[i];
-//        }
-//        for(int i = 0; i < nlen; i++)
-//        {
-//            datas[10+dlen+i] = lightAuto.getNightBright()[i];
-//        }
-//        if(lightAuto.isHasDynamic())
-//        {
-//            datas[10+dlen+nlen] = lightAuto.getWeek();
-//            datas[11+dlen+nlen] = lightAuto.getDynamicPeriod().getStartHour();
-//            datas[12+dlen+nlen] = lightAuto.getDynamicPeriod().getStartMinute();
-//            datas[13+dlen+nlen] = lightAuto.getDynamicPeriod().getEndHour();
-//            datas[14+dlen+nlen] = lightAuto.getDynamicPeriod().getEndMinute();
-//            datas[15+dlen+nlen] = lightAuto.getDynamicMode();
-//        }
-//        datas[len-1] = getCRC(datas, len-1);
-//        BleManager.getInstance().sendBytes(mac, datas);
-//}
-
     public static void runAutoMode(String mac, LightModel lightModel) {
         // 数据长度：命令头 + （时间长度 + 通道数量）* 时间段数量
-        int dataLength = 2 +(lightModel.getChannelNum() + 4) * lightModel.getTimePoints().length /  2 + 1;
+        int dataLength = 2 +(lightModel.getChannelNum() + 4) * lightModel.getTimePoints().size() /  2 + 1;
 
         if(lightModel.ismDynamicEnable())
         {
@@ -356,19 +313,19 @@ public class CommUtil
         byte[] values = new byte[dataLength];
         values[0] = FRM_HDR;
         values[1] = CMD_CYCLE;
-        for(int i=0;i<lightModel.getTimePoints().length / 2;i++) {
+        for(int i=0;i<lightModel.getTimePoints().size() / 2;i++) {
             // 填充时间
-            TimePoint startTimePoint = lightModel.getTimePoints()[2 * i];
-            TimePoint endTimePoint = lightModel.getTimePoints()[2 * i + 1];
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length)] = startTimePoint.getHour();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 1] = startTimePoint.getMinute();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 2] = endTimePoint.getHour();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 3] = endTimePoint.getMinute();
+            TimePoint startTimePoint = lightModel.getTimePoints().get(2 * i);
+            TimePoint endTimePoint = lightModel.getTimePoints().get(2 * i + 1);
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size())] = startTimePoint.getHour();
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 1] = startTimePoint.getMinute();
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 2] = endTimePoint.getHour();
+            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 3] = endTimePoint.getMinute();
 
             // 填充颜色值
             byte[] colorValues = lightModel.getTimePointColorValue().get((short)(2 * i + 1));
             for(int j=0;j<colorValues.length;j++) {
-                values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().length) + 4 + j] = colorValues[j];
+                values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 4 + j] = colorValues[j];
             }
         }
 
