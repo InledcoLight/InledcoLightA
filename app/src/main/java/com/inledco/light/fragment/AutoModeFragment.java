@@ -38,6 +38,7 @@ import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
 import com.inledco.light.bean.TimePoint;
+import com.inledco.light.constant.ConstVal;
 import com.inledco.light.constant.CustomColor;
 import com.inledco.light.impl.PreviewTaskListener;
 import com.inledco.light.util.CommUtil;
@@ -188,9 +189,9 @@ public class AutoModeFragment extends BaseFragment {
         XAxis xAxis = mLineChart.getXAxis();
 
         xAxis.setAxisMinimum(0);
-        xAxis.setAxisMaximum(60 * 24);
+        xAxis.setAxisMaximum(ConstVal.MAX_MINUTES_INDEX);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setLabelCount(13, true);
+        xAxis.setLabelCount(5, true);
         xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawAxisLine(false);
 
@@ -217,7 +218,10 @@ public class AutoModeFragment extends BaseFragment {
         IAxisValueFormatter axisValueFormatter = new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                return Integer.toString((int) ( value / 60 ));
+                if (value == ConstVal.MAX_MINUTES_INDEX) {
+                    return "0:00";
+                }
+                return Integer.toString((int) ( (value + 1) / 60 )) + ":00";
             }
 
             @Override
@@ -408,20 +412,26 @@ public class AutoModeFragment extends BaseFragment {
         }
 
         // 获取通道数据
-        Channel[] channels = DeviceUtil.getLightChannel(getContext(), lightModel.getDeviceId());
+        Channel[] channels = DeviceUtil.getLightChannel(getContext(), lightModel.getLightId());
         for (int i=0;i<channels.length;i++) {
             List<Entry> entryList = new ArrayList<>();
 
             // 添加坐标0处的点
-            byte[] bytes = lightModel.getTimePointColorValue().get((short) 0);
-            entryList.add(new Entry(0, bytes[i]));
+            float yFirst = lightModel.getTimePointColorValue().get(0)[i];
+            float yLast = lightModel.getTimePointColorValue().get(lightModel.getTimePointCount()-1)[i];
+            float firstTimePointIndex = lightModel.getTimePoints().get(0).getMinutesOfTimePoint();
+            float lastTimePointIndex = lightModel.getTimePoints().get(lightModel.getTimePointCount()-1).getMinutesOfTimePoint();
+
+            float dis = firstTimePointIndex / (firstTimePointIndex + ConstVal.MAX_MINUTES_INDEX - lastTimePointIndex) * (yFirst - yLast);
+            int boundaryValue = (int) (yFirst - dis);
+            entryList.add(new Entry(0, boundaryValue));
             for (int j=0;j<lightModel.getTimePoints().size();j++) {
-                entryList.add(new Entry( lightModel.getTimePoints().get(j).getHour() * 60 + lightModel.getTimePoints().get(j).getMinute(),
+                entryList.add(new Entry( lightModel.getTimePoints().get(j).getMinutesOfTimePoint(),
                         lightModel.getTimePointColorValue().get((short)j)[i]));
             }
 
             // 添加坐标24*60处的点
-            entryList.add(new Entry( 24 * 60,  bytes[i]));
+            entryList.add(new Entry(24 * 60,  boundaryValue));
 
             LineDataSet lineDataSet = new LineDataSet(entryList, channels[i].getName());
 

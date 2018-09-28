@@ -21,8 +21,8 @@ import com.inledco.light.adapter.TimePointAdapter;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
 import com.inledco.light.bean.TimePoint;
+import com.inledco.light.constant.ConstVal;
 import com.inledco.light.util.DeviceUtil;
-import java.util.ArrayList;
 
 /**
  * 自动模式编辑界面
@@ -37,6 +37,8 @@ public class AutoModeEditFragment extends BaseFragment {
     public EditAutoInterface editAutoInterface;
 
     private LightModel mLightModel;
+    // 当前时间点索引
+    private int mCurrentTimePointIndex = 0;
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,7 +47,6 @@ public class AutoModeEditFragment extends BaseFragment {
 
     // 颜色条适配器
     private ColorSliderAdapter mColorSliderAdapter;
-    private Channel[] mChannels;
 
     // 控件
     private Button mAddTimePointBtn;
@@ -155,10 +156,27 @@ public class AutoModeEditFragment extends BaseFragment {
         mTimePointListRv.setAdapter(mTimePointAdapter);
         mTimePointListRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mTimePointListRv.addItemDecoration(new DividerItemDecoration(getContext(), OrientationHelper.VERTICAL));
+        mTimePointAdapter.timePointOnClick = new TimePointAdapter.TimePointListInterface() {
+            @Override
+            public void timePointClick(int index) {
+                // 更新选择时间点的信息
+                refreshEditView(mLightModel, index);
+            }
+        };
 
-        mColorSliderRv.setAdapter(new ColorSliderAdapter(getContext(), getChannels(mLightModel, 0), DeviceUtil.getThumb(mLightModel.getDeviceId())));
+        mColorSliderAdapter = new ColorSliderAdapter(getContext(), getChannels(mLightModel, 0), DeviceUtil.getThumb(mLightModel.getDeviceId()));
+        mColorSliderAdapter.setColorSliderInterface(new ColorSliderAdapter.ColorSliderInterface() {
+            @Override
+            public void seekBarProgressChanged(int position, int progress) {
+                mLightModel.getTimePointColorValue().get(mCurrentTimePointIndex)[position] = (byte) (progress / ConstVal.MAX_COLOR_VALUE * 100);
+
+                editAutoInterface.refreshChart(mLightModel);
+            }
+        });
         mColorSliderRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mColorSliderRv.addItemDecoration(new DividerItemDecoration(getContext(), OrientationHelper.VERTICAL));
+
+        refreshEditView(mLightModel, 0);
     }
 
     @Override
@@ -180,38 +198,12 @@ public class AutoModeEditFragment extends BaseFragment {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                         TimePoint addTimePoint = new TimePoint((byte) hourOfDay, (byte) minute);
-                        int minuteIndex = addTimePoint.getMinutesOfTimePoint();
-                        int insertPosition = 0;
-                        for (int i=0;i<mLightModel.getTimePoints().size();i++) {
-                            TimePoint timePoint = mLightModel.getTimePoints().get(i);
+                        int insertPosition = addTimePointToModel(mLightModel, addTimePoint);
 
-                            if (i == 0 && minuteIndex < timePoint.getHour() * 60 + timePoint.getMinute()) {
-                                insertPosition = 0;
-                                break;
-                            }
-
-                            if (i == mLightModel.getTimePoints().size()-1 && minuteIndex > timePoint.getHour() * 60 + timePoint.getMinute()) {
-                                insertPosition = mLightModel.getTimePoints().size();
-                                break;
-                            }
-
-                            TimePoint nextTimePoint = mLightModel.getTimePoints().get(i+1);
-                            if (minuteIndex >= timePoint.getMinutesOfTimePoint() && minuteIndex <= nextTimePoint.getMinutesOfTimePoint()) {
-                                insertPosition = i + 1;
-                                break;
-                            }
-                        }
-
-                        mLightModel.getTimePoints().add(insertPosition, addTimePoint);
-                        byte[] timePointColorValue = new byte[mLightModel.getControllerNum()];
-                        for (int i=0;i<timePointColorValue.length;i++) {
-                            timePointColorValue[i] = 0;
-                        }
-                        mLightModel.getTimePointColorValue().add(insertPosition, timePointColorValue);
-                        mLightModel.setTimePointCount(mLightModel.getTimePointCount() + 1);
                         mTimePointAdapter.notifyDataSetChanged();
 
-                        editAutoInterface.refreshChart(mLightModel);
+                        // 刷新编辑界面
+                        refreshEditView(mLightModel, insertPosition);
                     }
                 }, 0, 0 , true);
 
@@ -222,15 +214,31 @@ public class AutoModeEditFragment extends BaseFragment {
         mDeleteTimePointBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if (mLightModel.getTimePoints().size() <= 4) {
+                    AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
 
-                builder.setTitle("确认删除时间点");
-                builder.setView(new TimePicker(getContext()));
-                builder.setPositiveButton(R.string.cancel, null);
-                builder.setNeutralButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                    builder.setTitle(R.string.lessThanMinTimePoint);
+                    builder.setPositiveButton(R.string.dialog_ok, null);
+
+                    builder.show();
+                    return;
+                }
+
+                TimePoint timePoint = mLightModel.getTimePoints().get(mCurrentTimePointIndex);
+
+                AlertDialog.Builder builder =  new AlertDialog.Builder(getContext());
+
+                builder.setTitle(R.string.confirmdeleteTimePointMessage);
+                builder.setMessage(timePoint.getFormatTimePoint("%02d:%02d"));
+                builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // 同步到模型中
+                        mLightModel.setTimePointCount(mLightModel.getTimePointCount() - 1);
+                        mLightModel.getTimePoints().remove(mCurrentTimePointIndex);
+                        mLightModel.getTimePointColorValue().remove(mCurrentTimePointIndex);
+
+                        refreshEditView(mLightModel, 0);
+                        mTimePointAdapter.notifyDataSetChanged();
                     }
                 });
 
@@ -241,8 +249,20 @@ public class AutoModeEditFragment extends BaseFragment {
         mTimePointPicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                // 刷新曲线图
+                // 调整时间点顺序
+                TimePoint timePoint = new TimePoint((byte) hourOfDay, (byte) minute);
 
+                mLightModel.getTimePoints().set(mCurrentTimePointIndex, timePoint);
+                if (mCurrentTimePointIndex < mLightModel.getTimePointCount() - 1) {
+                    mCurrentTimePointIndex = exchangeTimePoint(mLightModel, timePoint, mCurrentTimePointIndex, mCurrentTimePointIndex + 1);
+                }
+
+                if (mCurrentTimePointIndex > 0) {
+                    mCurrentTimePointIndex = exchangeTimePoint(mLightModel, timePoint, mCurrentTimePointIndex, mCurrentTimePointIndex - 1);
+                }
+
+                editAutoInterface.refreshChart(mLightModel);
+                mTimePointAdapter.notifyDataSetChanged();
             }
         });
 
@@ -276,10 +296,95 @@ public class AutoModeEditFragment extends BaseFragment {
         for (int i=0;i<channels.length;i++) {
             Channel channel = channels[i];
 
-            channel.setColor(colors[i]);
+            channel.setValue(colors[i]);
         }
 
         return channels;
+    }
+
+    /**
+     * 交换时间点及时间点对应的颜色值位置
+     * @param lightModel 设备参数模型
+     * @param timePoint 新时间点
+     * @param currentIndex 当前时间点索引
+     * @param anotherIndex 另外时间点索引
+     * @return 交换位置后当前时间点索引
+     */
+    private int exchangeTimePoint(LightModel lightModel, TimePoint timePoint, int currentIndex, int anotherIndex) {
+        TimePoint anotherTimePoint = lightModel.getTimePoints().get(anotherIndex);
+        if ((currentIndex < anotherIndex && timePoint.getMinutesOfTimePoint() > anotherTimePoint.getMinutesOfTimePoint()) ||
+            (currentIndex > anotherIndex && timePoint.getMinutesOfTimePoint() < anotherTimePoint.getMinutesOfTimePoint())) {
+            lightModel.getTimePoints().set(currentIndex, anotherTimePoint);
+            lightModel.getTimePoints().set(anotherIndex, timePoint);
+
+            byte[] colorValues = lightModel.getTimePointColorValue().get(currentIndex);
+            lightModel.getTimePointColorValue().set(currentIndex, lightModel.getTimePointColorValue().get(anotherIndex));
+            lightModel.getTimePointColorValue().set(anotherIndex, colorValues);
+
+            return anotherIndex;
+        }
+
+        return currentIndex;
+    }
+
+    /**
+     * 刷新编辑界面
+     * @param lightModel 设备参数模型
+     * @param timePointIndex 时间点索引
+     */
+    private void refreshEditView(LightModel lightModel, int timePointIndex) {
+        TimePoint timePoint = lightModel.getTimePoints().get(timePointIndex);
+        mTimePointPicker.setCurrentHour((int)timePoint.getHour());
+        mTimePointPicker.setCurrentMinute((int)timePoint.getMinute());
+
+        mColorSliderRv.setAdapter(mColorSliderAdapter);
+        mColorSliderAdapter.notifyDataSetChanged();
+
+        mCurrentTimePointIndex = timePointIndex;
+
+        // 刷新曲线图
+        editAutoInterface.refreshChart(lightModel);
+    }
+
+    /**
+     * 添加时间点到模型中
+     * @param lightModel 设备参数模型
+     * @param timePoint 添加的时间点
+     * @return 插入的位置
+     */
+    private int addTimePointToModel(LightModel lightModel, TimePoint timePoint) {
+        int minuteIndex = timePoint.getMinutesOfTimePoint();
+        int insertPosition = 0;
+        for (int i=0;i<lightModel.getTimePoints().size();i++) {
+            TimePoint tp = lightModel.getTimePoints().get(i);
+
+            if (i == 0 && minuteIndex < tp.getHour() * 60 + tp.getMinute()) {
+                insertPosition = i;
+                break;
+            }
+
+            if (i == lightModel.getTimePoints().size()-1 && minuteIndex > tp.getMinutesOfTimePoint()) {
+                insertPosition = lightModel.getTimePoints().size();
+                break;
+            }
+
+            TimePoint nextTimePoint = lightModel.getTimePoints().get(i+1);
+            if (minuteIndex >= tp.getMinutesOfTimePoint() && minuteIndex <= nextTimePoint.getMinutesOfTimePoint()) {
+                insertPosition = i + 1;
+                break;
+            }
+        }
+
+        // 刷新时间点列表
+        lightModel.getTimePoints().add(insertPosition, timePoint);
+        byte[] timePointColorValue = new byte[lightModel.getControllerNum()];
+        for (int i=0;i<timePointColorValue.length;i++) {
+            timePointColorValue[i] = 0;
+        }
+        lightModel.getTimePointColorValue().add(insertPosition, timePointColorValue);
+        lightModel.setTimePointCount(lightModel.getTimePointCount() + 1);
+
+        return insertPosition;
     }
 
     public interface EditAutoInterface {

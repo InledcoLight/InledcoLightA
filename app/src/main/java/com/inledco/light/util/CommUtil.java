@@ -201,6 +201,7 @@ public class CommUtil
 
             int dataIndex = 5;
             byte runModeByte = bytes.get(2);
+
             lightModel.setControllerNum(DeviceUtil.getChannelCount(devId));
 
             if (runModeByte == 0) {
@@ -246,6 +247,7 @@ public class CommUtil
 
                     dataIndex ++;
                     byte[] colorValues = new byte[lightModel.getControllerNum()];
+                    // 解析时需要使用控制器的通道数量
                     for (int j = 0; j < lightModel.getControllerNum(); j++) {
                         colorValues[j] = bytes.get(dataIndex);
 

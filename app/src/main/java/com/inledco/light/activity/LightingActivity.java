@@ -24,6 +24,7 @@ import com.inledco.blemanager.BleCommunicateListener;
 import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.bean.DevicePrefer;
+import com.inledco.light.bean.LightDevice;
 import com.inledco.light.bean.LightModel;
 import com.inledco.light.bean.RunMode;
 import com.inledco.light.constant.ConstVal;
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 
 public class LightingActivity extends BaseActivity implements DataInvalidFragment.OnRetryClickListener {
     // 设备参数
-    private DevicePrefer mPrefer;
+    private LightDevice mLightDevice;
     private LightModel mLightModel;
     private Toolbar mLightingToolbar;
     private TextView mTitleTextView;
@@ -54,8 +55,8 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
         // 接收传递的设备参数
         Intent intent = getIntent();
-        mPrefer = (DevicePrefer)intent.getSerializableExtra("DevicePrefer");
-
+        mLightDevice = (LightDevice) intent.getSerializableExtra("LightDevice");
+        
         initView();
         initEvent();
         initData();
@@ -86,15 +87,15 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
         setSupportActionBar(mLightingToolbar);
 
         mTitleTextView = findViewById(R.id.titleTextView);
-        mTitleTextView.setText(mPrefer.getDeviceName());
+        mTitleTextView.setText(mLightDevice.getDevicePrefer().getDeviceName());
 
         // 初始化提示框
-        mProgressDialog = new ProgressDialog(this );
+        mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCanceledOnTouchOutside(false);
         mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
             @Override
             public void onCancel(DialogInterface dialog){
-                BleManager.getInstance().disconnectDevice(mPrefer.getDeviceMac());
+                BleManager.getInstance().disconnectDevice(mLightDevice.getDevicePrefer().getDeviceMac());
             }
         });
     }
@@ -128,7 +129,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mPrefer.getDeviceMac()))
+                        .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac()))
                         .commit();
             }
         };
@@ -136,7 +137,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
         mCommunicateListener = new BleCommunicateListener() {
             @Override
             public void onDataValid(final String mac) {
-                if (mac.equals(mPrefer.getDeviceMac())) {
+                if (mac.equals(mLightDevice.getDevicePrefer().getDeviceMac())) {
                     runOnUiThread(new Runnable(){
                         @Override
                         public void run(){
@@ -150,7 +151,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
             @Override
             public void onDataInvalid(String mac) {
-                if (mac.equals(mPrefer.getDeviceMac())) {
+                if (mac.equals(mLightDevice.getDevicePrefer().getDeviceMac())) {
                     runOnUiThread(new Runnable(){
                         @Override
                         public void run(){
@@ -160,7 +161,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
                             getSupportFragmentManager()
                                     .beginTransaction()
-                                    .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mPrefer.getDeviceMac()))
+                                    .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac()))
                                     .commit();
                         }
                     });
@@ -174,7 +175,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
             @Override
             public void onDataReceived(String mac, ArrayList<Byte> list) {
-                if (mac.equals(mPrefer.getDeviceMac())) {
+                if (mac.equals(mLightDevice.getDevicePrefer().getDeviceMac())) {
                     decodeReceiveData(mac, list);
                 }
             }
@@ -185,7 +186,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mPrefer.getDeviceMac()))
+                .replace(R.id.lighting_fragment, DataInvalidFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac()))
                 .commit();
 
         getDeviceData();
@@ -207,7 +208,7 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
             @Override
             public boolean onMenuItemClick (MenuItem menuItem)
             {
-                showRenameDialog(mPrefer);
+                showRenameDialog(mLightDevice.getDevicePrefer());
                 return false;
             }
         });
@@ -225,33 +226,33 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
         return true;
     }
 
-    private void showRenameDialog (final DevicePrefer prefer )
+    private void showRenameDialog (final DevicePrefer prefer)
     {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this );
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final AlertDialog dialog = builder.create();
-        dialog.setTitle(R.string.rename_device );
+        dialog.setTitle(R.string.rename_device);
 
-        View view = LayoutInflater.from(this ).inflate(R.layout.dialog_rename, null );
-        Button btn_cancel = (Button)view.findViewById(R.id.rename_cancel );
-        Button btn_rename = (Button)view.findViewById(R.id.rename_confirm );
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_rename, null);
+        Button btn_cancel = (Button)view.findViewById(R.id.rename_cancel);
+        Button btn_rename = (Button)view.findViewById(R.id.rename_confirm);
 
-        final EditText newname = (EditText)view.findViewById(R.id.rename_newname );
+        final EditText newname = (EditText)view.findViewById(R.id.rename_newname);
         newname.setText(prefer.getDeviceName());
         btn_cancel.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick (View view )
+            public void onClick (View view)
             {
                 dialog.dismiss();
             }
-        } );
+        });
 
         btn_rename.setOnClickListener(new View.OnClickListener(){
             @Override
-            public void onClick (View view )
+            public void onClick (View view)
             {
                 if (TextUtils.isEmpty(newname.getText().toString()))
                 {
-                    newname.setError(getString(R.string.error_input_empty ));
+                    newname.setError(getString(R.string.error_input_empty));
                 }
                 else if (newname.getText().toString().equals(prefer.getDeviceName()))
                 {
@@ -265,28 +266,28 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                     dialog.dismiss();
                 }
             }
-        } );
+        });
 
-        dialog.setView(view );
-        dialog.setCanceledOnTouchOutside(false );
+        dialog.setView(view);
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
 
     // 连接设备获取设备数据
     private void getDeviceData() {
         // 连接设备
-        if (!BleManager.getInstance().isConnected(mPrefer.getDeviceMac())) {
+        if (!BleManager.getInstance().isConnected(mLightDevice.getDevicePrefer().getDeviceMac())) {
             // 没有连接则连接设备
             mProgressDialog.setMessage(getString(R.string.msg_connecting_device));
             mProgressDialog.show();
 
-            BleManager.getInstance().connectDevice(mPrefer.getDeviceMac());
-        } else if (BleManager.getInstance().isDataValid(mPrefer.getDeviceMac())) {
+            BleManager.getInstance().connectDevice(mLightDevice.getDevicePrefer().getDeviceMac());
+        } else if (BleManager.getInstance().isDataValid(mLightDevice.getDevicePrefer().getDeviceMac())) {
             // 如果已经连接，并且MAC地址合法，则同步设备时间
             mProgressDialog.setMessage(getString(R.string.msg_get_device_data));
             mProgressDialog.show();
 
-            CommUtil.syncDeviceTime(mPrefer.getDeviceMac());
+            CommUtil.syncDeviceTime(mLightDevice.getDevicePrefer().getDeviceMac());
 
             mCountDownTimer.start();
         }
@@ -298,8 +299,16 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
      * @param list 数据
      */
     private void decodeReceiveData(final String mac, ArrayList<Byte> list) {
-        mLightModel = CommUtil.decodeLightModel(list, mPrefer.getDevId());
-        mLightModel.setDeviceId(mPrefer.getDevId());
+        mLightModel = CommUtil.decodeLightModel(list, mLightDevice.getDevicePrefer().getDevId());
+
+        if (mLightModel == null) {
+            return;
+        }
+
+        mLightModel.setMacAddress(mac);
+        mLightModel.setLightId(mLightDevice.getLightId());
+        mLightModel.setDeviceId(mLightDevice.getDevicePrefer().getDevId());
+        mLightModel.setChannelNum(mLightDevice.getLightChannelNum());
 
         if (mLightModel != null) {
             final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -314,14 +323,14 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                         // 设置手动自动模式切换按钮
                         getSupportFragmentManager()
                                 .beginTransaction()
-                                .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mPrefer.getDeviceMac(),
-                                        mPrefer.getDevId(), true))
+                                .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac(),
+                                        mLightDevice.getDevicePrefer().getDevId(), true))
                                 .commit();
 
                         // 显示圆盘手动调光界面
                         fragmentTransaction.replace(R.id.lighting_fragment,
-                                ManualModeFragment.newInstance(mPrefer.getDeviceMac(),
-                                        mPrefer.getDevId(),
+                                ManualModeFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac(),
+                                        mLightDevice.getDevicePrefer().getDevId(),
                                         mLightModel)).commit();
                     }
                 });
@@ -330,13 +339,13 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                 // 自动模式
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mPrefer.getDeviceMac(),
-                                mPrefer.getDevId(), false))
+                        .replace(R.id.manual_auto_fragment, ManualAutoSwitchFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac(),
+                                mLightDevice.getDevicePrefer().getDevId(), false))
                         .commit();
 
                 fragmentTransaction.replace(R.id.lighting_fragment,
-                        AutoModeFragment.newInstance(mPrefer.getDeviceMac(),
-                                mPrefer.getDevId(),
+                        AutoModeFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac(),
+                                mLightDevice.getDevicePrefer().getDevId(),
                                 mLightModel)).commit();
             }
         }

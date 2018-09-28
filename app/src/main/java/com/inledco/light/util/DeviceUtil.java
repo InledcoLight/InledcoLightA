@@ -6,7 +6,6 @@ import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightDevice;
 import com.inledco.light.bean.LightModel;
-import com.inledco.light.bean.RampTime;
 import com.inledco.light.constant.CustomColor;
 
 import java.util.HashMap;
@@ -16,28 +15,28 @@ import java.util.Map;
 public class DeviceUtil
 {
     // 控制器ID:每种控制器支持多个灯具
-    public static final short LIGHT_ID_ONE_COLOR = 0x0001;
-    public static final short LIGHT_ID_TWO_COLOR = 0x0002;
-    public static final short LIGHT_ID_THREE_COLOR = 0x0003;
-    public static final short LIGHT_ID_FOUR_COLOR = 0x0004;
-    public static final short LIGHT_ID_FIVE_COLOR = 0x0005;
-    public static final short LIGHT_ID_SIX_COLOR = 0x0006;
+    private static final short DEVICE_ID_ONE_COLOR = 0x0001;
+    private static final short DEVICE_ID_TWO_COLOR = 0x0002;
+    private static final short DEVICE_ID_THREE_COLOR = 0x0003;
+    private static final short DEVICE_ID_FOUR_COLOR = 0x0004;
+    private static final short DEVICE_ID_FIVE_COLOR = 0x0005;
+    private static final short DEVICE_ID_SIX_COLOR = 0x0006;
 
     // 控制器类型名称
-    public static final String LIGHT_TYPE_ONE_COLOR = "ONE COLOR";
-    public static final String LIGHT_TYPE_TWO_COLOR = "TWO COLOR";
-    public static final String LIGHT_TYPE_THREE_COLOR = "THREE COLOR";
-    public static final String LIGHT_TYPE_FOUR_COLOR = "FOUR COLOR";
-    public static final String LIGHT_TYPE_FIVE_COLOR = "FIVE COLOR";
-    public static final String LIGHT_TYPE_SIX_COLOR = "SIX COLOR";
+    private static final String DEVICE_TYPE_ONE_COLOR = "ONE COLOR";
+    private static final String DEVICE_TYPE_TWO_COLOR = "TWO COLOR";
+    private static final String DEVICE_TYPE_THREE_COLOR = "THREE COLOR";
+    private static final String DEVICE_TYPE_FOUR_COLOR = "FOUR COLOR";
+    private static final String DEVICE_TYPE_FIVE_COLOR = "FIVE COLOR";
+    private static final String DEVICE_TYPE_SIX_COLOR = "SIX COLOR";
 
     // 控制器支持灯具ID
-    public static final short SUPPORT_LIGHT_ID_ONE = 0x0001;
-    public static final short SUPPORT_LIGHT_ID_TWO = 0x0002;
-    public static final short SUPPORT_LIGHT_ID_THREE = 0x0003;
-    public static final short SUPPORT_LIGHT_ID_FOUR = 0x0004;
-    public static final short SUPPORT_LIGHT_ID_FIVE = 0x0005;
-    public static final short SUPPORT_LIGHT_ID_SIX = 0x0006;
+    private static final short SUPPORT_LIGHT_ID_ONE = 0x0001;
+    private static final short SUPPORT_LIGHT_ID_TWO = 0x0002;
+    private static final short SUPPORT_LIGHT_ID_THREE = 0x0003;
+    private static final short SUPPORT_LIGHT_ID_FOUR = 0x0004;
+    private static final short SUPPORT_LIGHT_ID_FIVE = 0x0005;
+    private static final short SUPPORT_LIGHT_ID_SIX = 0x0006;
 
     // 控制器
     private static Map<Short, String> mDeviceMap;
@@ -49,12 +48,12 @@ public class DeviceUtil
         mIconMap = new HashMap<>();
 
         // 一到六路类型定义
-        mDeviceMap.put(LIGHT_ID_ONE_COLOR, LIGHT_TYPE_ONE_COLOR);
-        mDeviceMap.put(LIGHT_ID_TWO_COLOR, LIGHT_TYPE_TWO_COLOR);
-        mDeviceMap.put(LIGHT_ID_THREE_COLOR, LIGHT_TYPE_THREE_COLOR);
-        mDeviceMap.put(LIGHT_ID_FOUR_COLOR, LIGHT_TYPE_FOUR_COLOR);
-        mDeviceMap.put(LIGHT_ID_FIVE_COLOR, LIGHT_TYPE_FIVE_COLOR);
-        mDeviceMap.put(LIGHT_ID_SIX_COLOR, LIGHT_TYPE_SIX_COLOR);
+        mDeviceMap.put(DEVICE_ID_ONE_COLOR, DEVICE_TYPE_ONE_COLOR);
+        mDeviceMap.put(DEVICE_ID_TWO_COLOR, DEVICE_TYPE_TWO_COLOR);
+        mDeviceMap.put(DEVICE_ID_THREE_COLOR, DEVICE_TYPE_THREE_COLOR);
+        mDeviceMap.put(DEVICE_ID_FOUR_COLOR, DEVICE_TYPE_FOUR_COLOR);
+        mDeviceMap.put(DEVICE_ID_FIVE_COLOR, DEVICE_TYPE_FIVE_COLOR);
+        mDeviceMap.put(DEVICE_ID_SIX_COLOR, DEVICE_TYPE_SIX_COLOR);
 
         // 一到六路图标
         mIconMap.put(SUPPORT_LIGHT_ID_ONE, R.mipmap.led);
@@ -67,8 +66,8 @@ public class DeviceUtil
 
 
     /** 是否是合法的id
-     * @param id
-     * @return
+     * @param id 设备id
+     * @return 设备id是否存在
      */
     public static boolean isCorrectDevType(short id)
     {
@@ -78,8 +77,8 @@ public class DeviceUtil
     /**
      * 由设备id获取设备类型
      *
-     * @param devId
-     * @return
+     * @param devId 设备id
+     * @return 设备类型
      */
     public static String getDeviceType (short devId)
     {
@@ -91,9 +90,9 @@ public class DeviceUtil
     }
 
 
-    /**
-     * @param devId
-     * @return
+    /** 图标id
+     * @param devId 设备id
+     * @return 设备图标
      */
     public static int getDeviceIcon (short devId)
     {
@@ -110,31 +109,31 @@ public class DeviceUtil
     }
 
     /** 获取控制器支持的灯具
-     * @param devId
-     * @return
+     * @param devId 设备id
+     * @return 设备支持的灯具列表
      */
     public static LightDevice[] getSupportLight(short devId) {
         LightDevice[] listItem = null;
 
         switch (devId) {
-            case LIGHT_ID_ONE_COLOR:
+            case DEVICE_ID_ONE_COLOR:
                 listItem = new LightDevice[] {};
                 break;
-            case LIGHT_ID_TWO_COLOR:
+            case DEVICE_ID_TWO_COLOR:
                 listItem = new LightDevice[] {};
                 break;
-            case LIGHT_ID_THREE_COLOR:
+            case DEVICE_ID_THREE_COLOR:
                 listItem = new LightDevice[] {};
                 break;
-            case LIGHT_ID_FOUR_COLOR:
+            case DEVICE_ID_FOUR_COLOR:
                 listItem = new LightDevice[] {};
                 break;
-            case LIGHT_ID_FIVE_COLOR:
-                listItem = new LightDevice[] { new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light1", "0005","0005"),
-                                               new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light2", "0005","0005"),
-                                               new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light3", "0005","0005") };
+            case DEVICE_ID_FIVE_COLOR:
+                listItem = new LightDevice[] { new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light1", "0005","0005", (short)5),
+                                               new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light2", "0005","0005", (short)5),
+                                               new LightDevice(null, SUPPORT_LIGHT_ID_FIVE, "Light3", "0005","0005", (short)5) };
                 break;
-            case LIGHT_ID_SIX_COLOR:
+            case DEVICE_ID_SIX_COLOR:
                 listItem = new LightDevice[] {};
                 break;
         }
@@ -142,37 +141,37 @@ public class DeviceUtil
         return listItem;
     }
 
-    public static Channel[] getLightChannel(Context context, short devId)
+    public static Channel[] getLightChannel(Context context, short lightId)
     {
         Channel[] channels = null;
-        switch (devId)
+        switch (lightId)
         {
-            case LIGHT_ID_ONE_COLOR:
+            case SUPPORT_LIGHT_ID_ONE:
                 channels = new Channel[]{ new Channel(context.getString(R.string.chn_name_red), CustomColor.COLOR_RED_A700, (short) 0)};
                 break;
-            case LIGHT_ID_TWO_COLOR:
+            case SUPPORT_LIGHT_ID_TWO:
                 channels = new Channel[]{ new Channel(context.getString(R.string.chn_name_red), CustomColor.COLOR_RED_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_green), CustomColor.COLOR_GREEN_A700, (short) 0) };
                 break;
-            case LIGHT_ID_THREE_COLOR:
+            case SUPPORT_LIGHT_ID_THREE:
                 channels = new Channel[]{ new Channel(context.getString(R.string.chn_name_red), CustomColor.COLOR_RED_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_green), CustomColor.COLOR_GREEN_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_blue), CustomColor.COLOR_BLUE_A700, (short) 0) };
                 break;
-            case LIGHT_ID_FOUR_COLOR:
+            case SUPPORT_LIGHT_ID_FOUR:
                 channels = new Channel[]{ new Channel(context.getString(R.string.chn_name_red), CustomColor.COLOR_RED_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_green), CustomColor.COLOR_GREEN_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_blue), CustomColor.COLOR_BLUE_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_white), CustomColor.COLOR_WHITE_COLD, (short) 0) };
                 break;
-            case LIGHT_ID_FIVE_COLOR:
+            case SUPPORT_LIGHT_ID_FIVE:
                 channels = new Channel[]{ new Channel(context.getString(R.string.chn_name_red), CustomColor.COLOR_RED_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_green), CustomColor.COLOR_GREEN_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_blue), CustomColor.COLOR_BLUE_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_white), CustomColor.COLOR_WHITE_COLD, (short) 0),
                         new Channel(context.getString(R.string.chn_name_purple), CustomColor.COLOR_PURPLE_A700, (short) 0)};
                 break;
-            case LIGHT_ID_SIX_COLOR:
+            case SUPPORT_LIGHT_ID_SIX:
                 channels = new Channel[]{ new Channel(context.getString(R.string.chn_name_red), CustomColor.COLOR_RED_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_green), CustomColor.COLOR_GREEN_A700, (short) 0),
                         new Channel(context.getString(R.string.chn_name_blue), CustomColor.COLOR_BLUE_A700, (short) 0),
@@ -189,29 +188,29 @@ public class DeviceUtil
         int[] thumbs = null;
         switch (devid)
         {
-            case LIGHT_ID_ONE_COLOR:
+            case DEVICE_ID_ONE_COLOR:
                 thumbs = new int[]{
                         R.drawable.shape_circle_thumb_red };
                 break;
-            case LIGHT_ID_TWO_COLOR:
+            case DEVICE_ID_TWO_COLOR:
                 thumbs = new int[]{
                         R.drawable.shape_circle_thumb_red,
                         R.drawable.shape_circle_thumb_green };
                 break;
-            case LIGHT_ID_THREE_COLOR:
+            case DEVICE_ID_THREE_COLOR:
                 thumbs = new int[]{
                         R.drawable.shape_circle_thumb_red,
                         R.drawable.shape_circle_thumb_green,
                         R.drawable.shape_circle_thumb_blue };
                 break;
-            case LIGHT_ID_FOUR_COLOR:
+            case DEVICE_ID_FOUR_COLOR:
                 thumbs = new int[]{
                         R.drawable.shape_circle_thumb_red,
                         R.drawable.shape_circle_thumb_green,
                         R.drawable.shape_circle_thumb_blue,
                         R.drawable.shape_circle_thumb_white };
                 break;
-            case LIGHT_ID_FIVE_COLOR:
+            case DEVICE_ID_FIVE_COLOR:
                 thumbs = new int[]{
                         R.drawable.shape_circle_thumb_red,
                         R.drawable.shape_circle_thumb_green,
@@ -219,7 +218,7 @@ public class DeviceUtil
                         R.drawable.shape_circle_thumb_white,
                         R.drawable.shape_circle_thumb_purple };
                 break;
-            case LIGHT_ID_SIX_COLOR:
+            case DEVICE_ID_SIX_COLOR:
                 thumbs = new int[]{
                         R.drawable.shape_circle_thumb_red,
                         R.drawable.shape_circle_thumb_green,
@@ -237,33 +236,33 @@ public class DeviceUtil
         int[] seekBars = null;
         switch (devid)
         {
-            case LIGHT_ID_ONE_COLOR:
+            case DEVICE_ID_ONE_COLOR:
                 seekBars = new int[]{
                         R.drawable.custom_seekebar_red };
                 break;
-            case LIGHT_ID_TWO_COLOR:
+            case DEVICE_ID_TWO_COLOR:
                 seekBars = new int[]{ R.drawable.custom_seekebar_red,
                         R.drawable.custom_seekebar_green };
                 break;
-            case LIGHT_ID_THREE_COLOR:
+            case DEVICE_ID_THREE_COLOR:
                 seekBars = new int[]{ R.drawable.custom_seekebar_red,
                         R.drawable.custom_seekebar_green,
                         R.drawable.custom_seekebar_blue };
                 break;
-            case LIGHT_ID_FOUR_COLOR:
+            case DEVICE_ID_FOUR_COLOR:
                 seekBars = new int[]{ R.drawable.custom_seekebar_red,
                         R.drawable.custom_seekebar_green,
                         R.drawable.custom_seekebar_blue,
                         R.drawable.custom_seekebar_coldwhite };
                 break;
-            case LIGHT_ID_FIVE_COLOR:
+            case DEVICE_ID_FIVE_COLOR:
                 seekBars = new int[]{ R.drawable.custom_seekbar_pink,
                         R.drawable.custom_seekbar_cyan,
                         R.drawable.custom_seekebar_blue,
                         R.drawable.custom_seekbar_purple,
                         R.drawable.custom_seekebar_coldwhite };
                 break;
-            case LIGHT_ID_SIX_COLOR:
+            case DEVICE_ID_SIX_COLOR:
                 seekBars = new int[]{ R.drawable.custom_seekbar_pink,
                         R.drawable.custom_seekbar_cyan,
                         R.drawable.custom_seekebar_blue,
@@ -312,22 +311,22 @@ public class DeviceUtil
         int channelNum = 0;
         switch (devId)
         {
-            case LIGHT_ID_ONE_COLOR:
+            case DEVICE_ID_ONE_COLOR:
                 channelNum = 1;
                 break;
-            case LIGHT_ID_TWO_COLOR:
+            case DEVICE_ID_TWO_COLOR:
                 channelNum = 2;
                 break;
-            case LIGHT_ID_THREE_COLOR:
+            case DEVICE_ID_THREE_COLOR:
                 channelNum = 3;
                 break;
-            case LIGHT_ID_FOUR_COLOR:
+            case DEVICE_ID_FOUR_COLOR:
                 channelNum = 4;
                 break;
-            case  LIGHT_ID_FIVE_COLOR:
+            case  DEVICE_ID_FIVE_COLOR:
                 channelNum = 5;
                 break;
-            case LIGHT_ID_SIX_COLOR:
+            case DEVICE_ID_SIX_COLOR:
                 channelNum = 6;
                 break;
         }

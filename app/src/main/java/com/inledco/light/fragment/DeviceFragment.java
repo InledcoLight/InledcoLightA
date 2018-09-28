@@ -238,7 +238,7 @@ public class DeviceFragment extends BaseFragment
                         // 跳转设置界面，跳转到新的设置界面
                         Intent intent =  new Intent(getContext(), LightingActivity.class);
 
-                        intent.putExtra("DevicePrefer", lightDevice.getDevicePrefer());
+                        intent.putExtra("LightDevice", lightDevice);
 
                         startActivity(intent);
                         break;

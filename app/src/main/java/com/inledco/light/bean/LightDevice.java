@@ -1,23 +1,26 @@
 package com.inledco.light.bean;
 
 
+import java.io.Serializable;
+
 /**
  * 控制器支持灯具模型
  */
-public class LightDevice extends ListItem {
-    // 控制器信息
+public class LightDevice extends ListItem implements Serializable {
     private DevicePrefer mDevicePrefer;
     private short mLightId;
     private String mLightName;
     private String lightCode;
     private String lightType;
+    private short mLightChannelNum;
 
-    public LightDevice(DevicePrefer devicePrefer, short lightId, String lightName, String lightCode, String lightType) {
-        mDevicePrefer = devicePrefer;
+    public LightDevice(DevicePrefer devicePrefer, short lightId, String lightName, String lightCode, String lightType, short lightChannelNum) {
+        this.mDevicePrefer = devicePrefer;
         this.mLightId = lightId;
         this.mLightName = lightName;
         this.lightCode = lightCode;
         this.lightType = lightType;
+        this.mLightChannelNum = lightChannelNum;
     }
 
     @Override
@@ -55,6 +58,14 @@ public class LightDevice extends ListItem {
 
     public void setLightName(String lightName) {
         mLightName = lightName;
+    }
+
+    public short getLightChannelNum() {
+        return mLightChannelNum;
+    }
+
+    public void setLightChannelNum(short lightChannelNum) {
+        mLightChannelNum = lightChannelNum;
     }
 
     public DevicePrefer getDevicePrefer() {

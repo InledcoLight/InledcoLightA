@@ -13,8 +13,10 @@ import java.util.Map;
 
 public class LightModel implements Serializable,Cloneable {
     private static final long serialVersionUID = 7284666673318500459L;
-    // 设备id
+    // 控制器id
     private short deviceId;
+    // 灯具id
+    private short mLightId;
     // 设备名称
     private String mDeviceName;
     // mac地址
@@ -22,7 +24,7 @@ public class LightModel implements Serializable,Cloneable {
     // 控制器通道数量:默认为最大5
     private int controllerNum = 5;
     // 通道数量
-    private short channelNum;
+    private short mChannelNum;
     // 运行模式
     private RunMode runMode;
 
@@ -64,7 +66,7 @@ public class LightModel implements Serializable,Cloneable {
 
     public LightModel(short deviceId, short channelNum, ArrayList<TimePoint> timePoints, ArrayList<byte[]> timePointColorValue) {
         this.deviceId = deviceId;
-        this.channelNum = channelNum;
+        this.mChannelNum = channelNum;
         this.mTimePoints = timePoints;
         this.mTimePointColorValue = timePointColorValue;
     }
@@ -77,16 +79,20 @@ public class LightModel implements Serializable,Cloneable {
             Log.d("Clone","不支持克隆");
         }
 
-        o.mUserDefineColorValue = (ArrayList<byte[]>)mUserDefineColorValue.clone();
+        // o.mUserDefineColorValue = (ArrayList<byte[]>)mUserDefineColorValue.clone();
         o.mTimePoints = (ArrayList<TimePoint>)mTimePoints.clone();
         o.mTimePointColorValue = (ArrayList<byte[]>)mTimePointColorValue.clone();
-        o.mDynamicPeriod = (RampTime)mDynamicPeriod.clone();
+        // o.mDynamicPeriod = (RampTime)mDynamicPeriod.clone();
 
         return o;
     }
 
     public short getChannelNum() {
-        return channelNum;
+        return mChannelNum;
+    }
+
+    public void setChannelNum(short channelNum) {
+        mChannelNum = channelNum;
     }
 
     public void setTimePointColorValue(int timePointIndex, int colorIndex, int colorValue) {
@@ -339,45 +345,12 @@ public class LightModel implements Serializable,Cloneable {
     public void setDeviceId(short deviceId) {
         this.deviceId = deviceId;
     }
+
+    public short getLightId() {
+        return mLightId;
+    }
+
+    public void setLightId(short lightId) {
+        mLightId = lightId;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

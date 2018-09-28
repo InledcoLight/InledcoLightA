@@ -24,6 +24,7 @@ public class TimePointAdapter extends RecyclerView.Adapter {
 
     // 数据源
     private ArrayList<TimePoint> mTimePoints;
+    public TimePointListInterface timePointOnClick;
 
     public TimePointAdapter(ArrayList<TimePoint>  timePoints) {
         mTimePoints = timePoints;
@@ -45,11 +46,18 @@ public class TimePointAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder viewHolder, int i) {
         TimePointViewHolder timePointViewHolder = (TimePointViewHolder)viewHolder;
         TimePoint timePoint = mTimePoints.get(i);
 
         timePointViewHolder.mTimePointTv.setText(timePoint.getFormatTimePoint("%02d:%02d"));
+        timePointViewHolder.mTimePointTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 需要传递时间点索引值
+                timePointOnClick.timePointClick(viewHolder.getAdapterPosition());
+            }
+        });
 
         viewHolder.itemView.setTag(i);
     }
@@ -69,5 +77,9 @@ public class TimePointAdapter extends RecyclerView.Adapter {
 
             mTimePointTv = itemView.findViewById(R.id.item_time_point_time);
         }
+    }
+
+    public interface TimePointListInterface {
+        void timePointClick(int index);
     }
 }

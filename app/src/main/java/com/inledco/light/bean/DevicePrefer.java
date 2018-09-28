@@ -2,22 +2,19 @@ package com.inledco.light.bean;
 
 import java.io.Serializable;
 
-public class DevicePrefer implements Serializable
-{
+public class DevicePrefer implements Serializable {
     private static final long serialVersionUID = -3359140079103510542L;
     private short mDevId;
     private String mDeviceMac;
     private String mDeviceName;
     private String mTank;
 
-    public DevicePrefer (String deviceMac, String deviceName)
-    {
+    public DevicePrefer (String deviceMac, String deviceName) {
         mDeviceMac = deviceMac;
         mDeviceName = deviceName;
     }
 
-    public DevicePrefer (short devId, String deviceMac, String deviceName)
-    {
+    public DevicePrefer (short devId, String deviceMac, String deviceName) {
         mDevId = devId;
         mDeviceMac = deviceMac;
         mDeviceName = deviceName;

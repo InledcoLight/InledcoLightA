@@ -1,10 +1,7 @@
 package com.inledco.light.constant;
 
-/**
- * Created by liruya on 2016/10/25.
- */
-
-public class ConstVal
-{
+public class ConstVal {
     public static final String DEV_PREFER_FILENAME = "DEV_MAC_PREFER";
+    public static final int MAX_MINUTES_INDEX = 1439;
+    public static final float MAX_COLOR_VALUE = 1000;
 }

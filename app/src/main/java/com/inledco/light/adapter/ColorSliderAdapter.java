@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
+import com.inledco.light.constant.ConstVal;
 import com.inledco.light.util.MeasureUtil;
 
 import org.w3c.dom.Text;
@@ -29,7 +30,8 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
 
     private Context mContext;
     private Channel[] mChannels;
-    int[] thumbs;
+    private int[] thumbs;
+    private float mItemHeight = 30;
     // 滑动条代理
     private ColorSliderInterface mColorSliderInterface;
 
@@ -50,7 +52,7 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
 
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
-        layoutParams.height = MeasureUtil.Dp2Px(mContext, 220) / mChannels.length;
+        layoutParams.height = MeasureUtil.Dp2Px(mContext, mItemHeight);
 
         view.setLayoutParams(layoutParams);
 
@@ -97,7 +99,8 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
         colorSliderItemViewHolder.itemView.setTag(i);
 
         colorSliderItemViewHolder.mNameTextView.setText(channel.getName());
-        colorSliderItemViewHolder.mColorSeekBar.setProgress(channel.getValue() * 10);
+        colorSliderItemViewHolder.mColorSeekBar.setMax((int) ConstVal.MAX_COLOR_VALUE);
+        colorSliderItemViewHolder.mColorSeekBar.setProgress(channel.getValue() / 100 * (int) ConstVal.MAX_COLOR_VALUE);
         colorSliderItemViewHolder.mColorSeekBar.setThumb(mContext.getResources().getDrawable(thumbs[i]));
         colorSliderItemViewHolder.mPercentTextView.setText(String.format("%s%%", channel.getValue()));
     }
@@ -105,6 +108,10 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return mChannels == null ? 0 : mChannels.length;
+    }
+
+    public void setItemHeight(float itemHeight) {
+        mItemHeight = itemHeight;
     }
 
     private class ColorSliderItemViewHolder extends RecyclerView.ViewHolder {
