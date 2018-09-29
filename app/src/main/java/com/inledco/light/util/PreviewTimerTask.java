@@ -1,16 +1,16 @@
 package com.inledco.light.util;
 
 import com.inledco.light.bean.LightModel;
+import com.inledco.light.constant.ConstVal;
 import com.inledco.light.impl.PreviewTaskListener;
 
 import java.util.TimerTask;
 
 /**
- * Created by huangzhengguo on 2018/1/2.
+ * 预览功能
  */
 
-public class PreviewTimerTask extends TimerTask
-{
+public class PreviewTimerTask extends TimerTask {
     private int tm;
     private PreviewTaskListener mListener;
     private String mAddress;
@@ -43,7 +43,7 @@ public class PreviewTimerTask extends TimerTask
     public void run ()
     {
         tm++;
-        if (tm >= 1440)
+        if (tm >= ConstVal.MAX_MINUTES_INDEX)
         {
             tm = 0;
             if (mListener != null)
@@ -62,38 +62,42 @@ public class PreviewTimerTask extends TimerTask
         CommUtil.previewAuto(mAddress, getColorValues(tm, mLightModel));
     }
 
+    /**
+     * 获取指定索引的颜色值
+     * @param ct 索引值
+     * @param lightModel 设备参数模型
+     * @return 颜色数组
+     */
     private short[] getColorValues(int ct, LightModel lightModel) {
-        short[] colorValues = new short[mChannelNum];
-
         short[] values = new short[mChannelNum];
 
         // 获取时间点个数
         int timePointNum = lightModel.getTimePoints().size();
-        int[] tms = tms = new int[timePointNum];
+        int[] tms = new int[timePointNum];
         for (int i=0;i<timePointNum;i++) {
             tms[i] = lightModel.getTimePoints().get(i).getHour() * 60 + lightModel.getTimePoints().get(i).getMinute();
         }
 
         // 构造颜色值信息
         byte[][] vals = new byte[timePointNum][mChannelNum];
-        for ( int i = 0; i < timePointNum; i++ )
+        for (int i = 0; i < timePointNum; i++)
         {
             for (int j=0;j<mChannelNum;j++) {
                 vals[i][j] = lightModel.getTimePointColorValue().get((short)i)[j];
             }
         }
 
-        for ( int i = 0; i < timePointNum; i++ )
+        for (int i = 0; i < timePointNum; i++)
         {
-            int j = ( i + 1 ) % timePointNum;
+            int j = (i + 1) % timePointNum;
             int st = tms[i];
             int et = tms[j];
             int duration;
             int dt;
             int dbrt;
-            if ( et >= st )
+            if (et >= st)
             {
-                if ( ct >= st && ct < et )
+                if (ct >= st && ct < et)
                 {
                     duration = et - st;
                     dt = ct - st;
@@ -105,16 +109,16 @@ public class PreviewTimerTask extends TimerTask
             }
             else
             {
-                if ( ct >= st || ct < et )
+                if (ct >= st || ct < et)
                 {
-                    duration = 1440 - st + et;
-                    if ( ct >= st )
+                    duration = ConstVal.MAX_MINUTES_INDEX - st + et;
+                    if (ct >= st)
                     {
                         dt = ct - st;
                     }
                     else
                     {
-                        dt = 1440 - st + ct;
+                        dt = ConstVal.MAX_MINUTES_INDEX - st + ct;
                     }
                 }
                 else
@@ -122,19 +126,19 @@ public class PreviewTimerTask extends TimerTask
                     continue;
                 }
             }
-            for ( int k = 0; k < mChannelNum; k++ )
+            for (int k = 0; k < mChannelNum; k++)
             {
                 byte sbrt = vals[i][k];
                 byte ebrt = vals[j][k];
-                if ( ebrt >= sbrt )
+                if (ebrt >= sbrt)
                 {
                     dbrt = ebrt - sbrt;
-                    values[k] = (short) ( ( sbrt & 0xFF ) * 10 + dbrt * 10 * dt / duration );
+                    values[k] = (short) ((sbrt & 0xFF) * 10 + dbrt * 10 * dt / duration);
                 }
                 else
                 {
                     dbrt = sbrt - ebrt;
-                    values[k] = (short) ( ( sbrt & 0xFF ) * 10 - dbrt * 10 * dt / duration );
+                    values[k] = (short) ((sbrt & 0xFF) * 10 - dbrt * 10 * dt / duration);
                 }
             }
         }

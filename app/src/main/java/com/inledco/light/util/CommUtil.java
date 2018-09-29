@@ -37,6 +37,7 @@ public class CommUtil
     private static final byte CMD_CTRL = 0x04;
     private static final byte CMD_READ = 0x05;
     private static final byte CMD_CUSTOM = 0x06;
+    private static final byte CMD_WRITE_DATA = 0x06;
     private static final byte CMD_CYCLE= 0x07;
     private static final byte CMD_CHN_INC = 0x08;
     private static final byte CMD_CHN_DEC = 0x09;
@@ -46,6 +47,9 @@ public class CommUtil
     private static final byte CMD_READTIME = 0x0D;
     private static final byte CMD_SYNC_TIME = 0x01;
     private static final byte CMD_FIND = 0x0F;
+
+    // 自动模式开始地址
+    private static final byte CMD_AUTO_START_ADDRESS = 0x20;
 
     public static ArrayList<Byte> mRcvBytes = new ArrayList<>();
 
@@ -192,17 +196,19 @@ public class CommUtil
         BleManager.getInstance().sendBytes(mac, txs);
     }
 
-    public static LightModel decodeLightModel(ArrayList<Byte> bytes, short devId) {
-        LightModel lightModel = null;
+    /**
+     * 解析接收到的数据到模型中
+     * @param bytes 接收到的数据
+     * @param lightModel 设备参数模型
+     * @return 是否解析成功
+     */
+    public static boolean decodeLightModel(ArrayList<Byte> bytes, LightModel lightModel) {
         int receiveDataLength = bytes.size();
         // 检查数据完整性，第5个为数据字节，减去6：减去命令头 校验码 数据量等占用的数量
         if (receiveDataLength > 5 && bytes.get(4) == receiveDataLength - 6 && getCRC(bytes, receiveDataLength) == 0x00) {
-            lightModel = new LightModel();
-
+            Log.d(TAG, "decodeLightModel: 接收到完整数据！");
             int dataIndex = 5;
             byte runModeByte = bytes.get(2);
-
-            lightModel.setControllerNum(DeviceUtil.getChannelCount(devId));
 
             if (runModeByte == 0) {
                 // 手动模式数据
@@ -235,6 +241,9 @@ public class CommUtil
 
                 lightModel.setUserDefineColorValue(userDefineValues);
             } else if (runModeByte == 1) {
+                lightModel.setTimePoints(null);
+                lightModel.setTimePointColorValue(null);
+
                 // 自动模式数据
                 lightModel.setRunMode(RunMode.AUTO_MODE);
                 lightModel.setTimePointCount(bytes.get(dataIndex));
@@ -260,9 +269,11 @@ public class CommUtil
                 lightModel.setTimePoints(timePointsArrayList);
                 lightModel.setTimePointColorValue(timePointColorValueArrayList);
             }
+
+            return true;
         }
 
-        return lightModel;
+        return false;
     }
 
     public static void sendKey(String mac, byte key)
@@ -303,40 +314,32 @@ public class CommUtil
         BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_READTIME, FRM_HDR^CMD_READTIME});
     }
 
+    /**
+     * 发送设置自动模式
+     * @param mac MAC地址
+     * @param lightModel 设备参数模型
+     */
     public static void runAutoMode(String mac, LightModel lightModel) {
-        // 数据长度：命令头 + （时间长度 + 通道数量）* 时间段数量
-        int dataLength = 2 +(lightModel.getChannelNum() + 4) * lightModel.getTimePoints().size() /  2 + 1;
+        byte dataLength = (byte) (1 + lightModel.getTimePointCount() * (1 + 1 + lightModel.getControllerNum()));
+        byte[] values = new byte[dataLength + 5];
 
-        if(lightModel.ismDynamicEnable())
-        {
-            dataLength += 6;
-        }
-
-        byte[] values = new byte[dataLength];
         values[0] = FRM_HDR;
-        values[1] = CMD_CYCLE;
-        for(int i=0;i<lightModel.getTimePoints().size() / 2;i++) {
-            // 填充时间
-            TimePoint startTimePoint = lightModel.getTimePoints().get(2 * i);
-            TimePoint endTimePoint = lightModel.getTimePoints().get(2 * i + 1);
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size())] = startTimePoint.getHour();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 1] = startTimePoint.getMinute();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 2] = endTimePoint.getHour();
-            values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 3] = endTimePoint.getMinute();
-
-            // 填充颜色值
-            byte[] colorValues = lightModel.getTimePointColorValue().get((short)(2 * i + 1));
-            for(int j=0;j<colorValues.length;j++) {
-                values[2 + i *(lightModel.getChannelNum() + lightModel.getTimePoints().size()) + 4 + j] = colorValues[j];
+        values[1] = CMD_WRITE_DATA;
+        values[2] = CMD_AUTO_START_ADDRESS;
+        values[3] = dataLength;
+        values[4] = (byte) lightModel.getTimePointCount();
+        int dataIndex = 5;
+        for (int i=0;i<lightModel.getTimePointCount();i++) {
+            TimePoint timePoint = lightModel.getTimePoints().get(i);
+            byte[] colorValues = lightModel.getTimePointColorValue().get(i);
+            values[dataIndex + i * (lightModel.getControllerNum() + 2)] = timePoint.getHour();
+            values[dataIndex + i * (lightModel.getControllerNum() + 2) + 1] = timePoint.getMinute();
+            for (int j=0;j<colorValues.length;j++) {
+                values[dataIndex + i * (lightModel.getControllerNum() + 2) + 2 + j] = colorValues[j];
             }
         }
 
-        // 动态模式
-        if(lightModel.ismDynamicEnable()) {
-
-        }
-
-        values[dataLength-1] = getCRC(values, dataLength-1);
+        values[dataLength+4] = getCRC(values, dataLength+4);
         BleManager.getInstance().sendBytes(mac, values);
     }
 }

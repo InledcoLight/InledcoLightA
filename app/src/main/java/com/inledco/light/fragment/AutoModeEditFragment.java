@@ -173,6 +173,7 @@ public class AutoModeEditFragment extends BaseFragment {
                 editAutoInterface.refreshChart(mLightModel);
             }
         });
+        mColorSliderRv.setAdapter(mColorSliderAdapter);
         mColorSliderRv.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         mColorSliderRv.addItemDecoration(new DividerItemDecoration(getContext(), OrientationHelper.VERTICAL));
 
@@ -239,6 +240,9 @@ public class AutoModeEditFragment extends BaseFragment {
 
                         refreshEditView(mLightModel, 0);
                         mTimePointAdapter.notifyDataSetChanged();
+
+                        // 刷新曲线图
+                        editAutoInterface.refreshChart(mLightModel);
                     }
                 });
 
@@ -253,11 +257,11 @@ public class AutoModeEditFragment extends BaseFragment {
                 TimePoint timePoint = new TimePoint((byte) hourOfDay, (byte) minute);
 
                 mLightModel.getTimePoints().set(mCurrentTimePointIndex, timePoint);
-                if (mCurrentTimePointIndex < mLightModel.getTimePointCount() - 1) {
+                while (mCurrentTimePointIndex < mLightModel.getTimePointCount() - 1 && timePoint.getMinutesOfTimePoint() > mLightModel.getTimePoints().get(mCurrentTimePointIndex + 1).getMinutesOfTimePoint()) {
                     mCurrentTimePointIndex = exchangeTimePoint(mLightModel, timePoint, mCurrentTimePointIndex, mCurrentTimePointIndex + 1);
                 }
 
-                if (mCurrentTimePointIndex > 0) {
+                while (mCurrentTimePointIndex > 0 && timePoint.getMinutesOfTimePoint() < mLightModel.getTimePoints().get(mCurrentTimePointIndex - 1).getMinutesOfTimePoint()) {
                     mCurrentTimePointIndex = exchangeTimePoint(mLightModel, timePoint, mCurrentTimePointIndex, mCurrentTimePointIndex - 1);
                 }
 
@@ -269,7 +273,9 @@ public class AutoModeEditFragment extends BaseFragment {
         mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // 保存
+                editAutoInterface.save(mLightModel);
+                getFragmentManager().popBackStack();
             }
         });
 
@@ -277,29 +283,10 @@ public class AutoModeEditFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 editAutoInterface.cancelSave();
+                // 移除编辑视图
+                getFragmentManager().popBackStack();
             }
         });
-    }
-
-    private Channel[] getChannels(LightModel lightModel, int timePointIndex) {
-        if (lightModel == null) {
-            return null;
-        }
-
-        if (timePointIndex > lightModel.getTimePointColorValue().size() - 1) {
-            return null;
-        }
-
-        Channel[] channels = DeviceUtil.getLightChannel(getContext(), lightModel.getDeviceId());
-        // 获取第timePointIndex个时间点的颜色值
-        byte[] colors = lightModel.getTimePointColorValue().get((short)timePointIndex);
-        for (int i=0;i<channels.length;i++) {
-            Channel channel = channels[i];
-
-            channel.setValue(colors[i]);
-        }
-
-        return channels;
     }
 
     /**
@@ -314,6 +301,7 @@ public class AutoModeEditFragment extends BaseFragment {
         TimePoint anotherTimePoint = lightModel.getTimePoints().get(anotherIndex);
         if ((currentIndex < anotherIndex && timePoint.getMinutesOfTimePoint() > anotherTimePoint.getMinutesOfTimePoint()) ||
             (currentIndex > anotherIndex && timePoint.getMinutesOfTimePoint() < anotherTimePoint.getMinutesOfTimePoint())) {
+
             lightModel.getTimePoints().set(currentIndex, anotherTimePoint);
             lightModel.getTimePoints().set(anotherIndex, timePoint);
 
@@ -333,17 +321,14 @@ public class AutoModeEditFragment extends BaseFragment {
      * @param timePointIndex 时间点索引
      */
     private void refreshEditView(LightModel lightModel, int timePointIndex) {
+        mCurrentTimePointIndex = timePointIndex;
+
         TimePoint timePoint = lightModel.getTimePoints().get(timePointIndex);
         mTimePointPicker.setCurrentHour((int)timePoint.getHour());
         mTimePointPicker.setCurrentMinute((int)timePoint.getMinute());
 
-        mColorSliderRv.setAdapter(mColorSliderAdapter);
+        mColorSliderAdapter.setChannels(getChannels(lightModel, mCurrentTimePointIndex));
         mColorSliderAdapter.notifyDataSetChanged();
-
-        mCurrentTimePointIndex = timePointIndex;
-
-        // 刷新曲线图
-        editAutoInterface.refreshChart(lightModel);
     }
 
     /**
@@ -358,7 +343,7 @@ public class AutoModeEditFragment extends BaseFragment {
         for (int i=0;i<lightModel.getTimePoints().size();i++) {
             TimePoint tp = lightModel.getTimePoints().get(i);
 
-            if (i == 0 && minuteIndex < tp.getHour() * 60 + tp.getMinute()) {
+            if (i == 0 && minuteIndex < tp.getMinutesOfTimePoint()) {
                 insertPosition = i;
                 break;
             }
@@ -381,15 +366,44 @@ public class AutoModeEditFragment extends BaseFragment {
         for (int i=0;i<timePointColorValue.length;i++) {
             timePointColorValue[i] = 0;
         }
+
         lightModel.getTimePointColorValue().add(insertPosition, timePointColorValue);
         lightModel.setTimePointCount(lightModel.getTimePointCount() + 1);
 
         return insertPosition;
     }
 
+    /**
+     * 获取通道数据
+     * @param lightModel 设备参数模型
+     * @param timePointIndex 时间点索引
+     * @return 通道数据
+     */
+    private Channel[] getChannels(LightModel lightModel, int timePointIndex) {
+        if (lightModel == null) {
+            return null;
+        }
+
+        if (timePointIndex > lightModel.getTimePointColorValue().size() - 1) {
+            return null;
+        }
+
+        Channel[] channels = DeviceUtil.getLightChannel(getContext(), lightModel.getDeviceId());
+        // 获取第timePointIndex个时间点的颜色值
+        byte[] colors = lightModel.getTimePointColorValue().get((short)timePointIndex);
+        for (int i=0;i<channels.length;i++) {
+            Channel channel = channels[i];
+
+            channel.setValue(colors[i]);
+        }
+
+        return channels;
+    }
+
     public interface EditAutoInterface {
         void refreshChart(LightModel lightModel);
         void cancelSave();
+        void save(LightModel lightModel);
     }
 }
 

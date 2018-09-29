@@ -98,9 +98,9 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
 
         colorSliderItemViewHolder.itemView.setTag(i);
 
-        colorSliderItemViewHolder.mNameTextView.setText(channel.getName());
+        // colorSliderItemViewHolder.mNameTextView.setText(channel.getName());
         colorSliderItemViewHolder.mColorSeekBar.setMax((int) ConstVal.MAX_COLOR_VALUE);
-        colorSliderItemViewHolder.mColorSeekBar.setProgress(channel.getValue() / 100 * (int) ConstVal.MAX_COLOR_VALUE);
+        colorSliderItemViewHolder.mColorSeekBar.setProgress(channel.getValue() * (int) ConstVal.MAX_COLOR_VALUE / 100);
         colorSliderItemViewHolder.mColorSeekBar.setThumb(mContext.getResources().getDrawable(thumbs[i]));
         colorSliderItemViewHolder.mPercentTextView.setText(String.format("%s%%", channel.getValue()));
     }
@@ -112,6 +112,10 @@ public class ColorSliderAdapter extends RecyclerView.Adapter {
 
     public void setItemHeight(float itemHeight) {
         mItemHeight = itemHeight;
+    }
+
+    public void setChannels(Channel[] channels) {
+        mChannels = channels;
     }
 
     private class ColorSliderItemViewHolder extends RecyclerView.ViewHolder {

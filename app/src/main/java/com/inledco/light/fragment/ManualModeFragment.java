@@ -24,12 +24,7 @@ import com.inledco.light.util.DeviceUtil;
 import io.feeeei.circleseekbar.CircleSeekBar;
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ManualModeFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ManualModeFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * 手动模式界面
  */
 public class ManualModeFragment extends BaseFragment
 {
@@ -135,15 +130,18 @@ public class ManualModeFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_manual_mode, null );
+
+        return view;
         // 使用相对布局，由于灯具的路数不一定，所以使用代码布局
-        mColorRelativeLayout = new RelativeLayout(getContext());
+//        mColorRelativeLayout = new RelativeLayout(getContext());
+//
+//        // 初始化
+//        initView(mColorRelativeLayout);
+//        initData();
+//        initEvent();
 
-        // 初始化
-        initView(mColorRelativeLayout);
-        initData();
-        initEvent();
-
-        return mColorRelativeLayout;
+        // return mColorRelativeLayout;
     }
 
     @Override

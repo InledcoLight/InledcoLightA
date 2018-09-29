@@ -1,9 +1,6 @@
 package com.inledco.light.fragment;
 
-import android.app.FragmentManager;
-import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,14 +8,11 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -37,7 +31,6 @@ import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
-import com.inledco.light.bean.TimePoint;
 import com.inledco.light.constant.ConstVal;
 import com.inledco.light.constant.CustomColor;
 import com.inledco.light.impl.PreviewTaskListener;
@@ -65,7 +58,6 @@ public class AutoModeFragment extends BaseFragment {
 
     // 整个布局
     private ConstraintLayout mConstraintLayout;
-    private FragmentTransaction mFragmentTransaction;
 
     private String mDeviceMacAddress;
     private short mDeviceId;
@@ -164,9 +156,6 @@ public class AutoModeFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        mLineChart.setData(getLineData(mLightModel));
-        mLineChart.invalidate();
     }
 
     @Override
@@ -207,7 +196,7 @@ public class AutoModeFragment extends BaseFragment {
         yLeftAxis.setTextColor(Color.WHITE);
         yLeftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
         yLeftAxis.setDrawAxisLine(false);
-        yLeftAxis.setValueFormatter( new PercentFormatter( new DecimalFormat( "##0" ) ) );
+        yLeftAxis.setValueFormatter(new PercentFormatter(new DecimalFormat("##0")));
 
         mLineChart.setTouchEnabled(false);
         mLineChart.setDragEnabled(false);
@@ -221,7 +210,7 @@ public class AutoModeFragment extends BaseFragment {
                 if (value == ConstVal.MAX_MINUTES_INDEX) {
                     return "0:00";
                 }
-                return Integer.toString((int) ( (value + 1) / 60 )) + ":00";
+                return Integer.toString((int) ((value + 1) / 60)) + ":00";
             }
 
             @Override
@@ -267,18 +256,18 @@ public class AutoModeFragment extends BaseFragment {
                                 public void run() {
                                     mLineChart.getXAxis()
                                             .removeAllLimitLines();
-                                    LimitLine limitLine = new LimitLine( mPreviewTimerTask.getTm() );
-                                    limitLine.setLineWidth( 1 );
-                                    limitLine.setLineColor( CustomColor.COLOR_ACCENT );
+                                    LimitLine limitLine = new LimitLine(mPreviewTimerTask.getTm());
+                                    limitLine.setLineWidth(1);
+                                    limitLine.setLineColor(CustomColor.COLOR_ACCENT);
                                     mLineChart.getXAxis()
-                                            .addLimitLine( limitLine );
+                                            .addLimitLine(limitLine);
                                     mLineChart.invalidate();
                                 }
                             });
                         }
                     });
 
-                    mTimer.schedule( mPreviewTimerTask, 0, 40 );
+                    mTimer.schedule(mPreviewTimerTask, 0, 40);
                 } else {
                     mPreviewButton.setSelected(false);
                     mPreviewButton.setText(R.string.light_auto_preview);
@@ -337,10 +326,20 @@ public class AutoModeFragment extends BaseFragment {
                             mLineChart.setData(getLineData(mLightModel));
                             mLineChart.invalidate();
                         }
+
+                        @Override
+                        public void save(LightModel lightModel) {
+                            // 发送自动模式数据
+                            CommUtil.runAutoMode(lightModel.getMacAddress(), lightModel);
+                        }
                     };
 
-                    mFragmentTransaction.replace(R.id.auto_mode_edit_view_fragment, autoModeEditFragment);
-                    mFragmentTransaction.commit();
+                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+
+                    fragmentTransaction.replace(R.id.auto_mode_edit_view_fragment, autoModeEditFragment);
+                    fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
                 }
             }
         });
@@ -348,8 +347,6 @@ public class AutoModeFragment extends BaseFragment {
 
     @Override
     protected void initData() {
-        mFragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-
         mBleCommunicateListener = new BleCommunicateListener() {
             @Override
             public void onDataValid(String mac) {
@@ -370,16 +367,17 @@ public class AutoModeFragment extends BaseFragment {
             public void onDataReceived(String mac, ArrayList<Byte> list) {
                 // 蓝牙接收到数据后的操作
                 if (mac.equals(mDeviceMacAddress)) {
-                    Object object = CommUtil.decodeLightModel(list, mDeviceId);
-                    if (object != null && object instanceof LightModel) {
-                        mLightModel = (LightModel) object;
+                    if (mLightModel != null && CommUtil.decodeLightModel(list, mLightModel)) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                if (getContext() == null) {
+                                    return;
+                                }
+
                                 mLineChart.setData(getLineData(mLightModel));
                                 mLineChart.invalidate();
-                                Toast.makeText( getContext(), R.string.load_success, Toast.LENGTH_SHORT )
-                                        .show();
+                                Toast.makeText(getContext(), R.string.load_success, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -407,7 +405,7 @@ public class AutoModeFragment extends BaseFragment {
         ArrayList<ILineDataSet> lineDataSets = new ArrayList<>();
 
         // 如果没有数据则返回
-        if (lightModel.getTimePointColorValue() == null || lightModel.getTimePoints() == null) {
+        if (lightModel == null || lightModel.getTimePointColorValue() == null || lightModel.getTimePoints() == null) {
             return null;
         }
 
@@ -426,7 +424,7 @@ public class AutoModeFragment extends BaseFragment {
             int boundaryValue = (int) (yFirst - dis);
             entryList.add(new Entry(0, boundaryValue));
             for (int j=0;j<lightModel.getTimePoints().size();j++) {
-                entryList.add(new Entry( lightModel.getTimePoints().get(j).getMinutesOfTimePoint(),
+                entryList.add(new Entry(lightModel.getTimePoints().get(j).getMinutesOfTimePoint(),
                         lightModel.getTimePointColorValue().get((short)j)[i]));
             }
 

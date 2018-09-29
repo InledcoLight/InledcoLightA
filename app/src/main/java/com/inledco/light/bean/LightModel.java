@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Created by HuangZhengGuo on 2018/1/1.
@@ -75,13 +74,24 @@ public class LightModel implements Serializable,Cloneable {
         LightModel o = null;
         try {
             o = (LightModel)super.clone();
-        }catch (CloneNotSupportedException ex) {
+        } catch (CloneNotSupportedException ex) {
             Log.d("Clone","不支持克隆");
         }
 
         // o.mUserDefineColorValue = (ArrayList<byte[]>)mUserDefineColorValue.clone();
         o.mTimePoints = (ArrayList<TimePoint>)mTimePoints.clone();
-        o.mTimePointColorValue = (ArrayList<byte[]>)mTimePointColorValue.clone();
+        ArrayList<byte[]> timeColorValues = new ArrayList<>();
+        for (int i=0;i<mTimePointColorValue.size();i++) {
+            byte[] colorValues = new byte[mTimePointColorValue.get(i).length];
+
+            for (int j=0;j<colorValues.length;j++) {
+                colorValues[j] = mTimePointColorValue.get(i)[j];
+            }
+            timeColorValues.add(colorValues);
+        }
+
+        o.mTimePointColorValue = timeColorValues;
+
         // o.mDynamicPeriod = (RampTime)mDynamicPeriod.clone();
 
         return o;

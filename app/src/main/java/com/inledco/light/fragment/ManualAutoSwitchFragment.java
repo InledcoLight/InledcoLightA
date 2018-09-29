@@ -34,6 +34,8 @@ public class ManualAutoSwitchFragment extends BaseFragment {
     private Button mManualButton;
     private Button mAutoButton;
 
+    public ManualAutoSwitchInterface mManualAutoSwitchInterface;
+
     public ManualAutoSwitchFragment() {
         // Required empty public constructor
     }
@@ -124,14 +126,14 @@ public class ManualAutoSwitchFragment extends BaseFragment {
         mManualButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommUtil.setManual(mDeviceAddress);
+                mManualAutoSwitchInterface.setManualMode();
             }
         });
 
         mAutoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommUtil.setAuto(mDeviceAddress);
+                mManualAutoSwitchInterface.setAutoMode();
             }
         });
     }
@@ -154,5 +156,14 @@ public class ManualAutoSwitchFragment extends BaseFragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setManualMode(boolean isManual) {
+        isManualMode = isManual;
+    }
+
+    public interface ManualAutoSwitchInterface {
+        void setManualMode();
+        void setAutoMode();
     }
 }
