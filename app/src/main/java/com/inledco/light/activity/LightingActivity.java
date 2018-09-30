@@ -331,12 +331,14 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                 mManualAutoSwitchFragment.mManualAutoSwitchInterface = new ManualAutoSwitchFragment.ManualAutoSwitchInterface() {
                     @Override
                     public void setManualMode() {
+                        BleManager.getInstance().removeBleCommunicateListener(mCommunicateListener);
                         BleManager.getInstance().addBleCommunicateListener(mCommunicateListener);
                         CommUtil.setManual(mLightModel.getMacAddress());
                     }
 
                     @Override
                     public void setAutoMode() {
+                        BleManager.getInstance().removeBleCommunicateListener(mCommunicateListener);
                         BleManager.getInstance().addBleCommunicateListener(mCommunicateListener);
                         CommUtil.setAuto(mLightModel.getMacAddress());
                     }
@@ -367,22 +369,27 @@ public class LightingActivity extends BaseActivity implements DataInvalidFragmen
                     }
                 });
             } else if (mLightModel.getRunMode() == RunMode.AUTO_MODE) {
-                mProgressDialog.dismiss();
-                BleManager.getInstance().removeBleCommunicateListener(mCommunicateListener);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgressDialog.dismiss();
+                        BleManager.getInstance().removeBleCommunicateListener(mCommunicateListener);
 
-                mManualAutoSwitchFragment.setManualMode(false);
-                // 自动模式
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.manual_auto_fragment, mManualAutoSwitchFragment)
-                        .commit();
+                        mManualAutoSwitchFragment.setManualMode(false);
+                        // 自动模式
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .replace(R.id.manual_auto_fragment, mManualAutoSwitchFragment)
+                                .commit();
 
-                if (mAutoModeFragment == null) {
-                    mAutoModeFragment = AutoModeFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac(),
-                            mLightDevice.getDevicePrefer().getDevId(),
-                            mLightModel);
-                }
-                fragmentTransaction.replace(R.id.lighting_fragment,mAutoModeFragment).commit();
+                        if (mAutoModeFragment == null) {
+                            mAutoModeFragment = AutoModeFragment.newInstance(mLightDevice.getDevicePrefer().getDeviceMac(),
+                                    mLightDevice.getDevicePrefer().getDevId(),
+                                    mLightModel);
+                        }
+                        fragmentTransaction.replace(R.id.lighting_fragment,mAutoModeFragment).commit();
+                    }
+                });
             }
         }
     }

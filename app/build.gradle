@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "com.inledco.light"
         minSdkVersion 21
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 3
         versionName "0.03"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -43,9 +43,9 @@ dependencies {
     implementation project(':bleota')
     implementation project(':itemtouchhelperextension')
     implementation 'com.android.support:recyclerview-v7:27.1.1'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    // implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation project(path: ':blemanager')
 }
 
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+// apply plugin: 'kotlin-android'
+// apply plugin: 'kotlin-android-extensions'

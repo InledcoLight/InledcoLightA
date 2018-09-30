@@ -91,7 +91,7 @@ public class CommUtil
      */
     public static void turnOnLed(String mac)
     {
-        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_SWITCH, LED_ON, FRM_HDR^CMD_SWITCH^LED_ON});
+        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_WRITE_DATA, 0x01, 0x01, 0x01, FRM_HDR^CMD_WRITE_DATA^0x01^0x01^0x01});
     }
 
     /**
@@ -100,18 +100,18 @@ public class CommUtil
      */
     public static void turnOffLed(String mac)
     {
-        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_SWITCH, LED_OFF, FRM_HDR^CMD_SWITCH^LED_OFF});
+        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_WRITE_DATA, 0x01, 0x01, 0x00, FRM_HDR^CMD_WRITE_DATA^0x01^0x01^0x00});
     }
 
 
     public static void setAuto(String mac)
     {
-        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_AUTO, LED_AUTO, FRM_HDR^CMD_AUTO^LED_AUTO});
+        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, 0x02, LED_AUTO, FRM_HDR^0x02^LED_AUTO});
     }
 
     public static void setManual(String mac)
     {
-        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, CMD_AUTO, LED_MANUAL, FRM_HDR^CMD_AUTO^LED_MANUAL});
+        BleManager.getInstance().sendBytes(mac, new byte[]{FRM_HDR, 0x02, LED_MANUAL, FRM_HDR^0x02^LED_MANUAL});
     }
     /**
      * 设置LED运行参数
@@ -128,6 +128,49 @@ public class CommUtil
         {
             txs[2+2*i] =(byte)(value[i] >> 8);
             txs[3+2*i] =(byte)(value[i] & 0xFF);
+        }
+        txs[txs.length-1] = getCRC(txs, txs.length-1);
+        BleManager.getInstance().sendBytes(mac, txs);
+    }
+
+    /**
+     *  设置数据到设备，需要调整字节
+     * @param mac MAC地址
+     * @param startAddress 开始写入地址
+     * @param dataCount 数据字节数
+     * @param value 写入数据
+     */
+    public static void writeData(String mac, byte startAddress, byte dataCount, short[] value) {
+        byte[] txs = new byte[5 + value.length*2];
+        txs[0] = FRM_HDR;
+        txs[1] = CMD_WRITE_DATA;
+        txs[2] = startAddress;
+        txs[3] = dataCount;
+        for(int i = 0; i < value.length; i++)
+        {
+            txs[4+2*i] =(byte)(value[i] >> 8);
+            txs[5+2*i] =(byte)(value[i] & 0xFF);
+        }
+        txs[txs.length-1] = getCRC(txs, txs.length-1);
+        BleManager.getInstance().sendBytes(mac, txs);
+    }
+
+    /**
+     *  设置数据到设备，需要调整字节
+     * @param mac MAC地址
+     * @param startAddress 开始写入地址
+     * @param dataCount 数据字节数
+     * @param value 写入数据
+     */
+    public static void writeData(String mac, byte startAddress, byte dataCount, byte[] value) {
+        byte[] txs = new byte[5 + value.length];
+        txs[0] = FRM_HDR;
+        txs[1] = CMD_WRITE_DATA;
+        txs[2] = startAddress;
+        txs[3] = dataCount;
+        for(int i = 0; i < value.length; i++)
+        {
+            txs[4+i] =value[i];
         }
         txs[txs.length-1] = getCRC(txs, txs.length-1);
         BleManager.getInstance().sendBytes(mac, txs);
@@ -180,7 +223,25 @@ public class CommUtil
 
     public static void setLedCustom(String mac, byte idx)
     {
-        byte[] txs = new byte[]{ FRM_HDR, CMD_CUSTOM, idx,(byte)(FRM_HDR ^ CMD_CUSTOM ^ idx) };
+        byte[] txs = new byte[]{ FRM_HDR, CMD_WRITE_DATA, (byte) (0x0c + idx), 0x01,(byte)(FRM_HDR ^ CMD_CUSTOM ^ idx) };
+        BleManager.getInstance().sendBytes(mac, txs);
+    }
+
+    public static void sendUserDefineSetting(String mac, byte index, byte[] values) {
+        byte[] txs = new byte[5 + values.length];
+
+        txs[0] = FRM_HDR;
+        txs[1] = CMD_WRITE_DATA;
+        txs[2] = (byte) (0x0c + index * values.length);
+        txs[3] = (byte) values.length;
+        for (int i=4;i<txs.length;i++) {
+            if (i == txs.length-1) {
+                txs[i] = getCRC(txs, txs.length-1);
+            } else {
+                txs[i] = values[i-4];
+            }
+        }
+
         BleManager.getInstance().sendBytes(mac, txs);
     }
 
@@ -219,12 +280,11 @@ public class CommUtil
                 // 这个地方要用控制器的通道数量，数据返回时控制器会返回所有通道的值
                 short[] channelValues = new short[lightModel.getControllerNum()];
                 for (int i = 0; i < lightModel.getControllerNum(); i++) {
-                    channelValues[i] = bytes.get(dataIndex);
-
-                    dataIndex ++;
+                    channelValues[i] = (short)((bytes.get(dataIndex) & 0xFF) | ((bytes.get(dataIndex+1)) << 8));
+                    dataIndex = dataIndex + 2;
                 }
 
-                lightModel.setmChnValues(channelValues);
+                lightModel.setChnValues(channelValues);
 
                 // 解析用户自定义数据
                 ArrayList<byte[]> userDefineValues = new ArrayList<>(4);

@@ -284,12 +284,12 @@ public class LightModel implements Serializable,Cloneable {
         this.mDynamicMode = mDynamicMode;
     }
 
-    public short[] getmChnValues() {
+    public short[] getChnValues() {
         return mChnValues;
     }
 
-    public void setmChnValues(short[] mChnValues) {
-        this.mChnValues = mChnValues;
+    public void setChnValues(short[] chnValues) {
+        this.mChnValues = chnValues;
     }
 
     public RunMode getRunMode() {

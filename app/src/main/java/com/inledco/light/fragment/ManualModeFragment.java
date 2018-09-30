@@ -4,23 +4,23 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CheckableImageButton;
-import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import com.inledco.blemanager.BleCommunicateListener;
+import com.inledco.blemanager.BleManager;
 import com.inledco.light.R;
 import com.inledco.light.bean.Channel;
 import com.inledco.light.bean.LightModel;
+import com.inledco.light.constant.ConstVal;
 import com.inledco.light.util.CommUtil;
 import com.inledco.light.util.DeviceUtil;
-
+import com.inledco.light.util.MeasureUtil;
+import java.util.ArrayList;
 import io.feeeei.circleseekbar.CircleSeekBar;
 
 /**
@@ -39,11 +39,10 @@ public class ManualModeFragment extends BaseFragment
     private Short mDeviceId;
     private LightModel mLightModel;
 
-    // 当前时间秒数
-    private long mCurrentMillisSecond = System.currentTimeMillis();
+    private BleCommunicateListener mCommunicateListener;
 
     // 布局
-    private RelativeLayout mColorRelativeLayout;
+    private ConstraintLayout mConstraintLayout;
 
     // 通道数据
     private Channel[] mChannels;
@@ -51,13 +50,9 @@ public class ManualModeFragment extends BaseFragment
     // 各个通道数值
     private short[] mChannelsValues;
 
-    // 圆弧
+    // 控件
     private CircleSeekBar mCircleSeekBar;
-
-    // 开关按钮
     private CheckableImageButton mPowerButton;
-
-    // 显示百分比
     private TextView percentTextView;
 
     // 圆形滑动回调
@@ -71,7 +66,7 @@ public class ManualModeFragment extends BaseFragment
             long currentTime = System.currentTimeMillis();
             if (currentTime - mCurrentMillisSecond > 32) {
                 short[] colorValues = new short[mChannels.length];
-                for (int j=0; j<colorValues.length; j++) {
+                for (int j=0; j<1; j++) {
                     colorValues[j] = (short) 0xFFFF;
                 }
 
@@ -130,18 +125,15 @@ public class ManualModeFragment extends BaseFragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_manual_mode, null );
-
-        return view;
         // 使用相对布局，由于灯具的路数不一定，所以使用代码布局
-//        mColorRelativeLayout = new RelativeLayout(getContext());
-//
-//        // 初始化
-//        initView(mColorRelativeLayout);
-//        initData();
-//        initEvent();
+        mConstraintLayout = new ConstraintLayout(getContext());
 
-        // return mColorRelativeLayout;
+        // 初始化
+        initView(mConstraintLayout);
+        initData();
+        initEvent();
+
+        return mConstraintLayout;
     }
 
     @Override
@@ -159,6 +151,9 @@ public class ManualModeFragment extends BaseFragment
     public void onDetach() {
         super.onDetach();
         mListener = null;
+
+        BleManager.getInstance().removeBleCommunicateListener(mCommunicateListener);
+        mCommunicateListener = null;
     }
 
     @Override
@@ -166,96 +161,109 @@ public class ManualModeFragment extends BaseFragment
         super.onDestroy();
     }
 
-    @SuppressLint("RestrictedApi")
+
     @Override
     protected void initView(View view) {
-        // 通道数值
-        mChannelsValues = mLightModel.getmChnValues();
+        initConstraintLayout(view);
+    }
 
-        // 获取通道数量
-        int channelNum = mChannelsValues.length;
+    /**
+     * 初始化布局
+     * @param view 视图
+     */
+    @SuppressLint("RestrictedApi")
+    private void initConstraintLayout(View view) {
+        // 通道数值
+        mChannelsValues = mLightModel.getChnValues();
 
         // 初始化类型数据
         mChannels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
 
-        // 获取设备屏幕宽高
-        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        mCircleSeekBar = new CircleSeekBar(getContext());
+        mCircleSeekBar.setOnSeekBarChangeListener(mColorSeekBarChangeListener);
+        mCircleSeekBar.setPointerRadius(30);
+        mCircleSeekBar.setReachedColor(mChannels[0].getColor());
+        mCircleSeekBar.setUnreachedColor(mChannels[0].getColor() & 0x80FFFFFF);
+        mCircleSeekBar.setReachedWidth(60);
+        mCircleSeekBar.setUnreachedWidth(60);
+        mCircleSeekBar.setMaxProcess((int) ConstVal.MAX_COLOR_VALUE);
+        mCircleSeekBar.setWheelShadow(5);
+        mCircleSeekBar.setPointerShadowRadius(0);
+        mCircleSeekBar.setHasReachedCornerRound(true);
+        mCircleSeekBar.setCurProcess(mChannelsValues[0]);
 
-        // 圆盘距离手动自动切换的距离
-        int circleDistance = 30;
+        ConstraintLayout.LayoutParams circleSeekBarLayoutParams = new ConstraintLayout.LayoutParams(0,0);
 
-        // 圆形中心直径
-        int diameter = displayMetrics.widthPixels / 6;
+        circleSeekBarLayoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+        circleSeekBarLayoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+        circleSeekBarLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+        circleSeekBarLayoutParams.dimensionRatio = "1";
+        circleSeekBarLayoutParams.setMargins(60,30,60,0);
 
-        // 圆盘距离边缘的距离
-        int distance = displayMetrics.widthPixels / 12;
+        mConstraintLayout.addView(mCircleSeekBar, circleSeekBarLayoutParams);
 
-        // 圆环宽度
-        float circleWidth = (displayMetrics.widthPixels - distance * 2 - diameter) / (mChannelsValues.length * 2);
+        // 添加用户自定义按钮
+        for (int i=0; i<3; i++) {
+            Button userDefineButton = new Button(getContext());
 
-        // 添加百分比显示
-        percentTextView = new TextView(getContext());
-        percentTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            userDefineButton.setId(30000 + i);
+            userDefineButton.setTag(i);
+            userDefineButton.setBackgroundColor(getResources().getColor(R.color.colorPureBlue));
+            userDefineButton.setText("M" + Integer.toString(i + 1));
+            userDefineButton.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
+            userDefineButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int userDefineIndex = (int) v.getTag();
 
-        RelativeLayout.LayoutParams textViewLayoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    byte[] userDefineValues = mLightModel.getUserDefineColorValue().get(userDefineIndex);
 
-        textViewLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        textViewLayoutParams.width = diameter;
-        textViewLayoutParams.height = diameter;
-        textViewLayoutParams.topMargin = (int) circleWidth * (mChannelsValues.length) + circleDistance + 3 * diameter / 8;
+                    // 设置对应的用户设置
+                    short[] values = new short[userDefineValues.length];
+                    for (int i = 0; i < userDefineValues.length; i++)
+                    {
+                        values[i] = (short) ((userDefineValues[i] & 0xFF) * 10);
+                    }
 
-        mColorRelativeLayout.addView(percentTextView, textViewLayoutParams);
+                    CommUtil.writeData(mDeviceMacAddress, (byte) 0x02, (byte) (mLightModel.getControllerNum() * 2), values);
+                }
+            });
 
-        // 根据通道数量创建圆环
-        for (int i=0; i<1; i++) {
-            // 圆环
-            mCircleSeekBar = new CircleSeekBar(getContext());
+            userDefineButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    int userDefineIndex = (int) v.getTag();
 
-            mCircleSeekBar.setId(10000 + i);
-            mCircleSeekBar.setReachedColor(mChannels[i].getColor());
-            mCircleSeekBar.setUnreachedColor(mChannels[i].getColor() & 0x80FFFFFF);
-            mCircleSeekBar.setReachedWidth(circleWidth);
-            mCircleSeekBar.setUnreachedWidth(circleWidth);
-            mCircleSeekBar.setMaxProcess(1000);
-            mCircleSeekBar.setCurProcess(mChannelsValues[i]);
-            mCircleSeekBar.setTag(i);
-            mCircleSeekBar.setOnSeekBarChangeListener(mColorSeekBarChangeListener);
+                    // 把当前亮度保存到对应用户设置用
+                    byte[] values = new byte[mLightModel.getChnValues().length];
+                    for (int i=0;i<values.length;i++) {
+                        values[i] = (byte) (mLightModel.getChnValues()[i] * 100 / ConstVal.MAX_COLOR_VALUE);
+                    }
 
-            // 布局参数
-            RelativeLayout.LayoutParams circleSeekBarLayoutParams =
-                    new RelativeLayout.LayoutParams(displayMetrics.widthPixels - distance * 2 - i * (int)mCircleSeekBar.getReachedWidth() * 2,
-                                                    displayMetrics.widthPixels - distance * 2 - i * (int)mCircleSeekBar.getReachedWidth() * 2);
+                    CommUtil.writeData(mDeviceMacAddress, (byte)(0x0c + userDefineIndex * mLightModel.getControllerNum()), (byte) (mLightModel.getControllerNum()), values);
 
-            circleSeekBarLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            circleSeekBarLayoutParams.topMargin = (int) circleWidth * i + circleDistance;
+                    return true;
+                }
+            });
 
-            mColorRelativeLayout.addView(mCircleSeekBar, circleSeekBarLayoutParams);
+            ConstraintLayout.LayoutParams userDefineButtonParams = new ConstraintLayout.LayoutParams(
+                    MeasureUtil.Dp2Px(getContext(), 70),
+                    MeasureUtil.Dp2Px(getContext(), 35));
 
-            // 设置第一个颜色值
+            userDefineButtonParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+            userDefineButtonParams.bottomMargin = 10;
             if (i == 0) {
-                percentTextView.setText(String.format("%s%%", mChannelsValues[i] / 10));
+                userDefineButtonParams.endToStart = 30001;
+                userDefineButtonParams.rightMargin = 10;
+            } else if (i == 1) {
+                userDefineButtonParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+                userDefineButtonParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+            } else {
+                userDefineButtonParams.startToEnd = 30001;
+                userDefineButtonParams.setMarginStart(10);
             }
-        }
 
-        // 添加中间百分比及微调按钮
-        TextView centerTextView = new TextView(getContext());
-
-        mColorRelativeLayout.addView(centerTextView);
-
-        Button decreaseBtn = new Button(getContext());
-
-        mColorRelativeLayout.addView(decreaseBtn);
-
-        Button increaseBtn = new Button(getContext());
-
-        mColorRelativeLayout.addView(increaseBtn);
-
-        // 添加颜色选择
-        for (int i = 0; i < channelNum; i++) {
-            Button btn = new Button(getContext());
-
-            mColorRelativeLayout.addView(btn);
+            mConstraintLayout.addView(userDefineButton, userDefineButtonParams);
         }
 
         // 添加开关按钮
@@ -280,81 +288,68 @@ public class ManualModeFragment extends BaseFragment
             }
         });
 
-        RelativeLayout.LayoutParams powerButtonLayoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT);
+        ConstraintLayout.LayoutParams powerButtonLayoutParams = new ConstraintLayout.LayoutParams(
+                MeasureUtil.Dp2Px(getContext(), 64),
+                MeasureUtil.Dp2Px(getContext(), 64));
 
-        powerButtonLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        powerButtonLayoutParams.addRule(RelativeLayout.BELOW, mCircleSeekBar.getId());
+        powerButtonLayoutParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
+        powerButtonLayoutParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
+        powerButtonLayoutParams.bottomToTop = 30002;
+        powerButtonLayoutParams.bottomMargin = MeasureUtil.Dp2Px(getContext(), 10);
 
-        mColorRelativeLayout.addView(mPowerButton, powerButtonLayoutParams);
-
-        // 添加用户自定义按钮
-        for (int i=0; i<3; i++) {
-            Button userDefineButton = new Button(getContext());
-
-            userDefineButton.setId(30000 + i);
-            userDefineButton.setTag(i);
-            userDefineButton.setBackgroundColor(getResources().getColor(R.color.colorPureBlue));
-            userDefineButton.setText("M" + Integer.toString(i + 1));
-            userDefineButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int userDefineIndex = (int) v.getTag();
-
-                    byte[] userDefineValues = mLightModel.getUserDefineColorValue().get(userDefineIndex);
-                    
-                    // 设置对应的用户设置
-                    short[] values = new short[userDefineValues.length];
-                    for (int i = 0; i < userDefineValues.length; i++)
-                    {
-                        values[i] = (short) ((userDefineValues[i] & 0xFF) * 10);
-                    }
-                    CommUtil.setLed(mDeviceMacAddress, values);
-                }
-            });
-
-            userDefineButton.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int userDefineIndex = (int) v.getTag();
-
-                    CommUtil.setLedCustom(mDeviceMacAddress, (byte) userDefineIndex);
-
-                    return true;
-                }
-            });
-
-            RelativeLayout.LayoutParams userDefineButtonParams = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-            userDefineButtonParams.addRule(RelativeLayout.BELOW, mPowerButton.getId());
-            if (i == 0) {
-                userDefineButtonParams.addRule(RelativeLayout.LEFT_OF, mPowerButton.getId());
-                userDefineButtonParams.rightMargin = 50;
-            } else if (i == 1) {
-                userDefineButtonParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-            } else {
-                userDefineButtonParams.addRule(RelativeLayout.RIGHT_OF, mPowerButton.getId());
-                userDefineButtonParams.leftMargin = 50;
-            }
-
-            mColorRelativeLayout.addView(userDefineButton, userDefineButtonParams);
-        }
+        mConstraintLayout.addView(mPowerButton, powerButtonLayoutParams);
     }
 
     @Override
     protected void initEvent() {
+        mCommunicateListener = new BleCommunicateListener() {
+            @Override
+            public void onDataValid(String mac) {
 
+            }
+
+            @Override
+            public void onDataInvalid(String mac) {
+
+            }
+
+            @Override
+            public void onReadMfr(String mac, String s) {
+
+            }
+
+            @Override
+            public void onDataReceived(String mac, ArrayList<Byte> list) {
+                if (mLightModel != null && CommUtil.decodeLightModel(list, mLightModel)) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 刷新手动模式界面
+                            refreshManualModeView(mLightModel);
+                        }
+                    });
+                }
+            }
+        };
+
+        BleManager.getInstance().addBleCommunicateListener(mCommunicateListener);
     }
 
     @Override
     protected void initData() {
-        refreshData();
+
     }
 
-    private void refreshData() {
+    private void refreshManualModeView(LightModel lightModel) {
+        // 刷新圆盘
+
+        // 刷新开关
+        if (mLightModel.isPowerOn()) {
+            mPowerButton.setImageResource(R.drawable.ic_power);
+        } else {
+            mPowerButton.setImageResource(R.drawable.ic_power_off);
+        }
+
         Channel[] channels = DeviceUtil.getLightChannel(getContext(), mDeviceId);
         // 获取圆盘数据
 //        for (int i=0; i< mLightManual.getChnValues().length; i++) {
